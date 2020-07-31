@@ -1,8 +1,13 @@
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <json.h>
 #include <libgen.h>
 #include <unistd.h>
+#include <linux/limits.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <dirent.h>
 
 #include "wine.h"
 #include "net.h"
@@ -10,10 +15,13 @@
 #include "common.h"
 #include "config.h"
 
+
 const static struct Command wine_commands[] = {
-    { .name = "install",      .func = wine_install,    .description = "download and install a wine version from lutris" },
-    { .name = "list",         .func = wine_list,       .description = "list available wine versions" },
-    { .name = "help",         .func = wine_help,       .description = "shows this message" },
+    { .name = "download",       .func = wine_download,   .description = "download and extract a wine version from lutris" },
+    { .name = "list",           .func = wine_list,       .description = "list installable wine versions" },
+    { .name = "run",            .func = wine_run,        .description = "run a installed wine version" },
+    { .name = "list-installed", .func = wine_installed,  .description = "list installed wine versions" },
+    { .name = "help",           .func = wine_help,       .description = "shows this message" },
 };
 
 int wine(int argc, char** argv)
@@ -29,7 +37,7 @@ int wine(int argc, char** argv)
     return wine_help(argc, argv);
 }
 
-int wine_install(int argc, char** argv)
+int wine_download(int argc, char** argv)
 {
     if (argc == 4)
     {
@@ -54,8 +62,8 @@ int wine_install(int argc, char** argv)
                 json_object_object_get_ex(value, "url", &url);
                 char* name = basename((char*)json_object_get_string(url));
 
-                char datadir[256];
-                char downloadpath[256];
+                char datadir[PATH_MAX];
+                char downloadpath[PATH_MAX];
 
                 getDataDir(datadir);
                 makeDir(datadir);
@@ -74,7 +82,7 @@ int wine_install(int argc, char** argv)
     }
     else
     {
-        puts("Usage: polecat wine download <ID>\n\nIDs are obtained via `polecat wine list' ");
+        puts("Usage: " NAME " wine download <ID>\n\nIDs are obtained via `" NAME " wine list' ");
     }
     return 0;
 }
@@ -101,9 +109,61 @@ int wine_list(int argc, char** argv)
     return 0;
 }
 
+int wine_run(int argc, char** argv)
+{
+    if (argc > 3)
+    {
+        char winepath[PATH_MAX];
+        getDataDir(winepath);
+        char* winever = argv[3];
+
+        strcat(winepath, "/");
+        strcat(winepath, winever);
+        strcat(winepath, "/bin/wine");
+
+        for (int i = 4; i < argc; ++i)
+        {
+            strcat(winepath, " ");
+            strcat(winepath, argv[i]);
+        }
+
+        return system(winepath);
+    }
+    else
+    {
+        fprintf(stderr, "Specify a what wine version to run.\nUse `" NAME " wine list-installed' to list available versions\n");
+    }
+        
+    return 0;
+}
+
+int wine_installed(int argc, char** argv)
+{
+    char datadir[PATH_MAX];
+    getDataDir(datadir);
+
+    DIR *dir;
+    struct dirent *ent;
+
+    fprintf(stderr, "Installed wine versions:\n");
+    if ((dir = opendir(datadir)) != NULL)
+    {
+        while ((ent = readdir (dir)) != NULL)
+        {
+            if (ent->d_name[0] != '.' && ent->d_type == 4)
+            {
+                fprintf(stderr, " - %s\n", ent->d_name);
+            }
+        }
+        closedir (dir);
+    } 
+
+    return 0;
+}
+
 int wine_help(int argc, char** argv)
 {
-    puts("usage: polecat wine <command>\n\nList of commands:");
+    puts("usage: " NAME " wine <command>\n\nList of commands:");
 
     print_help(wine_commands, ARRAY_LEN(wine_commands));
 

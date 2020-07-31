@@ -40,7 +40,7 @@ int dxvk_install(int argc, char** argv)
 
             if (choice > json_object_array_length(runner) - 1 || choice < 0)
             {
-                printf("`%i' is not a valid ID\n\nrun `polecat dxvk list' to get a valid ID", choice);
+                printf("`%i' is not a valid ID\n\nrun `" NAME " dxvk list' to get a valid ID", choice);
             }
             else
             {
@@ -62,7 +62,7 @@ int dxvk_install(int argc, char** argv)
     }
     else
     {
-        puts("Usage: polecat dxvk download <ID>\n\nIDs are obtained via `polecat dxvk list' ");
+        puts("Usage: " NAME " dxvk download <ID>\n\nIDs are obtained via `" NAME " dxvk list' ");
     }
     return 0;
 }
@@ -90,7 +90,7 @@ int dxvk_list(int argc, char** argv)
 
 int dxvk_help(int argc, char** argv)
 {
-    puts("usage: polecat dxvk <command>\n\nList of commands:");
+    puts("usage: " NAME " dxvk <command>\n\nList of commands:");
 
     print_help(dxvk_commands, ARRAY_LEN(dxvk_commands));
 

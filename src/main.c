@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <linux/limits.h>
 
 #include "main.h"
 #include "wine.h"
@@ -9,7 +10,7 @@
 
 const static struct Command main_commands[] = {
     { .name = "wine",     .func = wine,         .description = "manage wine versions" },
-    { .name = "dxvk",     .func = dxvk,         .description = "manage dxvk versions (TODO)" },
+    //{ .name = "dxvk",     .func = dxvk,         .description = "manage dxvk versions (TODO)" },
     { .name = "info",     .func = main_info,    .description = "show some information about polecat" },
     { .name = "help",     .func = main_help,    .description = "displays this message" },
 };
@@ -30,8 +31,8 @@ int main(int argc, char** argv)
 
 int main_info(int argc, char** argv)
 {
-    char cfgdir[256];
-    char datadir[256];
+    char cfgdir[PATH_MAX];
+    char datadir[PATH_MAX];
 
     getConfigDir(cfgdir);
     getDataDir(datadir);
@@ -49,7 +50,7 @@ int main_info(int argc, char** argv)
 
 int main_help(int argc, char** argv)
 {
-    puts("usage: polecat <command>\n\nList of commands:");
+    puts("usage: " NAME " <command>\n\nList of commands:");
 
     print_help(main_commands, ARRAY_LEN(main_commands));
 
