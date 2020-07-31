@@ -1,6 +1,6 @@
 # GENERAL VARIABLES
 NAME            := polecat
-VERSION         := 0.1.0
+VERSION         := 0.1.1
 TARGET          ?= debug
 DEBUG           := 0
 ifeq ($(TARGET),debug)
@@ -45,17 +45,17 @@ ifeq ($(DEBUG),0)
 else
     COMMONFLAGS += -g
 endif
-CFLAGS          :=  $(COMMONFLAGS) -Wall `$(PKGCONFIG) json-c --cflags` `$(CURLCONFIG) --cflags`
-LDFLAGS         := `$(PKGCONFIG) json-c --libs` `$(CURLCONFIG) --libs`
+CFLAGS          :=  $(COMMONFLAGS) -Wall `$(PKGCONFIG) json-c --cflags` `$(PKGCONFIG) libarchive --cflags` `$(CURLCONFIG) --cflags`
+LDFLAGS         := `$(PKGCONFIG) json-c --libs` `$(PKGCONFIG) libarchive --libs` `$(CURLCONFIG) --libs`
 DEFINES         := -DNAME=\"$(NAME)\" -DVERSION=\"$(VERSION)\"
 ifeq ($(DEBUG),1)
     DEFINES     += -DDEBUG
 endif
 
 # SOURCE CODE AND OBJECT FILES
-CC_SRC_FILES    := $(wildcard   $(SRC_DIR)/*.c) 
+CC_SRC_FILES    := $(wildcard $(SRC_DIR)/*.c) 
 
-OBJ_FILES       := $(patsubst $(SRC_DIR)/%.c,  $(OBJ_DIR)/$(TARGET)/%.o, $(CC_SRC_FILES))
+OBJ_FILES       := $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/$(TARGET)/%.o, $(CC_SRC_FILES))
 
 
 # TARGETS

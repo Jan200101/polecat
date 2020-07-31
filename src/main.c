@@ -5,10 +5,11 @@
 #include "wine.h"
 #include "dxvk.h"
 #include "common.h"
+#include "config.h"
 
 const static struct Command main_commands[] = {
     { .name = "wine",     .func = wine,         .description = "manage wine versions" },
-    { .name = "dxvk",     .func = dxvk,         .description = "manage dxvk versions" },
+    { .name = "dxvk",     .func = dxvk,         .description = "manage dxvk versions (TODO)" },
     { .name = "info",     .func = main_info,    .description = "show some information about polecat" },
     { .name = "help",     .func = main_help,    .description = "displays this message" },
 };
@@ -29,10 +30,19 @@ int main(int argc, char** argv)
 
 int main_info(int argc, char** argv)
 {
-    printf("Version:\t\t%s\n"
-           "User-Agent:\t\t%s/%s\n",
+    char cfgdir[256];
+    char datadir[256];
+
+    getConfigDir(cfgdir);
+    getDataDir(datadir);
+
+    printf("version:\t\t%s\n"
+           "user-Agent:\t\t%s/%s\n"
+           "config dir\t\t%s\n"
+           "data dir\t\t%s\n",
            VERSION,
-           NAME, VERSION);
+           NAME, VERSION,
+           cfgdir, datadir);
 
     return 0;
 }

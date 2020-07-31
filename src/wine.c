@@ -2,10 +2,13 @@
 #include <string.h>
 #include <json.h>
 #include <libgen.h>
+#include <unistd.h>
 
 #include "wine.h"
 #include "net.h"
+#include "tar.h"
 #include "common.h"
+#include "config.h"
 
 const static struct Command wine_commands[] = {
     { .name = "install",      .func = wine_install,    .description = "download and install a wine version from lutris" },
@@ -26,7 +29,6 @@ int wine(int argc, char** argv)
     return wine_help(argc, argv);
 }
 
-
 int wine_install(int argc, char** argv)
 {
     if (argc == 4)
@@ -42,7 +44,7 @@ int wine_install(int argc, char** argv)
 
             if (choice > json_object_array_length(versions) - 1 || choice < 0)
             {
-                printf("`%i' is not a valid ID\n\nrun `polecat wine list' to get a valid ID", choice);
+                fprintf(stderr, "`%i' is not a valid ID\n\nrun `polecat wine list' to get a valid ID\n", choice);
             }
             else
             {
@@ -51,10 +53,22 @@ int wine_install(int argc, char** argv)
 
                 json_object_object_get_ex(value, "url", &url);
                 char* name = basename((char*)json_object_get_string(url));
+
+                char datadir[256];
+                char downloadpath[256];
+
+                getDataDir(datadir);
+                makeDir(datadir);
+
+                strcpy(downloadpath, datadir);
+                strcat(downloadpath, "/");
+                strcat(downloadpath, name);
                 
-                printf("Downloading %s", name);
-                downloadFile(json_object_get_string(url), name);
-                printf("\nDone\n");
+                fprintf(stderr, "Downloading %s\n", name);
+                downloadFile(json_object_get_string(url), downloadpath);
+                fprintf(stderr, "Extracting %s\n", name);
+                extract(downloadpath, datadir);
+                fprintf(stderr, "Done\n");
             }
         }
     }
