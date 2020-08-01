@@ -35,42 +35,45 @@ struct MemoryStruct* downloadToRam(const char* URL)
 
     struct MemoryStruct* chunk = malloc(sizeof(struct MemoryStruct));
 
-    chunk->memory = malloc(1);
-    chunk->size = 0;
-
-    curl_global_init(CURL_GLOBAL_ALL);
-
-    curl_handle = curl_easy_init();
-
-    curl_easy_setopt(curl_handle, CURLOPT_URL, URL);
-    curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, memoryCallback);
-    curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void*)chunk);
-    curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, USER_AGENT);
-    curl_easy_setopt(curl_handle, CURLOPT_FOLLOWLOCATION, 1L);
-
-    res = curl_easy_perform(curl_handle);
-
-    long http_code = 0;
-    curl_easy_getinfo (curl_handle, CURLINFO_RESPONSE_CODE, &http_code);
-
-    if(res != CURLE_OK) {
-        fprintf(stderr, "curl_easy_perform() failed: %s\n",
-        curl_easy_strerror(res));
-        return NULL;
-    }
-    else if (http_code != 200)
+    if (chunk)
     {
-        fprintf(stderr, "Server didn't respond as expected [HTTP Error %li]\n", http_code);
-        return NULL;
-    }
+        chunk->memory = malloc(1);
+        chunk->size = 0;
 
-    curl_easy_cleanup(curl_handle);
-    curl_global_cleanup();
+        curl_global_init(CURL_GLOBAL_ALL);
+
+        curl_handle = curl_easy_init();
+
+        curl_easy_setopt(curl_handle, CURLOPT_URL, URL);
+        curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, memoryCallback);
+        curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void*)chunk);
+        curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, USER_AGENT);
+        curl_easy_setopt(curl_handle, CURLOPT_FOLLOWLOCATION, 1L);
+
+        res = curl_easy_perform(curl_handle);
+
+        long http_code = 0;
+        curl_easy_getinfo (curl_handle, CURLINFO_RESPONSE_CODE, &http_code);
+
+        if(res != CURLE_OK) {
+            fprintf(stderr, "curl_easy_perform() failed: %s\n",
+            curl_easy_strerror(res));
+            return NULL;
+        }
+        else if (http_code != 200)
+        {
+            fprintf(stderr, "Server didn't respond as expected [HTTP Error %li]\n", http_code);
+            return NULL;
+        }
+
+        curl_easy_cleanup(curl_handle);
+        curl_global_cleanup();
+    }
 
     return chunk;
 }
 
-int downloadFile(const char* URL, const char* path)
+void downloadFile(const char* URL, const char* path)
 {
     struct MemoryStruct* chunk = downloadToRam(URL);
 
@@ -83,18 +86,21 @@ int downloadFile(const char* URL, const char* path)
         free(chunk->memory);
         free(chunk);
     }
-
-    return 0;
 }
 
 struct json_object* fetchJSON(const char* URL)
 {
     struct MemoryStruct* chunk = downloadToRam(URL);
 
-    struct json_object* json = json_tokener_parse((char*)chunk->memory);
+    if (chunk)
+    {
+        struct json_object* json = json_tokener_parse((char*)chunk->memory);
 
-    free(chunk->memory);
-    free(chunk);
+        free(chunk->memory);
+        free(chunk);
 
-    return json;
+        return json;
+    }
+
+    return NULL;
 }

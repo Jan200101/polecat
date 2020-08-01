@@ -62,7 +62,7 @@ int dxvk_install(int argc, char** argv)
     }
     else
     {
-        puts("Usage: " NAME " dxvk download <ID>\n\nIDs are obtained via `" NAME " dxvk list' ");
+        puts(USAGE_STR " dxvk download <ID>\n\nIDs are obtained via `" NAME " dxvk list' ");
     }
     return 0;
 }
@@ -90,7 +90,7 @@ int dxvk_list(int argc, char** argv)
 
 int dxvk_help(int argc, char** argv)
 {
-    puts("usage: " NAME " dxvk <command>\n\nList of commands:");
+    puts(USAGE_STR " dxvk <command>\n\nList of commands:");
 
     print_help(dxvk_commands, ARRAY_LEN(dxvk_commands));
 

@@ -11,6 +11,7 @@
 
 #define USER_AGENT NAME "/" VERSION
 
+#define USAGE_STR "Usage: " NAME
 
 struct MemoryStruct {
  	uint8_t* memory;

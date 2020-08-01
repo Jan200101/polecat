@@ -28,7 +28,7 @@ static int copy_data(struct archive* ar, struct archive* aw)
 void extract(const char* filename, const char* outputdir)
 {
     char cwd[256];
-    getcwd(cwd, sizeof(cwd));
+    void* err = getcwd(cwd, sizeof(cwd));
 
     if (chdir(outputdir) < 0)
     {
@@ -50,10 +50,12 @@ void extract(const char* filename, const char* outputdir)
     a = archive_read_new();
     archive_read_support_format_all(a);
     archive_read_support_filter_all(a);
+
     ext = archive_write_disk_new();
     archive_write_disk_set_options(ext, flags);
     archive_write_disk_set_standard_lookup(ext);
-    if ((r = archive_read_open_filename(a, filename, 10240))) return;
+
+    if ((r = archive_read_open_filename(a, filename, 0x4000))) return;
 
     for (;;)
     {
@@ -98,5 +100,5 @@ void extract(const char* filename, const char* outputdir)
     archive_write_close(ext);
     archive_write_free(ext);
 
-    if (cwd != NULL) chdir(cwd);
+    if (err) chdir(cwd);
 }

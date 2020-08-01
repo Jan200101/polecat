@@ -78,11 +78,13 @@ int wine_download(int argc, char** argv)
                 extract(downloadpath, datadir);
                 fprintf(stderr, "Done\n");
             }
+
+            json_object_put(runner);
         }
     }
     else
     {
-        puts("Usage: " NAME " wine download <ID>\n\nIDs are obtained via `" NAME " wine list' ");
+        puts(USAGE_STR " wine download <ID>\n\nIDs are obtained via `" NAME " wine list' ");
     }
     return 0;
 }
@@ -104,6 +106,8 @@ int wine_list(int argc, char** argv)
             json_object_object_get_ex(value, "version", &val);
             printf(" [%zu]\t%s\n", i, json_object_get_string(val));
         }
+
+        json_object_put(runner);
     }
 
     return 0;
@@ -129,10 +133,8 @@ int wine_run(int argc, char** argv)
 
         return system(winepath);
     }
-    else
-    {
-        fprintf(stderr, "Specify a what wine version to run.\nUse `" NAME " wine list-installed' to list available versions\n");
-    }
+
+    fprintf(stderr, "Specify a what wine version to run.\nUse `" NAME " wine list-installed' to list available versions\n");
         
     return 0;
 }
@@ -150,7 +152,11 @@ int wine_installed(int argc, char** argv)
     {
         while ((ent = readdir (dir)) != NULL)
         {
-            if (ent->d_name[0] != '.' && ent->d_type == 4)
+            /*
+             * WARNING: crusty
+             * d_type is only specified on glibc (including musl) and BSD
+             */
+            if (ent->d_name[0] != '.' && ent->d_type == DT_DIR)
             {
                 fprintf(stderr, " - %s\n", ent->d_name);
             }
@@ -163,7 +169,7 @@ int wine_installed(int argc, char** argv)
 
 int wine_help(int argc, char** argv)
 {
-    puts("usage: " NAME " wine <command>\n\nList of commands:");
+    puts(USAGE_STR " wine <command>\n\nList of commands:");
 
     print_help(wine_commands, ARRAY_LEN(wine_commands));
 

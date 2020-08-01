@@ -50,7 +50,7 @@ int main_info(int argc, char** argv)
 
 int main_help(int argc, char** argv)
 {
-    puts("usage: " NAME " <command>\n\nList of commands:");
+    puts(USAGE_STR " <command>\n\nList of commands:");
 
     print_help(main_commands, ARRAY_LEN(main_commands));
 
