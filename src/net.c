@@ -56,13 +56,12 @@ struct MemoryStruct* downloadToRam(const char* URL)
         curl_easy_getinfo (curl_handle, CURLINFO_RESPONSE_CODE, &http_code);
 
         if(res != CURLE_OK) {
-            fprintf(stderr, "curl_easy_perform() failed: %s\n",
-            curl_easy_strerror(res));
+            printf("libcurl error: %s\n", curl_easy_strerror(res));
             return NULL;
         }
         else if (http_code != 200)
         {
-            fprintf(stderr, "Server didn't respond as expected [HTTP Error %li]\n", http_code);
+            printf("HTTP Error %li\n", http_code);
             return NULL;
         }
 

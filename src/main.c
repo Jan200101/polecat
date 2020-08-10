@@ -5,14 +5,15 @@
 #include "main.h"
 #include "wine.h"
 #include "dxvk.h"
+#include "lutris.h"
 #include "common.h"
 #include "config.h"
 
 const static struct Command main_commands[] = {
-    { .name = "wine",     .func = wine,         .description = "manage wine versions" },
-    //{ .name = "dxvk",     .func = dxvk,         .description = "manage dxvk versions (TODO)" },
-    { .name = "info",     .func = main_info,    .description = "show some information about polecat" },
-    { .name = "help",     .func = main_help,    .description = "displays this message" },
+    { .name = "wine",   .func = wine,      .description = "manage wine versions" },
+  //{ .name = "dxvk",   .func = dxvk,      .description = "manage dxvk versions (TODO)" },
+    { .name = "lutris", .func = lutris,    .description = "run lutris instraller"},
+    { .name = "info",   .func = main_info, .description = "show some information about polecat" },
 };
 
 
@@ -22,7 +23,7 @@ int main(int argc, char** argv)
     {
         for (int i = 0; i < ARRAY_LEN(main_commands); ++i)
         {
-            if (!strcmp(main_commands[i].name, argv[1])) return main_commands[i].func(argc, argv);
+            if (!strcmp(main_commands[i].name, argv[1])) return main_commands[i].func(argc-1, argv+1);
         }
     } 
 

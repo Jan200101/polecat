@@ -10,16 +10,15 @@
 const static struct Command dxvk_commands[] = {
     { .name = "install",      .func = dxvk_install,    .description = "download and install a dxvk version" },
     { .name = "list",         .func = dxvk_list,       .description = "list available dxvk versions" },
-    { .name = "help",         .func = dxvk_help,       .description = "shows this message" },
 };
 
 int dxvk(int argc, char** argv)
 {
-    if (argc > 2)
+    if (argc > 1)
     {
         for (int i = 0; i < ARRAY_LEN(dxvk_commands); ++i)
         {
-            if (!strcmp(dxvk_commands[i].name, argv[2])) return dxvk_commands[i].func(argc, argv);
+            if (!strcmp(dxvk_commands[i].name, argv[1])) return dxvk_commands[i].func(argc-1, argv+1);
         }
     } 
 
@@ -29,14 +28,14 @@ int dxvk(int argc, char** argv)
 
 int dxvk_install(int argc, char** argv)
 {
-    if (argc == 4)
+    if (argc == 2)
     {
         struct json_object* runner = fetchJSON(DXVK_API);
 
         if (runner)
         {
 
-            int choice = atoi(argv[3]);
+            int choice = atoi(argv[1]);
 
             if (choice > json_object_array_length(runner) - 1 || choice < 0)
             {

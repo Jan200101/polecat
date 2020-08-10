@@ -16,6 +16,6 @@ void print_help(const struct Command* commands, const size_t size)
 
     for (size_t i = 0; i < size; ++i)
     {
-        printf("\t%-*s\t%s\n", longestCommand, commands[i].name, commands[i].description);
+        printf("\t%-*s\t %s\n", longestCommand, commands[i].name, commands[i].description);
     }
 }

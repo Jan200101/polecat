@@ -8,6 +8,7 @@
 
 #define WINE_API "https://lutris.net/api/runners/wine"
 #define DXVK_API "https://api.github.com/repos/lutris/dxvk/releases"
+#define INSTALLER_API "https://lutris.net/api/installers/"
 
 #define USER_AGENT NAME "/" VERSION
 

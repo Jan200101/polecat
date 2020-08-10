@@ -12,6 +12,7 @@ polecat depends on:
 
 - libcurl
 - json-c
+- libarchive
 
 ### License
 MIT

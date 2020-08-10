@@ -19,7 +19,7 @@ static int copy_data(struct archive* ar, struct archive* aw)
       return (r);
     r = archive_write_data_block(aw, buff, size, offset);
     if (r < ARCHIVE_OK) {
-      fprintf(stderr, "%s\n", archive_error_string(aw));
+      printf("%s\n", archive_error_string(aw));
       return (r);
     }
   }
@@ -32,7 +32,7 @@ void extract(const char* filename, const char* outputdir)
 
     if (chdir(outputdir) < 0)
     {
-        fprintf(stderr, "Cannot change to %s\n", outputdir);
+        printf("Cannot change to %s\n", outputdir);
         return;
     }
 
@@ -67,7 +67,7 @@ void extract(const char* filename, const char* outputdir)
 
         if (r < ARCHIVE_OK)
         {
-            fprintf(stderr, "%s\n", archive_error_string(a));
+            printf("%s\n", archive_error_string(a));
         }
 
         if (r < ARCHIVE_WARN)
@@ -78,20 +78,20 @@ void extract(const char* filename, const char* outputdir)
         r = archive_write_header(ext, entry);
         if (r < ARCHIVE_OK)
         {
-            fprintf(stderr, "%s\n", archive_error_string(ext));
+            printf("%s\n", archive_error_string(ext));
         }
         else if (archive_entry_size(entry) > 0)
         {
             r = copy_data(a, ext);
             if (r < ARCHIVE_OK)
-                fprintf(stderr, "%s\n", archive_error_string(ext));
+                printf("%s\n", archive_error_string(ext));
             if (r < ARCHIVE_WARN)
                 return;
         }
 
         r = archive_write_finish_entry(ext);
         if (r < ARCHIVE_OK)
-            fprintf(stderr, "%s\n", archive_error_string(ext));
+            printf("%s\n", archive_error_string(ext));
         if (r < ARCHIVE_WARN)
             return;
     }

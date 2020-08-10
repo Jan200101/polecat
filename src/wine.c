@@ -17,29 +17,29 @@
 
 
 const static struct Command wine_commands[] = {
-    { .name = "download",       .func = wine_download,   .description = "download and extract a wine version from lutris" },
-    { .name = "list",           .func = wine_list,       .description = "list installable wine versions" },
-    { .name = "run",            .func = wine_run,        .description = "run a installed wine version" },
-    { .name = "list-installed", .func = wine_installed,  .description = "list installed wine versions" },
-    { .name = "help",           .func = wine_help,       .description = "shows this message" },
+    { .name = "download",       .func = wine_download,  .description = "download and extract a wine version from lutris" },
+    { .name = "list",           .func = wine_list,      .description = "list installable wine versions" },
+    { .name = "run",            .func = wine_run,       .description = "run a installed wine version" },
+    { .name = "installed",      .func = wine_installed, .description = "list installed wine versions" },
 };
 
 int wine(int argc, char** argv)
 {
-    if (argc > 2)
+    if (argc > 1)
     {
         for (int i = 0; i < ARRAY_LEN(wine_commands); ++i)
         {
-            if (!strcmp(wine_commands[i].name, argv[2])) return wine_commands[i].func(argc, argv);
+            if (!strcmp(wine_commands[i].name, argv[1])) return wine_commands[i].func(argc-1, argv+1);
         }
     } 
+
 
     return wine_help(argc, argv);
 }
 
 int wine_download(int argc, char** argv)
 {
-    if (argc == 4)
+    if (argc == 2)
     {
         struct json_object* runner = fetchJSON(WINE_API);
 
@@ -48,11 +48,11 @@ int wine_download(int argc, char** argv)
             struct json_object* versions;
             json_object_object_get_ex(runner, "versions", &versions);
 
-            int choice = atoi(argv[3]);
+            int choice = atoi(argv[1]);
 
             if (choice > json_object_array_length(versions) - 1 || choice < 0)
             {
-                fprintf(stderr, "`%i' is not a valid ID\n\nrun `polecat wine list' to get a valid ID\n", choice);
+                printf("`%i' is not a valid ID\n\nrun `polecat wine list' to get a valid ID\n", choice);
             }
             else
             {
@@ -72,11 +72,11 @@ int wine_download(int argc, char** argv)
                 strcat(downloadpath, "/");
                 strcat(downloadpath, name);
                 
-                fprintf(stderr, "Downloading %s\n", name);
+                printf("Downloading %s\n", name);
                 downloadFile(json_object_get_string(url), downloadpath);
-                fprintf(stderr, "Extracting %s\n", name);
+                printf("Extracting %s\n", name);
                 extract(downloadpath, datadir);
-                fprintf(stderr, "Done\n");
+                printf("Done\n");
             }
 
             json_object_put(runner);
@@ -115,17 +115,17 @@ int wine_list(int argc, char** argv)
 
 int wine_run(int argc, char** argv)
 {
-    if (argc > 3)
+    if (argc > 1)
     {
         char winepath[PATH_MAX];
         getDataDir(winepath);
-        char* winever = argv[3];
+        char* winever = argv[1];
 
         strcat(winepath, "/");
         strcat(winepath, winever);
         strcat(winepath, "/bin/wine");
 
-        for (int i = 4; i < argc; ++i)
+        for (int i = 2; i < argc; ++i)
         {
             strcat(winepath, " ");
             strcat(winepath, argv[i]);
@@ -134,7 +134,7 @@ int wine_run(int argc, char** argv)
         return system(winepath);
     }
 
-    fprintf(stderr, "Specify a what wine version to run.\nUse `" NAME " wine list-installed' to list available versions\n");
+    printf("Specify a what wine version to run.\nUse `" NAME " wine list-installed' to list available versions\n");
         
     return 0;
 }
@@ -147,7 +147,7 @@ int wine_installed(int argc, char** argv)
     DIR *dir;
     struct dirent *ent;
 
-    fprintf(stderr, "Installed wine versions:\n");
+    printf("Installed wine versions:\n");
     if ((dir = opendir(datadir)) != NULL)
     {
         while ((ent = readdir (dir)) != NULL)
@@ -158,7 +158,7 @@ int wine_installed(int argc, char** argv)
              */
             if (ent->d_name[0] != '.' && ent->d_type == DT_DIR)
             {
-                fprintf(stderr, " - %s\n", ent->d_name);
+                printf(" - %s\n", ent->d_name);
             }
         }
         closedir (dir);
