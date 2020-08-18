@@ -11,7 +11,7 @@
 
 const static struct Command main_commands[] = {
     { .name = "wine",   .func = wine,      .description = "manage wine versions" },
-  //{ .name = "dxvk",   .func = dxvk,      .description = "manage dxvk versions (TODO)" },
+    { .name = "dxvk",   .func = dxvk,      .description = "manage dxvk versions" },
     { .name = "lutris", .func = lutris,    .description = "run lutris instraller"},
     { .name = "info",   .func = main_info, .description = "show some information about polecat" },
 };
@@ -32,19 +32,20 @@ int main(int argc, char** argv)
 
 int main_info(int argc, char** argv)
 {
-    char cfgdir[PATH_MAX];
-    char datadir[PATH_MAX];
+    char cfgdir[PATH_MAX], datadir[PATH_MAX], cachedir[PATH_MAX];
 
-    getConfigDir(cfgdir);
-    getDataDir(datadir);
+    getConfigDir(cfgdir, sizeof(cfgdir));
+    getDataDir(datadir, sizeof(datadir));
+    getCacheDir(cachedir, sizeof(cachedir));
 
     printf("version:\t\t%s\n"
            "user-Agent:\t\t%s/%s\n"
            "config dir\t\t%s\n"
-           "data dir\t\t%s\n",
+           "data dir\t\t%s\n"
+           "cache dir\t\t%s\n",
            VERSION,
            NAME, VERSION,
-           cfgdir, datadir);
+           cfgdir, datadir, cachedir);
 
     return 0;
 }

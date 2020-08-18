@@ -56,12 +56,14 @@ struct MemoryStruct* downloadToRam(const char* URL)
         curl_easy_getinfo (curl_handle, CURLINFO_RESPONSE_CODE, &http_code);
 
         if(res != CURLE_OK) {
-            printf("libcurl error: %s\n", curl_easy_strerror(res));
+            puts(curl_easy_strerror(res));
             return NULL;
         }
         else if (http_code != 200)
         {
+#ifdef DEBUG
             printf("HTTP Error %li\n", http_code);
+#endif
             return NULL;
         }
 
@@ -79,8 +81,11 @@ void downloadFile(const char* URL, const char* path)
     if (chunk)
     {
         FILE* file = fopen(path, "wb");
-        fwrite(chunk->memory, chunk->size, 1, file);
-        fclose(file);
+        if (file)
+        {
+            fwrite(chunk->memory, chunk->size, 1, file);
+            fclose(file);
+        }
 
         free(chunk->memory);
         free(chunk);
@@ -91,15 +96,16 @@ struct json_object* fetchJSON(const char* URL)
 {
     struct MemoryStruct* chunk = downloadToRam(URL);
 
+    struct json_object* json = NULL;
+
     if (chunk)
     {
-        struct json_object* json = json_tokener_parse((char*)chunk->memory);
+        json = json_tokener_parse((char*)chunk->memory);
 
         free(chunk->memory);
         free(chunk);
 
-        return json;
     }
 
-    return NULL;
+    return json;
 }

@@ -2,10 +2,13 @@
 #include <string.h>
 #include <json.h>
 #include <libgen.h>
+#include <linux/limits.h>
 
 #include "dxvk.h"
 #include "net.h"
+#include "tar.h"
 #include "common.h"
+#include "config.h"
 
 const static struct Command dxvk_commands[] = {
     { .name = "install",      .func = dxvk_install,    .description = "download and install a dxvk version" },
@@ -52,11 +55,27 @@ int dxvk_install(int argc, char** argv)
                 json_object_object_get_ex(version, "browser_download_url", &assets);
 
                 char* name = basename((char*)json_object_get_string(assets));
+                struct MemoryStruct* tar;
+
+                char datadir[PATH_MAX];
+                getDataDir(datadir, sizeof(datadir));
+                makeDir(datadir);
                 
                 printf("Downloading %s", json_object_get_string(assets));
-                downloadFile(json_object_get_string(assets), name);
-                printf("\nDone\n");
+                //downloadFile(json_object_get_string(assets), name);
+                tar = downloadToRam(json_object_get_string(assets));
+
+                printf("Extracting %s\n", name);
+
+                extract(tar, datadir);
+
+                printf("Done\n");
+
+                free(tar->memory);
+                free(tar);
             }
+
+            json_object_put(runner);
         }
     }
     else

@@ -15,14 +15,14 @@
 #define USAGE_STR "Usage: " NAME
 
 struct MemoryStruct {
- 	uint8_t* memory;
- 	size_t size;
+    uint8_t* memory;
+    size_t size;
 };
 
 struct Command {
-	char* name;
-	int (*func)(int, char**);
-	char* description;
+    char* name;
+    int (*func)(int, char**);
+    char* description;
 };
 
 void print_help(const struct Command*, size_t);

@@ -64,19 +64,32 @@ int wine_download(int argc, char** argv)
 
                 char datadir[PATH_MAX];
                 char downloadpath[PATH_MAX];
+                struct MemoryStruct* tar;
 
-                getDataDir(datadir);
+                getDataDir(datadir, sizeof(datadir));
                 makeDir(datadir);
 
-                strcpy(downloadpath, datadir);
-                strcat(downloadpath, "/");
-                strcat(downloadpath, name);
+                strncpy(downloadpath, datadir, sizeof(downloadpath));
+                strncat(downloadpath, "/", sizeof(downloadpath) - strlen(downloadpath));
+                strncat(downloadpath, name, sizeof(downloadpath) - strlen(downloadpath));
                 
                 printf("Downloading %s\n", name);
-                downloadFile(json_object_get_string(url), downloadpath);
-                printf("Extracting %s\n", name);
-                extract(downloadpath, datadir);
-                printf("Done\n");
+
+                tar = downloadToRam(json_object_get_string(url));
+                if (tar)
+                {
+                    printf("Extracting %s\n", name);
+                    extract(tar, datadir);
+                    puts("Done");
+                }
+                else
+                {
+                    puts("Something went wrong. The tar is not valid");
+                }
+
+
+                free(tar->memory);
+                free(tar);
             }
 
             json_object_put(runner);
@@ -118,7 +131,7 @@ int wine_run(int argc, char** argv)
     if (argc > 1)
     {
         char winepath[PATH_MAX];
-        getDataDir(winepath);
+        getDataDir(winepath, sizeof(winepath));
         char* winever = argv[1];
 
         strcat(winepath, "/");
@@ -142,7 +155,7 @@ int wine_run(int argc, char** argv)
 int wine_installed(int argc, char** argv)
 {
     char datadir[PATH_MAX];
-    getDataDir(datadir);
+    getDataDir(datadir, sizeof(datadir));
 
     DIR *dir;
     struct dirent *ent;

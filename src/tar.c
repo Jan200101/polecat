@@ -3,6 +3,10 @@
 #include <archive.h>
 #include <archive_entry.h>
 #include <fcntl.h> 
+#include <linux/limits.h>
+
+#include "common.h"
+#include "tar.h"
 
 static int copy_data(struct archive* ar, struct archive* aw)
 {
@@ -25,9 +29,9 @@ static int copy_data(struct archive* ar, struct archive* aw)
   }
 }
 
-void extract(const char* filename, const char* outputdir)
+void extract(const struct MemoryStruct* tar, const char* outputdir)
 {
-    char cwd[256];
+    char cwd[PATH_MAX];
     void* err = getcwd(cwd, sizeof(cwd));
 
     if (chdir(outputdir) < 0)
@@ -55,7 +59,7 @@ void extract(const char* filename, const char* outputdir)
     archive_write_disk_set_options(ext, flags);
     archive_write_disk_set_standard_lookup(ext);
 
-    if ((r = archive_read_open_filename(a, filename, 0x4000))) return;
+    if ((r = archive_read_open_memory(a, tar->memory, tar->size))) return;
 
     for (;;)
     {

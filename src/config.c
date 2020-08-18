@@ -7,7 +7,7 @@
 #include "config.h"
 #include "common.h"
 
-void getXDGDir(const char* envvar, const char* homeext, char* config)
+static void getXDGDir(const char* envvar, const char* homeext, char* config, const size_t size)
 {
     char* xdg_var = getenv(envvar);
 
@@ -18,19 +18,24 @@ void getXDGDir(const char* envvar, const char* homeext, char* config)
     else
     {
         char* home = getenv("HOME");
-        strcpy(config, home);
-        strcat(config, homeext);
+        strncpy(config, home, size);
+        strncat(config, homeext, size - strlen(config));
     }
 }
 
-void getConfigDir(char* config)
+void getConfigDir(char* config, const size_t size)
 {
-    getXDGDir("XDG_CONFIG_HOME", "/.config/" NAME, config);
+    getXDGDir("XDG_CONFIG_HOME", "/.config/" NAME, config, size);
 }
 
-void getDataDir(char* config)
+void getDataDir(char* config, const size_t size)
 {
-    getXDGDir("XDG_DATA_HOME", "/.local/share/" NAME, config);
+    getXDGDir("XDG_DATA_HOME", "/.local/share/" NAME, config, size);
+}
+
+void getCacheDir(char* config, const size_t size)
+{
+    getXDGDir("XDG_CACHE_HOME", "/.cache/" NAME, config, size);
 }
 
 void makeDir(const char* path)

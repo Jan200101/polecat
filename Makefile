@@ -1,6 +1,6 @@
 # GENERAL VARIABLES
 NAME            := polecat
-VERSION         := 0.1.3
+VERSION         := 0.1.4
 TARGET          ?= debug
 DEBUG           := 0
 ifeq ($(TARGET),debug)
@@ -17,15 +17,8 @@ CROSS           ?=
 RM              := rm -rf
 MKDIR           := mkdir -p
 DOXYGEN         := doxygen
-PKGCONFIG       := $(CROSS)pkg-config
-CURLCONFIG      := $(CROSS)curl-config
-
-
-ifndef PLATFORM
-    PLATFORM := $(HOSTPLATFORM)
-endif
-
-# CROSS COMPILATION ADAPTION
+PKGCONFIG       := ${CROSS}pkg-config
+CURLCONFIG      := ${CROSS}curl-config
 
 # DIRECTORIES
 BIN_DIR         := bin
@@ -78,7 +71,7 @@ $(OBJ_DIR)/$(TARGET)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)/$(TARGET)
 	${RECIPE_IF} ${CROSS}${CC} -c -o$@ $< ${CFLAGS} ${DEFINES} ${RECIPE_RESULT_COMPILE}
 
 clean:
-	${RM} ${BIN_DIR} ${OBJ_DIR} ${NAME}.tar 2> /dev/null
+	${RM} ${BIN_DIR} ${OBJ_DIR} 2> /dev/null
 
 loc:
 	-find ${SRC_DIR} ${INC_DIR} -name '*.cpp' -o -name '*.c' -o -name '*.h' -o -name '*.hpp' -type f | xargs wc -l
@@ -86,6 +79,8 @@ loc:
 tar: ${NAME}.tar
 
 dist: tar
+distclean:
+	${RM} ${NAME}.tar 2> /dev/null
 
 ${NAME}.tar:
 	${ARCHIVE_STATUS}

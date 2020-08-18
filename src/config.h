@@ -3,8 +3,9 @@
 
 #include <stdlib.h>
 
-void getConfigDir(char* config);
-void getDataDir(char* config);
+void getConfigDir(char*, const size_t);
+void getDataDir(char*, const size_t);
+void getCacheDir(char*, const size_t);
 
 void makeDir(const char* path);
 
