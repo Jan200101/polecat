@@ -54,7 +54,7 @@ OBJ_FILES       := $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/$(TARGET)/%.o, $(CC_SRC
 # TARGETS
 default: $(BIN_DIR)/$(TARGET)/$(NAME)$(OUT_EXT)
 
-all: $(BIN_DIR)/$(TARGET)/$(NAME)$(OUT_EXT) docs test
+all: $(BIN_DIR)/$(TARGET)/$(NAME)$(OUT_EXT) 
 
 $(BIN_DIR)/$(TARGET):
 	${MKDIR} $@
