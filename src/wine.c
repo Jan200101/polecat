@@ -69,9 +69,9 @@ int wine_download(int argc, char** argv)
                 getDataDir(datadir, sizeof(datadir));
                 makeDir(datadir);
 
-                strncpy(downloadpath, datadir, sizeof(downloadpath));
-                strncat(downloadpath, "/", sizeof(downloadpath) - strlen(downloadpath));
-                strncat(downloadpath, name, sizeof(downloadpath) - strlen(downloadpath));
+                strncpy(downloadpath, datadir, sizeof(downloadpath) - 1);
+                strncat(downloadpath, "/", sizeof(downloadpath) - strlen(downloadpath) - 1);
+                strncat(downloadpath, name, sizeof(downloadpath) - strlen(downloadpath) - 1);
                 
                 printf("Downloading %s\n", name);
 
@@ -134,20 +134,30 @@ int wine_run(int argc, char** argv)
         getDataDir(winepath, sizeof(winepath));
         char* winever = argv[1];
 
-        strcat(winepath, "/");
-        strcat(winepath, winever);
-        strcat(winepath, "/bin/wine");
+        strncat(winepath, "/", sizeof(winepath) - strlen(winepath) - 1);
+        strncat(winepath, winever, sizeof(winepath) - strlen(winepath) - 1);
+        strncat(winepath, "/bin/wine", sizeof(winepath) - strlen(winepath) - 1);
 
-        for (int i = 2; i < argc; ++i)
+        if (isFile(winepath))
         {
-            strcat(winepath, " ");
-            strcat(winepath, argv[i]);
+            for (int i = 2; i < argc; ++i)
+            {
+                strncat(winepath, " ", sizeof(winepath) - strlen(winepath) - 1);
+                strncat(winepath, argv[i], sizeof(winepath) - strlen(winepath) - 1);
+            }
+            return system(winepath);
+        }
+        else
+        {
+            printf("`%s' is not an installed wine version\n", winever);
         }
 
-        return system(winepath);
+    }
+    else
+    {
+        printf("Specify a what wine version to run.\nUse `" NAME " wine installed' to list available versions\n");
     }
 
-    printf("Specify a what wine version to run.\nUse `" NAME " wine list-installed' to list available versions\n");
         
     return 0;
 }
