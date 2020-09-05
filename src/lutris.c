@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <linux/limits.h>
+#include <libgen.h>
 
 #include "lutris.h"
 #include "net.h"
@@ -19,8 +20,7 @@ int lutris(int argc, char** argv)
         {
             if (!strcmp(lutris_commands[i].name, argv[1])) return lutris_commands[i].func(argc-1, argv+1);
         }
-    } 
-
+    }
 
     return lutris_help(argc, argv);
 }
@@ -28,6 +28,72 @@ int lutris(int argc, char** argv)
 
 int lutris_install(int argc, char** argv)
 {
+    if (argc == 2)
+    {
+        struct script_t installer = lutris_getInstaller(argv[1]);
+        char inp;
+
+        if (installer.error == NONE)
+        {
+            struct MemoryStruct** files = NULL;
+
+            printf("Install %s - %s to the current directory?\nThis may download files and install wine versions\n(y/n)\n", installer.name, installer.version);
+
+            if ((inp=getchar()) == 'y')
+            {
+                // fetch all files required by installer
+                // TODO: think about storing files on disk for larger files
+                if (installer.filecount)
+                {
+                    files = malloc( installer.filecount * sizeof(void*) );
+                    for (int i = 0; i < installer.filecount; ++i)
+                    {
+                        char* filename = basename(installer.files[i]->url);
+                        printf("Dowloading %s...\n", filename);
+                        files[i] = downloadToRam(installer.files[i]->url);
+                    }
+                }
+
+
+
+                // cleanup all files kept in memory
+                if (installer.filecount)
+                {
+                    for (int i = 0; i < installer.filecount; ++i)
+                    {
+                        free(files[i]->memory);
+                        free(files[i]);
+                    }
+
+                    free(files);
+                }
+            }
+        }
+        else
+        {
+            switch(installer.error)
+            {
+                case NO_JSON:
+                case NO_SLUG:
+                    puts("No Installer with that ID was found");
+                    break;
+
+                case NO_SCRIPT:
+                    puts("Installer has no script");
+                    break;
+
+                case NO_INSTALLER:
+                    puts("Script has no install directives");
+                    break;
+
+                default:
+                    puts("An error has occured.\nTry running the info command to figure out what went wrong");
+                    break;
+            }
+        }
+
+        lutris_freeInstaller(&installer);
+    }
     return 0;
 }
 
@@ -35,31 +101,24 @@ int lutris_info(int argc, char** argv)
 {
     if (argc == 2)
     {
-        struct script installer = lutris_getInstaller(argv[1]);
-        if (installer.error != NO_SLUG)
+        struct script_t installer = lutris_getInstaller(argv[1]);
+        if (installer.error > NO_JSON || installer.error == NONE)
         {
 
-            printf("Name: %s\n"
-                   "Version: %s\n"
-                   "Runner: %i\n"
-                   "Wine: %s\n"
-                   "Error %i\n"
-                   "Files: %zu\n"
-                   "Directives: %zu\n",
-                   installer.name,
-                   installer.version,
-                   installer.runner,
-                   installer.wine,
-                   installer.error,
-                   installer.filecount,
-                   installer.directivecount);
+            printf("[%s]", runnerStr[installer.runner]);
+            if (installer.wine) printf("[%s]", installer.wine);
+
+            printf(" %s - %s\n", installer.name, installer.version);
+
+            if (installer.description) puts(installer.description);
+            if (installer.notes) puts(installer.notes);
 
             if (installer.filecount)
             {
                 puts("\nFiles:");
                 for (int i = 0; i < installer.filecount; ++i)
                 {
-                    printf("\t%s\t->\t%s\n", installer.files[i]->filename, installer.files[i]->url);
+                    printf("\t%s ->%s\n", installer.files[i]->filename, installer.files[i]->url);
                 }
             }
 
@@ -107,9 +166,9 @@ void lutris_getInstallerURL(char* buffer, char* name, size_t size)
         strncat(buffer, name, size - strlen(buffer));
 }
 
-struct script lutris_getInstaller(char* installername)
+struct script_t lutris_getInstaller(char* installername)
 {
-    struct script installer;
+    struct script_t installer;
     installer.name = NULL;
     installer.version = NULL;
     installer.runner = UNKNOWN_RUNNER;
@@ -140,7 +199,7 @@ struct script lutris_getInstaller(char* installername)
             if (json_object_get_int(count) == 1)
             {
                 struct json_object* script, *scriptinstall, *files;
-                
+
                 if(json_object_object_get_ex(slug, "script", &script))
                 {
                     {
@@ -218,7 +277,7 @@ struct script lutris_getInstaller(char* installername)
                             if(json_object_get_type((struct json_object*)entry->v) == json_type_object)
 
                             {
-                                struct json_object* url; 
+                                struct json_object* url;
                                 json_object_object_get_ex((struct json_object*)entry->v, "url", &url);
                                 urlstr = json_object_get_string(url);
                             }
@@ -262,7 +321,7 @@ struct script lutris_getInstaller(char* installername)
                                         case MERGE:
                                             json_object_object_get_ex(directive, "src", &options[0]);
                                             json_object_object_get_ex(directive, "dst", &options[1]);
-                                            installer.directives[i]->size = 2;                                    
+                                            installer.directives[i]->size = 2;
                                             break;
 
                                         case EXTRACT:
@@ -294,6 +353,8 @@ struct script lutris_getInstaller(char* installername)
                                             break;
 
                                         case WRITE_JSON:
+                                            options[0] = directive;
+                                            installer.directives[i]->size = 1;
                                             break;
 
                                         case INPUT_MENU:
@@ -353,7 +414,6 @@ struct script lutris_getInstaller(char* installername)
                                     {
                                         offset = 1;
                                     }
-                                    
 
                                     installer.directives[i]->arguments = malloc(installer.directives[i]->size * sizeof(char*));
                                     for (int j = 0; j < installer.directives[i]->size; ++j)
@@ -368,7 +428,7 @@ struct script lutris_getInstaller(char* installername)
                         }
                     }
                     else installer.error = NO_INSTALLER;
-                    }
+                }
                 else installer.error = NO_SCRIPT;
             }
             else installer.error = NO_SLUG;
@@ -381,7 +441,7 @@ struct script lutris_getInstaller(char* installername)
     return installer;
 }
 
-void lutris_freeInstaller(struct script* installer)
+void lutris_freeInstaller(struct script_t* installer)
 {
     if (installer)
     {
@@ -397,7 +457,7 @@ void lutris_freeInstaller(struct script* installer)
             {
                 for (int j = 0; j < installer->directives[i]->size; ++j)
                 {
-                    free(installer->directives[i]->arguments[j]);                    
+                    free(installer->directives[i]->arguments[j]);
                 }
 
                 free(installer->directives[i]->arguments);

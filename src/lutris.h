@@ -58,15 +58,16 @@ static const char taskKeywordstr[TASKKEYWORDMAX][0xF] =
 };
 
 enum runner_t {
+    UNKNOWN_RUNNER,
     WINE,
     LINUX,
 
-    RUNNERMAX,
-    UNKNOWN_RUNNER
+    RUNNERMAX
 };
 
 static const char runnerStr[RUNNERMAX][0xF] = 
 {
+    "unknown",
     "wine",
     "linux",
 };
@@ -92,7 +93,7 @@ struct file_t {
     char* url;
 };
 
-struct script {
+struct script_t {
     char* name;
     char* version;
     enum runner_t runner;
@@ -112,7 +113,7 @@ int lutris_info(int, char**);
 int lutris_help(int, char**);
 
 void lutris_getInstallerURL(char*, char*, size_t);
-struct script lutris_getInstaller(char*);
-void lutris_freeInstaller(struct script*);
+struct script_t lutris_getInstaller(char*);
+void lutris_freeInstaller(struct script_t*);
 
 #endif
