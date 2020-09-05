@@ -8,7 +8,6 @@ ifeq ($(TARGET),debug)
 endif
 
 PRETTY_OUTPUT   ?= 1
-STATIC          ?= 0
 
 # CROSS COMPILATION SETUP
 CROSS           ?=
@@ -29,20 +28,20 @@ SRC_DIR         := src
 FILES           := $(filter-out $(BIN_DIR) $(OBJ_DIR), $(wildcard *))
 
 # FLAGS
-COMMONFLAGS     :=
-ifneq ($(STATIC), 0)
-    COMMONFLAGS += -static
+CFLAGS          ?=
+LDFLAGS         ?=
+
+ifeq ($(DEBUG),1)
+    CFLAGS      += -g
 endif
-ifeq ($(DEBUG),0)
-    COMMONFLAGS += -O2
-else
-    COMMONFLAGS += -g
-endif
-CFLAGS          :=  $(COMMONFLAGS) -Wall `$(PKGCONFIG) json-c --cflags` `$(PKGCONFIG) libarchive --cflags` `$(CURLCONFIG) --cflags`
-LDFLAGS         := `$(PKGCONFIG) json-c --libs` `$(PKGCONFIG) libarchive --libs` `$(CURLCONFIG) --libs`
+CFLAGS          +=  -Wall `$(PKGCONFIG) json-c --cflags` `$(PKGCONFIG) libarchive --cflags` `$(CURLCONFIG) --cflags`
+LDFLAGS         += `$(PKGCONFIG) json-c --libs` `$(PKGCONFIG) libarchive --libs` `$(CURLCONFIG) --libs`
 DEFINES         := -DNAME=\"$(NAME)\" -DVERSION=\"$(VERSION)\"
 ifeq ($(DEBUG),1)
     DEFINES     += -DDEBUG
+else
+	# define NDEBUG to prevent assert and similar to cause problems
+    DEFINES     += -DNDEBUG
 endif
 
 # SOURCE CODE AND OBJECT FILES
