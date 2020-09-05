@@ -13,7 +13,7 @@ static void getXDGDir(const char* envvar, const char* homeext, char* config, con
 
     if (xdg_var)
     {
-        strcpy(config, xdg_var);
+        strncpy(config, xdg_var, size);
     }
     else
     {
@@ -38,12 +38,3 @@ void getCacheDir(char* config, const size_t size)
     getXDGDir("XDG_CACHE_HOME", "/.cache/" NAME, config, size);
 }
 
-void makeDir(const char* path)
-{
-    struct stat st = {0};
-
-    if (stat(path, &st) == -1)
-    {
-        mkdir(path, 0755);
-    }
-}
