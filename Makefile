@@ -1,6 +1,6 @@
 # GENERAL VARIABLES
 NAME            := polecat
-VERSION         := 0.1.4
+VERSION         := 0.1.5
 TARGET          ?= debug
 DEBUG           := 0
 ifeq ($(TARGET),debug)
