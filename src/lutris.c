@@ -8,7 +8,9 @@
 #include "common.h"
 
 const static struct Command lutris_commands[] = {
+#ifndef DEBUG
     { .name = "install", .func = lutris_install, .description = "install a lutris script" },
+#endif
     { .name = "info",    .func = lutris_info,    .description = "show information about a lutris script" },
 };
 
@@ -43,34 +45,84 @@ int lutris_install(int argc, char** argv)
             {
                 // fetch all files required by installer
                 // TODO: think about storing files on disk for larger files
-                if (installer.filecount)
+                files = malloc( installer.filecount * sizeof(void*) );
+                for (size_t i = 0; i < installer.filecount; ++i)
                 {
-                    files = malloc( installer.filecount * sizeof(void*) );
-                    for (int i = 0; i < installer.filecount; ++i)
-                    {
-                        char* filename = basename(installer.files[i]->url);
-                        printf("Dowloading %s...\n", filename);
-                        files[i] = downloadToRam(installer.files[i]->url);
-                    }
+                    char* filename = basename(installer.files[i]->url);
+                    printf("Dowloading %s...\n", filename);
+                    files[i] = downloadToRam(installer.files[i]->url);
                 }
 
 
+                for (size_t i = 0; i < installer.directivecount; ++i)
+                {
+                    assert(installer.directives[i]->command < UNKNOWN_DIRECTIVE);
+                    switch(installer.directives[i]->command)
+                    {
+
+                        case MOVE:
+                            // TODO
+                            break;
+
+                        case MERGE:
+                            // TODO
+                            break;
+                        case EXTRACT:
+                            // TODO
+                            break;
+                        case COPY:
+                            // TODO
+                            break;
+                        case CHMODX:
+                            // TODO
+                            break;
+                        case EXECUTE:
+                            // TODO
+                            break;
+                        case WRITE_FILE:
+                        case WRITE_JSON:
+                            // TODO
+                            break;
+
+                        case WRITE_CONFIG:
+                            // TODO
+                            break;
+
+                        case INPUT_MENU:
+                            // TODO
+                            break;
+
+                        case INSERT_DISC:
+                            // TODO
+                            break;
+
+                        case TASK:
+                            // TODO
+                            break;
+
+                        case UNKNOWN_DIRECTIVE:
+                            printf("Unknown directive %i\nIf you see this please report it.", installer.directives[i]->command);
+                            break;
+
+                        default:
+                            unreachable;
+                            break;
+                    }
+                }
 
                 // cleanup all files kept in memory
-                if (installer.filecount)
+                for (size_t i = 0; i < installer.filecount; ++i)
                 {
-                    for (int i = 0; i < installer.filecount; ++i)
-                    {
-                        free(files[i]->memory);
-                        free(files[i]);
-                    }
-
-                    free(files);
+                    free(files[i]->memory);
+                    free(files[i]);
                 }
+
+                free(files);
             }
         }
         else
         {
+            assert(installer.error < NO_INSTALLER);
             switch(installer.error)
             {
                 case NO_JSON:
@@ -87,7 +139,7 @@ int lutris_install(int argc, char** argv)
                     break;
 
                 default:
-                    puts("An error has occured.\nTry running the info command to figure out what went wrong");
+                    unreachable;
                     break;
             }
         }
@@ -353,13 +405,16 @@ struct script_t lutris_getInstaller(char* installername)
                                             break;
 
                                         case WRITE_JSON:
-                                            options[0] = directive;
-                                            installer.directives[i]->size = 1;
+                                            json_object_object_get_ex(directive, "file", &options[0]);
+                                            json_object_object_get_ex(directive, "data", &options[1]);
+                                            installer.directives[i]->size = 2;
                                             break;
 
                                         case INPUT_MENU:
-                                            json_object_object_get_ex(directive, "description", &options[0]);
-                                            installer.directives[i]->size = 1;
+                                            json_object_object_get_ex(directive, "id", &options[0]);
+                                            json_object_object_get_ex(directive, "preselect", &options[1]);
+                                            json_object_object_get_ex(directive, "description", &options[2]);
+                                            installer.directives[i]->size = 3;
                                             break;
 
                                         case INSERT_DISC:

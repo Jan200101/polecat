@@ -26,6 +26,10 @@
 
 #define USAGE_STR "Usage: " NAME
 
+// inspired by Zigs unreachable
+#include <assert.h>
+#define unreachable assert(0 && "unreachable code reached")
+
 struct MemoryStruct {
     uint8_t* memory;
     size_t size;
