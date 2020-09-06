@@ -8,7 +8,7 @@
 #include "common.h"
 
 const static struct Command lutris_commands[] = {
-#ifndef DEBUG
+#ifdef DEBUG
     { .name = "install", .func = lutris_install, .description = "install a lutris script" },
 #endif
     { .name = "info",    .func = lutris_info,    .description = "show information about a lutris script" },
