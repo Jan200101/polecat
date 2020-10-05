@@ -1,4 +1,3 @@
-bin
-obj
+build
 *.tar*
 zig-cache

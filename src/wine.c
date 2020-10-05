@@ -71,7 +71,7 @@ int wine_download(int argc, char** argv)
                 getDataDir(datadir, sizeof(datadir));
                 makeDir(datadir);
 
-                strncpy(downloadpath, datadir, sizeof(downloadpath) - 1);
+                strncpy(downloadpath, datadir, sizeof(downloadpath));
                 strncat(downloadpath, "/", sizeof(downloadpath) - strlen(downloadpath) - 1);
                 strncat(downloadpath, name, sizeof(downloadpath) - strlen(downloadpath) - 1);
                 
