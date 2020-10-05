@@ -26,15 +26,15 @@ polecat depends on:
 
 - pkg-config
 - libcurl
-- curl-config (should be included with the libcurl development package)
 - json-c
 - libarchive
+- meson
 
 ## Build instructions
 
 - ensure you have all [dependencies](#Dependencies) installed 
-- run `make` for a debug build
-- run `make TARGET=release` for a release build
+- run `meson _build && ninja -C _build` for a debug build
+- run `meson _build -Drelease=true && ninja -C _build` for a release build
 
 
 ### [License](LICENSE)
