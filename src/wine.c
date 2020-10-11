@@ -1,9 +1,8 @@
-#include <polecat-config.h>
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <json.h>
+#include <json-c/json.h>
 #include <libgen.h>
 #include <unistd.h>
 #include <linux/limits.h>

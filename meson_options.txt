@@ -1,6 +1,0 @@
-option(
-  'release',
-  type : 'boolean',
-  value : false,
-  description : 'Release build'
-)

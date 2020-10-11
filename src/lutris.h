@@ -1,7 +1,7 @@
 #ifndef LUTRIS_H
 #define LUTRIS_H
 
-#include <json.h>
+#include <json-c/json.h>
 
 enum keyword {
     MOVE = 0,
