@@ -1,5 +1,8 @@
 name: CI
 
+env:
+  BUILD_TYPE: Release
+
 on:
   push:
     branches: [ master ]
@@ -13,10 +16,20 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
     - name: Install dependencies
-      run: sudo apt-get install libcurl4-openssl-dev libjson-c-dev libarchive-dev meson
+      run: sudo apt-get install libcurl4-openssl-dev libjson-c-dev libarchive-dev cmake make
+
+    - name: Create Build Environment
+      run: cmake -E make_directory ${{runner.workspace}}/build
+
+    - name: Configure CMake
+      shell: bash
+      working-directory: ${{runner.workspace}}/build
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+
     - name: Build
-      run: |
-           meson _build
-           ninja -vC _build
-           ninja -vC _build dist
+      working-directory: ${{runner.workspace}}/build
+      shell: bash
+      run: cmake --build . --config $BUILD_TYPE
+
