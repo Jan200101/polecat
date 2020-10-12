@@ -36,7 +36,7 @@ int wine(int argc, char** argv)
     } 
 
 
-    return wine_help(argc, argv);
+    return wine_help(argc-1, argv+1);
 }
 
 int wine_download(int argc, char** argv)

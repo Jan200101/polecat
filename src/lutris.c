@@ -25,7 +25,7 @@ int lutris(int argc, char** argv)
         }
     }
 
-    return lutris_help(argc, argv);
+    return lutris_help(argc-1, argv+1);
 }
 
 

@@ -30,7 +30,7 @@ int main(int argc, char** argv)
         }
     } 
 
-    return main_help(argc, argv);
+    return main_help(argc-1, argv+1);
 }
 
 int main_info(int argc, char** argv)

@@ -26,7 +26,7 @@ int dxvk(int argc, char** argv)
         }
     } 
 
-    return dxvk_help(argc, argv);
+    return dxvk_help(argc-1, argv+1);
 }
 
 
