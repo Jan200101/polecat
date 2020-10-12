@@ -8,6 +8,7 @@
 #include <linux/limits.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/utsname.h>
 #include <dirent.h>
 
 #include "wine.h"
@@ -137,15 +138,31 @@ int wine_run(int argc, char** argv)
 
         strncat(winepath, "/", sizeof(winepath) - strlen(winepath) - 1);
         strncat(winepath, winever, sizeof(winepath) - strlen(winepath) - 1);
-        strncat(winepath, "/bin/wine", sizeof(winepath) - strlen(winepath) - 1);
+
+        if (!isDir(winepath))
+        {
+
+            struct utsname buffer;
+
+            if (!uname(&buffer))
+            {
+                strncat(winepath, "-", sizeof(winepath) - strlen(winepath) - 1);
+                strncat(winepath, buffer.machine, sizeof(winepath) - strlen(winepath) - 1);
+            }
+        }
+
+        strncat(winepath, WINEBIN, sizeof(winepath) - strlen(winepath) - 1);
 
         if (isFile(winepath))
         {
             for (int i = 2; i < argc; ++i)
             {
-                strncat(winepath, " ", sizeof(winepath) - strlen(winepath) - 1);
+                strncat(winepath, " \"", sizeof(winepath) - strlen(winepath) - 1);
                 strncat(winepath, argv[i], sizeof(winepath) - strlen(winepath) - 1);
+                strncat(winepath, "\"", sizeof(winepath) - strlen(winepath) - 1);
             }
+
+            puts(winepath);
             return system(winepath);
         }
         else

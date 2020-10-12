@@ -1,6 +1,8 @@
 #ifndef WINE_H
 #define WINE_H
 
+#define WINEBIN "/bin/wine"
+
 int wine(int, char**);
 int wine_download(int, char**);
 int wine_list(int, char**);
