@@ -3,39 +3,27 @@
 - *What is polecat?*
 polecat is wine manager 
 
-- *why?*
-I used to use Lutris to manage installed Wine games but after
-the lutris team had released a stable version with a program
-breaking regression and the master branch was working as well
-as a alpha branch I decided enough is enough and started working
-on my own.
+- *Why?*
+I'm not satified with the quality of lutris and how its maintained.
+It feels like almost every week there is a regression or other problem caused by not enough testing and sanity checking being done.
+A week before I made polecat I fed up with Lutris constantly breaking on me and having to wait for a fix to land on the master branch
+I looked up how lutris fetched wine and DXVK versions and implemented them in C with libcurl to download stuff, json-c to parse the API (and later a config file) and libarchive to unpack the downloaded archives for wine and DXVK.
 
-- *Why should I use polecat instead of X*
-maybe you are tired of lutris breaking like me or maybe you
-just don't want to use lutris because its a bloated python
-application running GTK with [CSD](https://en.wikipedia.org/wiki/Client-side_decoration)
+- *Why should I use polecat instead of XYZ?*
+You probably shouldn't.
+Polecat is intended to be used by power-users that know how to deal with wine willing to troubleshoot when shit goes down.
 
-- *Can I help?*
-If you use polecat you are already more than I could ask for
-but if you want to go the extra step you can go ahead and
-look at the [roadmap](https://github.com/Jan200101/polecat/issues/1) and suggest or implement things
+- *What about installers/other lutris features*
+lutris support is planned to be added but there is a lot to deal with that is easier to do in a higher level language like Python.
 
 ## Dependencies
 
 polecat depends on:
 
-- pkg-config
 - libcurl
 - json-c
 - libarchive
-- meson
-
-## Build instructions
-
-- ensure you have all [dependencies](#Dependencies) installed 
-- run `meson _build && ninja -C _build` for a debug build
-- run `meson _build -Drelease=true && ninja -C _build` for a release build
-
+- cmake
 
 ### [License](LICENSE)
 
