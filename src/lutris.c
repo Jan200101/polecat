@@ -57,7 +57,6 @@ int lutris_install(int argc, char** argv)
 
                 for (size_t i = 0; i < installer.directivecount; ++i)
                 {
-                    assert(installer.directives[i]->command < UNKNOWN_DIRECTIVE);
                     switch(installer.directives[i]->command)
                     {
 
@@ -123,7 +122,6 @@ int lutris_install(int argc, char** argv)
         }
         else
         {
-            assert(installer.error < NO_INSTALLER);
             switch(installer.error)
             {
                 case NO_JSON:

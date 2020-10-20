@@ -64,34 +64,27 @@ int wine_download(int argc, char** argv)
                 json_object_object_get_ex(value, "url", &url);
                 char* name = basename((char*)json_object_get_string(url));
 
-                char datadir[PATH_MAX];
-                char downloadpath[PATH_MAX];
-                struct MemoryStruct* tar;
+                char winedir[PATH_MAX];
+                struct MemoryStruct* archive;
 
-                getDataDir(datadir, sizeof(datadir));
-                makeDir(datadir);
-
-                strncpy(downloadpath, datadir, sizeof(downloadpath));
-                strncat(downloadpath, "/", sizeof(downloadpath) - strlen(downloadpath) - 1);
-                strncat(downloadpath, name, sizeof(downloadpath) - strlen(downloadpath) - 1);
+                getWineDir(winedir, sizeof(winedir));
+                makeDir(winedir);
                 
                 printf("Downloading %s\n", name);
 
-                tar = downloadToRam(json_object_get_string(url));
-                if (tar)
+                archive = downloadToRam(json_object_get_string(url));
+                if (archive)
                 {
                     printf("Extracting %s\n", name);
-                    extract(tar, datadir);
-                    puts("Done");
+                    extract(archive, winedir);
                 }
                 else
                 {
-                    puts("Something went wrong. The tar is not valid");
+                    puts("Something went wrong. The archive went missing");
                 }
 
-
-                free(tar->memory);
-                free(tar);
+                free(archive->memory);
+                free(archive);
             }
 
             json_object_put(runner);
@@ -133,7 +126,7 @@ int wine_run(int argc, char** argv)
     if (argc > 1)
     {
         char winepath[PATH_MAX];
-        getDataDir(winepath, sizeof(winepath));
+        getWineDir(winepath, sizeof(winepath));
         char* winever = argv[1];
 
         strncat(winepath, "/", sizeof(winepath) - strlen(winepath) - 1);
@@ -162,7 +155,6 @@ int wine_run(int argc, char** argv)
                 strncat(winepath, "\"", sizeof(winepath) - strlen(winepath) - 1);
             }
 
-            puts(winepath);
             return system(winepath);
         }
         else
@@ -182,14 +174,14 @@ int wine_run(int argc, char** argv)
 
 int wine_installed(int argc, char** argv)
 {
-    char datadir[PATH_MAX];
-    getDataDir(datadir, sizeof(datadir));
+    char winedir[PATH_MAX];
+    getWineDir(winedir, sizeof(winedir));
 
     DIR *dir;
     struct dirent *ent;
 
     printf("Installed wine versions:\n");
-    if ((dir = opendir(datadir)) != NULL)
+    if ((dir = opendir(winedir)) != NULL)
     {
         while ((ent = readdir (dir)) != NULL)
         {

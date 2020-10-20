@@ -1,6 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include <stdlib.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -26,9 +27,11 @@
 
 #define USAGE_STR "Usage: " NAME
 
-// inspired by Zigs unreachable
-#include <assert.h>
-#define unreachable assert(0 && "unreachable code reached")
+#ifdef DEBUG
+#define unreachable printf("unreachable code reached\n" __FILE__ ":L%i\n", __LINE__); exit(0);
+#else
+#define unreachable
+#endif
 
 struct MemoryStruct {
     uint8_t* memory;

@@ -39,3 +39,14 @@ void getCacheDir(char* config, const size_t size)
     getXDGDir("XDG_CACHE_HOME", "/.cache/" NAME, config, size);
 }
 
+void getWineDir(char* config, const size_t size)
+{
+    getDataDir(config, size);
+    strncat(config, "/wine", size - strlen(config) - 1);
+}
+
+void getDXVKDir(char* config, const size_t size)
+{
+    getDataDir(config, size);
+    strncat(config, "/dxvk", size - strlen(config) - 1);
+}

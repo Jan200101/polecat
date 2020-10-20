@@ -12,7 +12,7 @@
 #include "config.h"
 
 const static struct Command dxvk_commands[] = {
-    { .name = "install",      .func = dxvk_install,    .description = "download and install a dxvk version" },
+    { .name = "download",     .func = dxvk_download,   .description = "download and install a dxvk version" },
     { .name = "list",         .func = dxvk_list,       .description = "list available dxvk versions" },
 };
 
@@ -30,7 +30,7 @@ int dxvk(int argc, char** argv)
 }
 
 
-int dxvk_install(int argc, char** argv)
+int dxvk_download(int argc, char** argv)
 {
     if (argc == 2)
     {
@@ -56,24 +56,27 @@ int dxvk_install(int argc, char** argv)
                 json_object_object_get_ex(version, "browser_download_url", &assets);
 
                 char* name = basename((char*)json_object_get_string(assets));
-                struct MemoryStruct* tar;
+                struct MemoryStruct* archive;
 
-                char datadir[PATH_MAX];
-                getDataDir(datadir, sizeof(datadir));
-                makeDir(datadir);
+                char winedir[PATH_MAX];
+                getDXVKDir(winedir, sizeof(winedir));
+                makeDir(winedir);
                 
-                printf("Downloading %s", json_object_get_string(assets));
-                //downloadFile(json_object_get_string(assets), name);
-                tar = downloadToRam(json_object_get_string(assets));
+                printf("Downloading %s\n", name);
 
-                printf("Extracting %s\n", name);
+                archive = downloadToRam(json_object_get_string(assets));
+                if (archive)
+                {
+                    printf("Extracting %s\n", name);
+                    extract(archive, winedir);
+                }
+                else
+                {
+                    puts("Something went wrong. The archive went missing");
+                }
 
-                extract(tar, datadir);
-
-                printf("Done\n");
-
-                free(tar->memory);
-                free(tar);
+                free(archive->memory);
+                free(archive);
             }
 
             json_object_put(runner);

@@ -65,6 +65,11 @@ enum runner_t {
     RUNNERMAX
 };
 
+/*
+ * a list of all available runners could be fetched from lutris
+ * but we keep a local copy of all supported runners
+ * to reduce the ammount of API calls needed
+ */
 static const char runnerStr[RUNNERMAX][0xF] = 
 {
     "unknown",
@@ -93,6 +98,7 @@ struct file_t {
     char* url;
 };
 
+// my best attempt at representing a Lutris installer as a struct
 struct script_t {
     char* name;
     char* version;

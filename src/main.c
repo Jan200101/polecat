@@ -16,7 +16,7 @@ const static struct Command main_commands[] = {
     { .name = "dxvk",   .func = dxvk,      .description = "manage dxvk versions" },
 #endif
     { .name = "lutris", .func = lutris,    .description = "run lutris instraller"},
-    { .name = "info",   .func = main_info, .description = "show some information about polecat" },
+    { .name = "env",    .func = main_env,  .description = "show some information about polecat" },
 };
 
 
@@ -33,22 +33,22 @@ int main(int argc, char** argv)
     return main_help(argc-1, argv+1);
 }
 
-int main_info(int argc, char** argv)
+int main_env(int argc, char** argv)
 {
-    char cfgdir[PATH_MAX], datadir[PATH_MAX], cachedir[PATH_MAX];
+    char buffer[PATH_MAX];
 
-    getConfigDir(cfgdir, sizeof(cfgdir));
-    getDataDir(datadir, sizeof(datadir));
-    getCacheDir(cachedir, sizeof(cachedir));
 
     printf("version:\t\t%s\n"
-           "user-Agent:\t\t%s/%s\n"
-           "config dir\t\t%s\n"
-           "data dir\t\t%s\n"
-           "cache dir\t\t%s\n",
+           "user-Agent:\t\t%s\n",
            VERSION,
-           NAME, VERSION,
-           cfgdir, datadir, cachedir);
+           USER_AGENT);
+
+    getConfigDir(buffer, sizeof(buffer));
+    printf("config dir\t\t%s\n", buffer);
+
+    getDataDir(buffer, sizeof(buffer));
+    printf("data dir\t\t%s\n", buffer);
+
 
     return 0;
 }

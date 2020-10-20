@@ -8,25 +8,25 @@
 
 #include "net.h"
 #include "common.h"
- 
+
 size_t memoryCallback(void* contents, size_t size, size_t nmemb, void* userp)
 {
-  size_t realsize = size * nmemb;
-  struct MemoryStruct* mem = (struct MemoryStruct*)userp;
- 
-  uint8_t* ptr = realloc(mem->memory, mem->size + realsize + 1);
-  if(ptr == NULL) {
-    /* out of memory! */ 
-    puts("out of memory");
-    return 0;
-  }
- 
-  mem->memory = ptr;
-  memcpy(&(mem->memory[mem->size]), contents, realsize);
-  mem->size += realsize;
-  mem->memory[mem->size] = 0;
- 
-  return realsize;
+    size_t realsize = size * nmemb;
+    struct MemoryStruct* mem = (struct MemoryStruct*)userp;
+
+    uint8_t* ptr = realloc(mem->memory, mem->size + realsize + 1);
+    if(ptr == NULL)
+    {
+        puts("out of memory");
+        return 0;
+    }
+
+    mem->memory = ptr;
+    memcpy(&(mem->memory[mem->size]), contents, realsize);
+    mem->size += realsize;
+    mem->memory[mem->size] = 0;
+
+    return realsize;
 }
 
 struct MemoryStruct* downloadToRam(const char* URL)
@@ -73,24 +73,6 @@ struct MemoryStruct* downloadToRam(const char* URL)
     }
 
     return chunk;
-}
-
-void downloadFile(const char* URL, const char* path)
-{
-    struct MemoryStruct* chunk = downloadToRam(URL);
-
-    if (chunk)
-    {
-        FILE* file = fopen(path, "wb");
-        if (file)
-        {
-            fwrite(chunk->memory, chunk->size, 1, file);
-            fclose(file);
-        }
-
-        free(chunk->memory);
-        free(chunk);
-    }
 }
 
 struct json_object* fetchJSON(const char* URL)
