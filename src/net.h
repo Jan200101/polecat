@@ -1,7 +1,7 @@
 #ifndef NET_H
 #define NET_H
 
-#include <json-c/json.h>
+#include <json.h>
 
 size_t WriteMemoryCallback(void*, size_t, size_t, void*);
 struct MemoryStruct* downloadToRam(const char* URL);

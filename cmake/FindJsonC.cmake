@@ -14,13 +14,13 @@ else()
 endif()
 
 find_path(JSONC_INC
-	NAMES json-c/json.h
+	NAMES json.h
 	HINTS
 		ENV jsoncPath${_lib_suffix}
 		ENV jsoncPath
 		${_JSONC_INCLUDE_DIRS}
 	PATHS
-		/usr/include /usr/local/include)
+		/usr/include/json-c /usr/local/include/json-c)
 
 find_library(JSONC_LIB
 	NAMES ${_JSONC_LIBRARIES} jsonc json-c

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <json-c/json.h>
+#include <json.h>
 #include <libgen.h>
 #include <unistd.h>
 #include <linux/limits.h>

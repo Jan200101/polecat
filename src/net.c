@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <curl/curl.h>
-#include <json-c/json.h>
+#include <json.h>
 
 #include "net.h"
 #include "common.h"
