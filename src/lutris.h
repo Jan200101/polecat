@@ -1,6 +1,7 @@
 #ifndef LUTRIS_H
 #define LUTRIS_H
 
+#include <stddef.h>
 #include <json.h>
 
 enum keyword {
@@ -68,7 +69,7 @@ enum runner_t {
 /*
  * a list of all available runners could be fetched from lutris
  * but we keep a local copy of all supported runners
- * to reduce the ammount of API calls needed
+ * to reduce the amount of API calls needed
  */
 static const char runnerStr[RUNNERMAX][0xF] = 
 {
@@ -98,6 +99,21 @@ struct file_t {
     char* url;
 };
 
+enum value_type_t {
+    string,
+    function
+};
+
+struct list_t {
+    char* key;
+    enum value_type_t type;
+    union
+    {
+        char* str;
+        void (*func)();
+    } value;
+};
+
 // my best attempt at representing a Lutris installer as a struct
 struct script_t {
     char* name;
@@ -106,10 +122,16 @@ struct script_t {
     char* description;
     char* notes;
     char* wine;
+
     struct directive_t** directives;
     size_t directivecount;
+
     struct file_t** files;
     size_t filecount;
+
+    struct list_t** variables;
+    size_t variablecount;
+
     enum errors error;
 };
 

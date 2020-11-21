@@ -1,4 +1,5 @@
 
+#include <stddef.h>
 #include <stdio.h>
 #include <string.h>
 #include <linux/limits.h>
@@ -231,6 +232,8 @@ struct script_t lutris_getInstaller(char* installername)
     installer.files = NULL;
     installer.filecount = 0;
     installer.error = NONE;
+    installer.variables = NULL;
+    installer.variablecount = 0;
 
     if (installername)
     {
