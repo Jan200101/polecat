@@ -1,4 +1,5 @@
 build
 *.tar*
 zig-cache
-Testing
+.cache
+.vscode
