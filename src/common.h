@@ -14,12 +14,12 @@
 #define INSTALLER_API "https://lutris.net/api/installers/"
 
 #ifndef NAME
-#warning "no name specified, setting it to polecat"
+#warning "no name specified, setting it to \"polecat\""
 #define NAME "polecat"
 #endif
 
 #ifndef VERSION
-#warning "no version specified, setting it to 0.0.0"
+#warning "no version specified, setting it to \"0.0.0\""
 #define VERSION "0.0.0"
 #endif
 
