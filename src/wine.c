@@ -126,6 +126,7 @@ int wine_run(int argc, char** argv)
     if (argc > 1)
     {
         char winepath[PATH_MAX];
+        char* winebinloc = NULL; // to be set by the wine type check
         getWineDir(winepath, sizeof(winepath));
         char* winever = argv[1];
 
@@ -135,6 +136,7 @@ int wine_run(int argc, char** argv)
         if (!isDir(winepath))
         {
 
+            // if the proton version does not exist try appending the system arch e.g. x86_64
             struct utsname buffer;
 
             if (!uname(&buffer))
@@ -142,9 +144,34 @@ int wine_run(int argc, char** argv)
                 strncat(winepath, "-", sizeof(winepath) - strlen(winepath) - 1);
                 strncat(winepath, buffer.machine, sizeof(winepath) - strlen(winepath) - 1);
             }
+
+            // if it still doesn't exist tell this wine ver is not installed
+            if (!isDir(winepath))
+            {
+                printf("`%s' is not an installed wine version\n", winever);
+                return 0;
+            }
         }
 
-        strncat(winepath, WINEBIN, sizeof(winepath) - strlen(winepath) - 1);
+        switch(check_wine_ver(winepath, sizeof(winepath)+1))
+        {
+            case WINE_NORMAL:
+                winebinloc = WINEBIN;
+                break;
+
+            case WINE_PROTON:
+                winebinloc = PROTONBIN;
+                break;
+
+            default:
+                #ifdef DEBUG
+                printf("Couldn't find figure out if this `%s' is Wine or Proton, defaulting to Wine", winever);
+                #endif
+                winebinloc = WINEBIN;
+                break;
+        }
+
+        strncat(winepath, winebinloc, sizeof(winepath) - strlen(winepath) - 1);
 
         if (isFile(winepath))
         {
@@ -159,7 +186,7 @@ int wine_run(int argc, char** argv)
         }
         else
         {
-            printf("`%s' is not an installed wine version\n", winever);
+            printf("cannot find wine for `%s'\n", winever);
         }
 
     }
@@ -207,4 +234,30 @@ int wine_help(int argc, char** argv)
     print_help(wine_commands, ARRAY_LEN(wine_commands));
 
     return 0;
+}
+
+enum wine_type_t check_wine_ver(char* winepath, size_t size)
+{
+    char* winepathcopy = NULL;
+
+    winepathcopy = malloc(size);
+    strncpy(winepathcopy, winepath, size);
+    strncat(winepathcopy, WINEBIN, size - strlen(winepathcopy));
+
+    if (isFile(winepathcopy))
+    {
+        free(winepathcopy);
+        return WINE_NORMAL;
+    }
+
+    strncpy(winepathcopy, winepath, size);
+    strncat(winepathcopy, PROTONBIN, size - strlen(winepathcopy));
+
+    if (isFile(winepathcopy))
+    {
+        free(winepathcopy);
+        return WINE_PROTON;
+    }
+
+    return WINE_NONE;
 }
