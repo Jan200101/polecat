@@ -303,7 +303,7 @@ struct script_t lutris_getInstaller(char* installername)
                         {
                             winestr = json_object_get_string(winever);
                             installer.wine = malloc( strlen(winestr) * sizeof(char) +1 );
-                            strcpy(installer.name, winestr);
+                            strcpy(installer.wine, winestr);
                         }
 
                     }
@@ -311,7 +311,7 @@ struct script_t lutris_getInstaller(char* installername)
                     if (json_object_object_get_ex(script, "files", &files))
                     {
                         installer.filecount = json_object_array_length(files);
-
+ 
                         installer.files = malloc(installer.filecount * sizeof(void*));
                         for (int i = 0; i < installer.filecount; ++i)
                         {
