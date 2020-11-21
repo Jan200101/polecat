@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.0)
 
 if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING
         "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif()
 
-project(polecat VERSION 0.1.5)
+project(polecat VERSION 0.1.6)
 
 add_compile_definitions(NAME="${CMAKE_PROJECT_NAME}")
 add_compile_definitions(VERSION="${CMAKE_PROJECT_VERSION}")
