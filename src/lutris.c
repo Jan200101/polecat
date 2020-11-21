@@ -195,10 +195,14 @@ int lutris_info(int argc, char** argv)
         }
         else
         {
-
+            printf("Couldn't find an installer by the name `%s'\n", argv[1]);
         }
 
         lutris_freeInstaller(&installer);
+    }
+    else
+    {
+        puts(USAGE_STR " lutris info <installer-name>\nThe Name of an installer can be found by viewing the install script of an installer");
     }
     return 0;
 }
