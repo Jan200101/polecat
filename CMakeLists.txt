@@ -10,12 +10,13 @@ project(polecat VERSION 0.1.5)
 add_compile_definitions(NAME="${CMAKE_PROJECT_NAME}")
 add_compile_definitions(VERSION="${CMAKE_PROJECT_VERSION}")
 
-message("-- Name: ${CMAKE_PROJECT_NAME}\n-- Version: ${CMAKE_PROJECT_VERSION}")
+message(STATUS "Name: ${CMAKE_PROJECT_NAME}")
+message(STATUS "Version: ${CMAKE_PROJECT_VERSION}")
 
 set(FILES common config dxvk lutris main net tar wine)
 
 foreach(FILE ${FILES})
-	set(SOURCES ${SOURCES} ${CMAKE_CURRENT_LIST_DIR}/src/${FILE}.c)
+	set(SOURCES ${SOURCES} ${CMAKE_CURRENT_LIST_DIR}/src/${FILE}.c ${CMAKE_CURRENT_LIST_DIR}/src/${FILE}.h)
 endforeach()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
