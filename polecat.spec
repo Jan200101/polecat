@@ -10,6 +10,8 @@ Source0:        %{url}/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
 BuildRequires:  libcurl-devel
 BuildRequires:  json-c-devel
 BuildRequires:  libarchive-devel
+BuildRequires:  cmake
+BuildRequires:  gcc gcc-c++
 # DXVK functionality requires wine
 Requires:       wine
 
