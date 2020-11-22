@@ -5,7 +5,7 @@ if(NOT CMAKE_BUILD_TYPE)
         "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif()
 
-project(polecat VERSION 0.1.6)
+project(polecat VERSION 0.1.8)
 
 add_compile_definitions(NAME="${CMAKE_PROJECT_NAME}")
 add_compile_definitions(VERSION="${CMAKE_PROJECT_VERSION}")
@@ -38,3 +38,5 @@ target_link_libraries(${CMAKE_PROJECT_NAME} LINK_PUBLIC ${LIBARCHIVE_LIBRARIES})
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ${LIBCURL_INCLUDE_DIRS})
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ${JSONC_INCLUDE_DIRS})
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ${LIBARCHIVE_INCLUDE_DIRS})
+
+install(TARGETS ${CMAKE_PROJECT_NAME})

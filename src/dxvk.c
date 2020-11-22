@@ -97,7 +97,6 @@ int dxvk_install(int argc, char** argv)
     if (argc > 1)
     {
         char dxvkpath[PATH_MAX];
-        char* winebinloc = NULL; // to be set by the wine type check
         getDXVKDir(dxvkpath, sizeof(dxvkpath));
         char* dxvkver = argv[1];
 
