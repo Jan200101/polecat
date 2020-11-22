@@ -12,9 +12,7 @@
 
 const static struct Command main_commands[] = {
     { .name = "wine",   .func = wine,      .description = "manage wine versions" },
-#ifdef DEBUG
-    { .name = "dxvk",   .func = dxvk,      .description = "manage dxvk versions" },
-#endif
+    { .name = "dxvk",   .func = dxvk,      .description = "manage DXVK versions" },
     { .name = "lutris", .func = lutris,    .description = "run lutris instraller"},
     { .name = "env",    .func = main_env,  .description = "show some information about polecat" },
 };

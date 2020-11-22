@@ -4,6 +4,7 @@
 #include <json.h>
 #include <libgen.h>
 #include <linux/limits.h>
+#include <dirent.h>
 
 #include "dxvk.h"
 #include "net.h"
@@ -12,8 +13,10 @@
 #include "config.h"
 
 const static struct Command dxvk_commands[] = {
-    { .name = "download",     .func = dxvk_download,   .description = "download and install a dxvk version" },
-    { .name = "list",         .func = dxvk_list,       .description = "list available dxvk versions" },
+    { .name = "download",       .func = dxvk_download,   .description = "download and install a dxvk version" },
+    { .name = "list",           .func = dxvk_list,       .description = "list available dxvk versions" },
+    { .name = "install",        .func = dxvk_install,    .description = "run the DXVK installer" },
+    { .name = "list-installed", .func = dxvk_installed,  .description = "list installed dxvk versions" },
 };
 
 int dxvk(int argc, char** argv)
@@ -58,9 +61,9 @@ int dxvk_download(int argc, char** argv)
                 char* name = basename((char*)json_object_get_string(assets));
                 struct MemoryStruct* archive;
 
-                char winedir[PATH_MAX];
-                getDXVKDir(winedir, sizeof(winedir));
-                makeDir(winedir);
+                char dxvkdir[PATH_MAX];
+                getDXVKDir(dxvkdir, sizeof(dxvk));
+                makeDir(dxvkdir);
                 
                 printf("Downloading %s\n", name);
 
@@ -68,7 +71,7 @@ int dxvk_download(int argc, char** argv)
                 if (archive)
                 {
                     printf("Extracting %s\n", name);
-                    extract(archive, winedir);
+                    extract(archive, dxvkdir);
                 }
                 else
                 {
@@ -88,6 +91,76 @@ int dxvk_download(int argc, char** argv)
     }
     return 0;
 }
+
+int dxvk_install(int argc, char** argv)
+{
+    if (argc > 1)
+    {
+        char dxvkpath[PATH_MAX];
+        char* winebinloc = NULL; // to be set by the wine type check
+        getDXVKDir(dxvkpath, sizeof(dxvkpath));
+        char* dxvkver = argv[1];
+
+        strncat(dxvkpath, "/", sizeof(dxvkpath) - strlen(dxvkpath) - 1);
+        strncat(dxvkpath, dxvkver, sizeof(dxvkpath) - strlen(dxvkpath) - 1);
+
+        if (!isDir(dxvkpath))
+        {
+            printf("`%s' is not an downloaded DXVK version\n", dxvkver);
+            return 0;
+        }
+
+        strncat(dxvkpath, DXVKSETUP, sizeof(dxvkpath) - strlen(dxvkpath) - 1);
+
+        if (isFile(dxvkpath))
+        {
+            strncat(dxvkpath, " install", sizeof(dxvkpath) - strlen(dxvkpath) - 1);
+
+            return system(dxvkpath);
+        }
+        else
+        {
+            printf("cannot find the setup script for `%s'\n", dxvkver);
+        }
+
+    }
+    else
+    {
+        printf("Specify a what DXVK version to install.\nUse `" NAME " dxvk list-installed' to list available versions\n");
+    }
+
+        
+    return 0;
+}
+
+int dxvk_installed(int argc, char** argv)
+{
+    char dxvkdir[PATH_MAX];
+    getDXVKDir(dxvkdir, sizeof(dxvkdir));
+
+    DIR *dir;
+    struct dirent *ent;
+
+    printf("Installed DXVK versions:\n");
+    if ((dir = opendir(dxvkdir)) != NULL)
+    {
+        while ((ent = readdir(dir)) != NULL)
+        {
+            /*
+             * WARNING: crusty
+             * d_type is only specified on glibc (including musl) and BSD
+             */
+            if (ent->d_name[0] != '.' && ent->d_type == DT_DIR)
+            {
+                printf(" - %s\n", ent->d_name);
+            }
+        }
+        closedir (dir);
+    } 
+
+    return 0;
+}
+
 
 int dxvk_list(int argc, char** argv)
 {

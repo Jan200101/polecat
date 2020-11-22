@@ -22,7 +22,7 @@ const static struct Command wine_commands[] = {
     { .name = "download",       .func = wine_download,  .description = "download and extract a wine version from lutris" },
     { .name = "list",           .func = wine_list,      .description = "list installable wine versions" },
     { .name = "run",            .func = wine_run,       .description = "run a installed wine version" },
-    { .name = "installed",      .func = wine_installed, .description = "list installed wine versions" },
+    { .name = "list-installed", .func = wine_installed, .description = "list installed wine versions" },
 };
 
 int wine(int argc, char** argv)
@@ -136,7 +136,7 @@ int wine_run(int argc, char** argv)
         if (!isDir(winepath))
         {
 
-            // if the proton version does not exist try appending the system arch e.g. x86_64
+            // if the wine version does not exist try appending the system arch e.g. x86_64
             struct utsname buffer;
 
             if (!uname(&buffer))
@@ -145,7 +145,7 @@ int wine_run(int argc, char** argv)
                 strncat(winepath, buffer.machine, sizeof(winepath) - strlen(winepath) - 1);
             }
 
-            // if it still doesn't exist tell this wine ver is not installed
+            // if it still doesn't exist tell this wine version is not installed
             if (!isDir(winepath))
             {
                 printf("`%s' is not an installed wine version\n", winever);
@@ -192,7 +192,7 @@ int wine_run(int argc, char** argv)
     }
     else
     {
-        printf("Specify a what wine version to run.\nUse `" NAME " wine installed' to list available versions\n");
+        printf("Specify a what wine version to run.\nUse `" NAME " wine list-installed' to list available versions\n");
     }
 
         
