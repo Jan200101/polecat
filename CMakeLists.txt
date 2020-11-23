@@ -5,7 +5,7 @@ if(NOT CMAKE_BUILD_TYPE)
         "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif()
 
-project(polecat VERSION 0.1.9)
+project(polecat VERSION 0.1.9 LANGUAGES C)
 
 add_compile_definitions(NAME="${CMAKE_PROJECT_NAME}")
 add_compile_definitions(VERSION="${CMAKE_PROJECT_VERSION}")
