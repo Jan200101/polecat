@@ -1,5 +1,5 @@
 Name:           polecat
-Version:        0.1.8
+Version:        0.1.9
 Release:        1%{?dist}
 Summary:        simple wine version manager
 
@@ -36,5 +36,8 @@ polecat is wine manager that manages, installs and downloads wine for you
 %{_bindir}/%{name}
 
 %changelog
+* Mon Nov 23 18:39:58 CET 2020 Jan Drögehoff <sentrycraft123@gmail.com> - 0.1.9-1
+- Update to 1.9
+
 * Sun Nov 22 22:21:50 CET 2020 Jan Drögehoff <sentrycraft123@gmail.com> - 0.1.8-1
 - Initial spec

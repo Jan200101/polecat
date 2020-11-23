@@ -62,7 +62,7 @@ int dxvk_download(int argc, char** argv)
                 struct MemoryStruct* archive;
 
                 char dxvkdir[PATH_MAX];
-                getDXVKDir(dxvkdir, sizeof(dxvk));
+                getDXVKDir(dxvkdir, sizeof(dxvkdir));
                 makeDir(dxvkdir);
                 
                 printf("Downloading %s\n", name);
