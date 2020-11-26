@@ -89,7 +89,7 @@ COMMAND(lutris, install)
                             break;
 
                         case UNKNOWN_DIRECTIVE:
-                            printf("Unknown directive %i\nIf you see this please report it.", installer.directives[i]->command);
+                            puts("Unknown directive\nIf you see this please report it with your system information and steps to reproduce this.");
                             break;
 
                         default:
