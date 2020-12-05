@@ -227,6 +227,89 @@ int wine_installed(int argc, char** argv)
     return 0;
 }
 
+int wine_env(int argc, char** argv)
+{
+    if (argc > 1)
+    {
+        char winepath[PATH_MAX];
+        char* winebinloc = NULL; // to be set by the wine type check
+        getWineDir(winepath, sizeof(winepath));
+        char* winever = argv[1];
+
+        strncat(winepath, "/", sizeof(winepath) - strlen(winepath) - 1);
+        strncat(winepath, winever, sizeof(winepath) - strlen(winepath) - 1);
+
+        if (!isDir(winepath))
+        {
+
+            // if the wine version does not exist try appending the system arch e.g. x86_64
+            struct utsname buffer;
+
+            if (!uname(&buffer))
+            {
+                strncat(winepath, "-", sizeof(winepath) - strlen(winepath) - 1);
+                strncat(winepath, buffer.machine, sizeof(winepath) - strlen(winepath) - 1);
+            }
+
+            // if it still doesn't exist tell this wine version is not installed
+            if (!isDir(winepath))
+            {
+                fprintf(stderr, "`%s' is not an installed wine version\n", winever);
+                return 0;
+            }
+        }
+
+        switch(check_wine_ver(winepath, sizeof(winepath)+1))
+        {
+            case WINE_NORMAL:
+                winebinloc = WINEBIN;
+                break;
+
+            case WINE_PROTON:
+                winebinloc = PROTONBIN;
+                break;
+
+            default:
+                #ifdef DEBUG
+                fprintf(stderr, "Couldn't find figure out if this `%s' is Wine or Proton, defaulting to Wine", winever);
+                #endif
+                winebinloc = WINEBIN;
+                break;
+        }
+
+        strncat(winepath, winebinloc, sizeof(winepath) - strlen(winepath) - 1);
+
+        if (isFile(winepath))
+        {
+            winepath[strlen(winepath) - strlen("wine")] = '\0';
+            if (isatty(STDOUT_FILENO))
+            {
+                puts("To add a wine installation to your PATH\n"
+                     "you have to eval polecats output eval\n"
+                     "the output (or your shells equivelent)\n\n"
+                     "  eval `polecat wine env <version>`");
+            }
+            else
+            {
+                printf("PS1=\"(%s)$PS1\"\nPATH=\"%s:$PATH\"\n", winever, winepath);
+            }
+            //printf("PATH=\"%s\"\n# Run this code in your Terminal\n# by running eval `%s`", newpath, argv[0]);
+        }
+        else
+        {
+            fprintf(stderr, "cannot find wine for `%s'\n", winever);
+        }
+
+    }
+    else
+    {
+        fprintf(stderr, "Specify a what wine version to run.\nUse `" NAME " wine list-installed' to list available versions\n");
+    }
+
+        
+    return 0;
+}
+
 int wine_help(int argc, char** argv)
 {
     puts(USAGE_STR " wine <command>\n\nList of commands:");

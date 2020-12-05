@@ -17,6 +17,7 @@ int wine_download(int, char**);
 int wine_list(int, char**);
 int wine_run(int, char**);
 int wine_installed(int, char**);
+int wine_env(int, char**);
 int wine_help(int, char**);
 
 enum wine_type_t check_wine_ver(char*, size_t);
