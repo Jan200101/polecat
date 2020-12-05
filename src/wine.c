@@ -23,6 +23,7 @@ const static struct Command wine_commands[] = {
     { .name = "list",           .func = wine_list,      .description = "list installable wine versions" },
     { .name = "run",            .func = wine_run,       .description = "run a installed wine version" },
     { .name = "list-installed", .func = wine_installed, .description = "list installed wine versions" },
+    { .name = "env",            .func = wine_env,       .description = "add a wine executable to your PATH"},
 };
 
 int wine(int argc, char** argv)
@@ -54,7 +55,7 @@ int wine_download(int argc, char** argv)
 
             if (choice > json_object_array_length(versions) - 1 || choice < 0)
             {
-                printf("`%i' is not a valid ID\n\nrun `polecat wine list' to get a valid ID\n", choice);
+                fprintf(stderr, "`%i' is not a valid ID\n\nrun `polecat wine list' to get a valid ID\n", choice);
             }
             else
             {
@@ -70,17 +71,17 @@ int wine_download(int argc, char** argv)
                 getWineDir(winedir, sizeof(winedir));
                 makeDir(winedir);
                 
-                printf("Downloading %s\n", name);
+                fprintf(stderr, "Downloading %s\n", name);
 
                 archive = downloadToRam(json_object_get_string(url));
                 if (archive)
                 {
-                    printf("Extracting %s\n", name);
+                    fprintf(stderr, "Extracting %s\n", name);
                     extract(archive, winedir);
                 }
                 else
                 {
-                    puts("Something went wrong. The archive went missing");
+                    fprintf(stderr, "Something went wrong. The archive went missing\n");
                 }
 
                 free(archive->memory);
@@ -92,7 +93,7 @@ int wine_download(int argc, char** argv)
     }
     else
     {
-        puts(USAGE_STR " wine download <ID>\n\nIDs are obtained via `" NAME " wine list' ");
+        fprintf(stderr, USAGE_STR " wine download <ID>\n\nIDs are obtained via `" NAME " wine list'\n");
     }
     return 0;
 }
@@ -106,7 +107,7 @@ int wine_list(int argc, char** argv)
         struct json_object* versions, *value, *val;
         json_object_object_get_ex(runner, "versions", &versions);
 
-        puts("Installable wine versions:");
+        if(isatty(STDOUT_FILENO)) puts("Installable wine versions:");
 
         for (size_t i = 0; i < json_object_array_length(versions); ++i)
         {
@@ -148,7 +149,7 @@ int wine_run(int argc, char** argv)
             // if it still doesn't exist tell this wine version is not installed
             if (!isDir(winepath))
             {
-                printf("`%s' is not an installed wine version\n", winever);
+                fprintf(stderr, "`%s' is not an installed wine version\n", winever);
                 return 0;
             }
         }
@@ -165,7 +166,7 @@ int wine_run(int argc, char** argv)
 
             default:
                 #ifdef DEBUG
-                printf("Couldn't find figure out if this `%s' is Wine or Proton, defaulting to Wine", winever);
+                fprintf(stderr, "Couldn't find figure out if this `%s' is Wine or Proton, defaulting to Wine", winever);
                 #endif
                 winebinloc = WINEBIN;
                 break;
@@ -186,13 +187,13 @@ int wine_run(int argc, char** argv)
         }
         else
         {
-            printf("cannot find wine for `%s'\n", winever);
+            fprintf(stderr, "cannot find wine for `%s'\n", winever);
         }
 
     }
     else
     {
-        printf("Specify a what wine version to run.\nUse `" NAME " wine list-installed' to list available versions\n");
+        fprintf(stderr, "Specify a what wine version to run.\nUse `" NAME " wine list-installed' to list available versions\n");
     }
 
         
@@ -207,18 +208,18 @@ int wine_installed(int argc, char** argv)
     DIR *dir;
     struct dirent *ent;
 
-    printf("Installed wine versions:\n");
+    int intty = isatty(STDOUT_FILENO);
+
+    if (intty) puts("Installed wine versions:");
+
     if ((dir = opendir(winedir)) != NULL)
     {
         while ((ent = readdir (dir)) != NULL)
         {
-            /*
-             * WARNING: crusty
-             * d_type is only specified on glibc (including musl) and BSD
-             */
             if (ent->d_name[0] != '.' && ent->d_type == DT_DIR)
             {
-                printf(" - %s\n", ent->d_name);
+                if (intty) printf(" - ");
+                printf("%s\n", ent->d_name);
             }
         }
         closedir (dir);
@@ -312,7 +313,7 @@ int wine_env(int argc, char** argv)
 
 int wine_help(int argc, char** argv)
 {
-    puts(USAGE_STR " wine <command>\n\nList of commands:");
+    fprintf(stderr, USAGE_STR " wine <command>\n\nList of commands:\n");
 
     print_help(wine_commands, ARRAY_LEN(wine_commands));
 

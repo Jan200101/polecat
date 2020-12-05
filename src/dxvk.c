@@ -3,6 +3,7 @@
 #include <string.h>
 #include <json.h>
 #include <libgen.h>
+#include <unistd.h>
 #include <linux/limits.h>
 #include <dirent.h>
 
@@ -46,7 +47,7 @@ int dxvk_download(int argc, char** argv)
 
             if (choice > json_object_array_length(runner) - 1 || choice < 0)
             {
-                printf("`%i' is not a valid ID\n\nrun `" NAME " dxvk list' to get a valid ID", choice);
+                fprintf(stderr, "`%i' is not a valid ID\n\nrun `" NAME " dxvk list' to get a valid ID", choice);
             }
             else
             {
@@ -65,7 +66,7 @@ int dxvk_download(int argc, char** argv)
                 getDXVKDir(dxvkdir, sizeof(dxvkdir));
                 makeDir(dxvkdir);
                 
-                printf("Downloading %s\n", name);
+                fprintf(stderr, "Downloading %s\n", name);
 
                 archive = downloadToRam(json_object_get_string(assets));
                 if (archive)
@@ -75,7 +76,7 @@ int dxvk_download(int argc, char** argv)
                 }
                 else
                 {
-                    puts("Something went wrong. The archive went missing");
+                    fprintf(stderr, "Something went wrong. The archive went missing\n");
                 }
 
                 free(archive->memory);
@@ -87,8 +88,29 @@ int dxvk_download(int argc, char** argv)
     }
     else
     {
-        puts(USAGE_STR " dxvk download <ID>\n\nIDs are obtained via `" NAME " dxvk list' ");
+        fprintf(stderr, USAGE_STR " dxvk download <ID>\n\nIDs are obtained via `" NAME " dxvk list'\n");
     }
+    return 0;
+}
+
+int dxvk_list(int argc, char** argv)
+{
+    struct json_object* runner = fetchJSON(DXVK_API);
+
+    if (runner)
+    {
+        if (isatty(STDOUT_FILENO)) puts("Installable DXVK versions:");
+
+        for (size_t i = 0; i < json_object_array_length(runner); ++i)
+        {
+            struct json_object* version = json_object_array_get_idx(runner, i);
+            struct json_object* name;
+
+            json_object_object_get_ex(version, "name", &name);
+            printf(" [%zu]\t%s\n", i, json_object_get_string(name));
+        }
+    }
+
     return 0;
 }
 
@@ -105,7 +127,7 @@ int dxvk_install(int argc, char** argv)
 
         if (!isDir(dxvkpath))
         {
-            printf("`%s' is not an downloaded DXVK version\n", dxvkver);
+            fprintf(stderr, "`%s' is not an downloaded DXVK version\n", dxvkver);
             return 0;
         }
 
@@ -119,13 +141,13 @@ int dxvk_install(int argc, char** argv)
         }
         else
         {
-            printf("cannot find the setup script for `%s'\n", dxvkver);
+            fprintf(stderr, "cannot find the setup script for `%s'\n", dxvkver);
         }
 
     }
     else
     {
-        printf("Specify a what DXVK version to install.\nUse `" NAME " dxvk list-installed' to list available versions\n");
+        fprintf(stderr, "Specify a what DXVK version to install.\nUse `" NAME " dxvk list-installed' to list available versions\n");
     }
 
         
@@ -140,18 +162,17 @@ int dxvk_installed(int argc, char** argv)
     DIR *dir;
     struct dirent *ent;
 
-    printf("Installed DXVK versions:\n");
+    int intty = isatty(STDOUT_FILENO);
+
+    if (intty) puts("Installed DXVK versions:");
     if ((dir = opendir(dxvkdir)) != NULL)
     {
         while ((ent = readdir(dir)) != NULL)
         {
-            /*
-             * WARNING: crusty
-             * d_type is only specified on glibc (including musl) and BSD
-             */
             if (ent->d_name[0] != '.' && ent->d_type == DT_DIR)
             {
-                printf(" - %s\n", ent->d_name);
+                if (intty) printf(" - ");
+                printf("%s\n", ent->d_name);
             }
         }
         closedir (dir);
@@ -160,31 +181,9 @@ int dxvk_installed(int argc, char** argv)
     return 0;
 }
 
-
-int dxvk_list(int argc, char** argv)
-{
-    struct json_object* runner = fetchJSON(DXVK_API);
-
-    if (runner)
-    {
-        puts("Installable DXVK versions:");
-
-        for (size_t i = 0; i < json_object_array_length(runner); ++i)
-        {
-            struct json_object* version = json_object_array_get_idx(runner, i);
-            struct json_object* name;
-
-            json_object_object_get_ex(version, "name", &name);
-            printf(" [%zu]\t%s\n", i, json_object_get_string(name));
-        }
-    }
-
-    return 0;
-}
-
 int dxvk_help(int argc, char** argv)
 {
-    puts(USAGE_STR " dxvk <command>\n\nList of commands:");
+    fprintf(stderr, USAGE_STR " dxvk <command>\n\nList of commands:\n");
 
     print_help(dxvk_commands, ARRAY_LEN(dxvk_commands));
 
