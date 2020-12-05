@@ -285,14 +285,13 @@ int wine_env(int argc, char** argv)
             winepath[strlen(winepath) - strlen("wine")] = '\0';
             if (isatty(STDOUT_FILENO))
             {
-                puts("To add a wine installation to your PATH\n"
-                     "you have to eval polecats output eval\n"
-                     "the output (or your shells equivelent)\n\n"
-                     "  eval `polecat wine env <version>`");
+                printf("To add a wine installation to your PATH\n"
+                       "you have to eval the output.\n\n"
+                       "$ eval `polecat wine env %s`\n", winever);
             }
             else
             {
-                printf("PS1=\"(%s)$PS1\"\nPATH=\"%s:$PATH\"\n", winever, winepath);
+                printf("PS1=\"(%s) $PS1\"\nPATH=\"%s:$PATH\"\n", winever, winepath);
             }
             //printf("PATH=\"%s\"\n# Run this code in your Terminal\n# by running eval `%s`", newpath, argv[0]);
         }
