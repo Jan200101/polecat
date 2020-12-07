@@ -25,8 +25,11 @@ void print_help(const struct Command* commands, const size_t size)
 
 struct stat getStat(const char* path)
 {
-    struct stat sb;
+    // fill with 0s by default in the case stat fails
+    struct stat sb = {0};
 
+    // the return value signifies if stat failes (e.g. file not found)
+    // unimportant for us if it fails it won't touch sb
     stat(path, &sb);
 
     return sb;
@@ -48,9 +51,10 @@ bool isDir(const char* path)
 
 void makeDir(const char* path)
 {
-    struct stat st = {0};
+    // we do not care about the contents but what stat returns
+    struct stat sb;
 
-    if (stat(path, &st) == -1)
+    if (stat(path, &sb) < 0)
     {
         mkdir(path, 0755);
     }
