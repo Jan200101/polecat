@@ -19,11 +19,11 @@
 
 
 const static struct Command wine_commands[] = {
-    { .name = "download",       .func = wine_download,  .description = "download and extract a wine version from lutris" },
+    { .name = "download",       .func = wine_download,  .description = "download and extract a wine version" },
     { .name = "list",           .func = wine_list,      .description = "list installable wine versions" },
-    { .name = "run",            .func = wine_run,       .description = "run a installed wine version" },
-    { .name = "list-installed", .func = wine_installed, .description = "list installed wine versions" },
-    { .name = "env",            .func = wine_env,       .description = "add a wine executable to your PATH"},
+    { .name = "run",            .func = wine_run,       .description = "run an installed wine version" },
+    { .name = "list-installed", .func = wine_installed, .description = "list already installed wine versions" },
+    { .name = "env",            .func = wine_env,       .description = "add wine to your PATH in a POSIX shell"},
 };
 
 int wine(int argc, char** argv)
@@ -166,7 +166,7 @@ int wine_run(int argc, char** argv)
 
             default:
                 #ifdef DEBUG
-                fprintf(stderr, "Couldn't find figure out if this `%s' is Wine or Proton, defaulting to Wine", winever);
+                fprintf(stderr, "Couldn't find figure out if this `%s' is Wine or Proton, defaulting to Wine\n", winever);
                 #endif
                 winebinloc = WINEBIN;
                 break;
