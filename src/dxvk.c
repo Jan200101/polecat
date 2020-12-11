@@ -10,7 +10,6 @@
 #include "dxvk.h"
 #include "net.h"
 #include "tar.h"
-#include "common.h"
 #include "config.h"
 
 const static struct Command dxvk_commands[] = {
@@ -62,6 +61,7 @@ COMMAND(dxvk, download)
                 {
                     printf("Extracting %s\n", name);
                     extract(archive, dxvkdir);
+                    fprintf(stderr, "Done\n");
                 }
                 else
                 {

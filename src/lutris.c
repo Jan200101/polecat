@@ -7,7 +7,6 @@
 
 #include "lutris.h"
 #include "net.h"
-#include "common.h"
 
 const static struct Command lutris_commands[] = {
 #ifdef DEBUG

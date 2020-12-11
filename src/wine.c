@@ -5,18 +5,14 @@
 #include <json.h>
 #include <libgen.h>
 #include <unistd.h>
-#include <linux/limits.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <sys/utsname.h>
 #include <dirent.h>
 
 #include "wine.h"
 #include "net.h"
 #include "tar.h"
-#include "common.h"
 #include "config.h"
-
+#include "common.h"
 
 const static struct Command wine_commands[] = {
     { .name = "download",       .func = wine_download,  .description = "download and extract a wine version" },
@@ -67,6 +63,7 @@ COMMAND(wine, download)
                 {
                     fprintf(stderr, "Extracting %s\n", name);
                     extract(archive, winedir);
+                    fprintf(stderr, "Done\n");
                 }
                 else
                 {
@@ -231,11 +228,8 @@ COMMAND(wine, run)
         }
 
     }
-    else
-    {
-        fprintf(stderr, "Specify a what wine version to run.\nUse `" NAME " wine list-installed' to list available versions\n");
-    }
 
+    fprintf(stderr, "Specify a what wine version to run.\nUse `" NAME " wine list-installed' to list available versions\n");
         
     return 0;
 }
