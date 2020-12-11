@@ -7,6 +7,7 @@
 
 COMMAND_GROUP(dxvk);
 COMMAND(dxvk, download);
+COMMAND(dxvk, remove);
 COMMAND(dxvk, list);
 COMMAND(dxvk, install);
 COMMAND(dxvk, installed);

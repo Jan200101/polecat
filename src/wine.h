@@ -16,6 +16,7 @@ enum wine_type_t {
 
 COMMAND_GROUP(wine);
 COMMAND(wine, download);
+COMMAND(wine, remove);
 COMMAND(wine, list);
 COMMAND(wine, run);
 COMMAND(wine, installed);

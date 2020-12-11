@@ -84,6 +84,38 @@ COMMAND(dxvk, download)
 
 COMMAND(dxvk, remove)
 {
+    if (argc == 2)
+    {
+        char* dxvkver = argv[1];
+
+        char dxvkpath[PATH_MAX];
+        getDXVKDir(dxvkpath, sizeof(dxvkpath));
+
+        strncat(dxvkpath, "/", sizeof(dxvkpath) - strlen(dxvkpath) - 1);
+        strncat(dxvkpath, dxvkver, sizeof(dxvkpath) - strlen(dxvkpath) - 1);
+
+
+        if (!isDir(dxvkpath))
+        {
+            fprintf(stderr, "`%s' is not an downloaded DXVK version\n", dxvkver);
+            return 0;
+        }
+
+        int retval = removeDir(dxvkpath);
+        if (!retval)
+        {
+            fprintf(stderr, "Done\n");
+        }
+        else
+        {
+            fprintf(stderr, "Something might have gone wrong. Manual cleanup might be required\n");
+        }
+
+        return retval;
+    }
+
+    fprintf(stderr, USAGE_STR " dxvk remove <version>\n\nInstalled dxvk versions can be obtained by using `" NAME " dxvk list-installed\n");
+
     return 0;
 }
 

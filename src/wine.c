@@ -87,8 +87,54 @@ COMMAND(wine, download)
     return 0;
 }
 
+
 COMMAND(wine, remove)
 {
+    if (argc == 2)
+    {
+        char* winever = argv[1];
+
+        char winepath[PATH_MAX];
+        getWineDir(winepath, sizeof(winepath));
+
+        strncat(winepath, "/", sizeof(winepath) - strlen(winepath) - 1);
+        strncat(winepath, winever, sizeof(winepath) - strlen(winepath) - 1);
+
+        if (!isDir(winepath))
+        {
+
+            // if the wine version does not exist try appending the system arch e.g. x86_64
+            struct utsname buffer;
+
+            if (!uname(&buffer))
+            {
+                strncat(winepath, "-", sizeof(winepath) - strlen(winepath) - 1);
+                strncat(winepath, buffer.machine, sizeof(winepath) - strlen(winepath) - 1);
+            }
+
+            // if it still doesn't exist tell this wine version is not installed
+            if (!isDir(winepath))
+            {
+                fprintf(stderr, "`%s' is not an installed wine version\n", winever);
+                return 0;
+            }
+        }
+
+        int retval = removeDir(winepath);
+        if (!retval)
+        {
+            fprintf(stderr, "Done\n");
+        }
+        else
+        {
+            fprintf(stderr, "Something might have gone wrong. Manual cleanup might be required\n");
+        }
+
+        return retval;
+    }
+
+    fprintf(stderr, USAGE_STR " wine remove <version>\n\nInstalled wine versions can be obtained by using `" NAME " wine list-installed\n");
+
     return 0;
 }
 

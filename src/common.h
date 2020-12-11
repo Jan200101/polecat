@@ -50,6 +50,7 @@ struct stat getStat(const char* path);
 bool isFile(const char*);
 bool isDir(const char*);
 
-void makeDir(const char* path);
+int makeDir(const char* path);
+int removeDir(const char *path);
 
 #endif
