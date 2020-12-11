@@ -15,26 +15,15 @@
 
 const static struct Command dxvk_commands[] = {
     { .name = "download",       .func = dxvk_download,   .description = "download and install a dxvk version" },
+    { .name = "remove",         .func = dxvk_remove,     .description = "remove a dxvk version" },
     { .name = "list",           .func = dxvk_list,       .description = "list available dxvk versions" },
     { .name = "install",        .func = dxvk_install,    .description = "run the DXVK installer" },
     { .name = "list-installed", .func = dxvk_installed,  .description = "list installed dxvk versions" },
 };
 
-int dxvk(int argc, char** argv)
-{
-    if (argc > 1)
-    {
-        for (int i = 0; i < ARRAY_LEN(dxvk_commands); ++i)
-        {
-            if (!strcmp(dxvk_commands[i].name, argv[1])) return dxvk_commands[i].func(argc-1, argv+1);
-        }
-    } 
+COMMAND_GROUP_FUNC(dxvk)
 
-    return dxvk_help(argc-1, argv+1);
-}
-
-
-int dxvk_download(int argc, char** argv)
+COMMAND(dxvk, download)
 {
     if (argc == 2)
     {
@@ -93,7 +82,12 @@ int dxvk_download(int argc, char** argv)
     return 0;
 }
 
-int dxvk_list(int argc, char** argv)
+COMMAND(dxvk, remove)
+{
+    return 0;
+}
+
+COMMAND(dxvk, list)
 {
     struct json_object* runner = fetchJSON(DXVK_API);
 
@@ -114,7 +108,7 @@ int dxvk_list(int argc, char** argv)
     return 0;
 }
 
-int dxvk_install(int argc, char** argv)
+COMMAND(dxvk, install)
 {
     if (argc > 1)
     {
@@ -154,7 +148,7 @@ int dxvk_install(int argc, char** argv)
     return 0;
 }
 
-int dxvk_installed(int argc, char** argv)
+COMMAND(dxvk, installed)
 {
     char dxvkdir[PATH_MAX];
     getDXVKDir(dxvkdir, sizeof(dxvkdir));
@@ -181,11 +175,4 @@ int dxvk_installed(int argc, char** argv)
     return 0;
 }
 
-int dxvk_help(int argc, char** argv)
-{
-    fprintf(stderr, USAGE_STR " dxvk <command>\n\nList of commands:\n");
-
-    print_help(dxvk_commands, ARRAY_LEN(dxvk_commands));
-
-    return 0;
-}
+COMMAND_HELP(dxvk, " dxvk");

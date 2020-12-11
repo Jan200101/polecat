@@ -135,10 +135,12 @@ struct script_t {
     enum errors error;
 };
 
-int lutris(int, char**);
-int lutris_install(int, char**);
-int lutris_info(int, char**);
-int lutris_help(int, char**);
+#include "command.h"
+
+COMMAND_GROUP(lutris);
+COMMAND(lutris, install);
+COMMAND(lutris, info);
+COMMAND(lutris, help);
 
 void lutris_getInstallerURL(char*, char*, size_t);
 struct script_t lutris_getInstaller(char*);

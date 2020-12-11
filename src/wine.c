@@ -20,27 +20,16 @@
 
 const static struct Command wine_commands[] = {
     { .name = "download",       .func = wine_download,  .description = "download and extract a wine version" },
+    { .name = "remove",         .func = wine_remove,    .description = "remove a wine version" },
     { .name = "list",           .func = wine_list,      .description = "list installable wine versions" },
     { .name = "run",            .func = wine_run,       .description = "run an installed wine version" },
     { .name = "list-installed", .func = wine_installed, .description = "list already installed wine versions" },
     { .name = "env",            .func = wine_env,       .description = "add wine to your PATH in a POSIX shell"},
 };
 
-int wine(int argc, char** argv)
-{
-    if (argc > 1)
-    {
-        for (int i = 0; i < ARRAY_LEN(wine_commands); ++i)
-        {
-            if (!strcmp(wine_commands[i].name, argv[1])) return wine_commands[i].func(argc-1, argv+1);
-        }
-    } 
+COMMAND_GROUP_FUNC(wine)
 
-
-    return wine_help(argc-1, argv+1);
-}
-
-int wine_download(int argc, char** argv)
+COMMAND(wine, download)
 {
     if (argc == 2)
     {
@@ -98,7 +87,12 @@ int wine_download(int argc, char** argv)
     return 0;
 }
 
-int wine_list(int argc, char** argv)
+COMMAND(wine, remove)
+{
+    return 0;
+}
+
+COMMAND(wine, list)
 {
     struct json_object* runner = fetchJSON(WINE_API);
 
@@ -122,7 +116,7 @@ int wine_list(int argc, char** argv)
     return 0;
 }
 
-int wine_run(int argc, char** argv)
+COMMAND(wine, run)
 {
     if (argc > 1)
     {
@@ -200,7 +194,7 @@ int wine_run(int argc, char** argv)
     return 0;
 }
 
-int wine_installed(int argc, char** argv)
+COMMAND(wine, installed)
 {
     char winedir[PATH_MAX];
     getWineDir(winedir, sizeof(winedir));
@@ -228,7 +222,7 @@ int wine_installed(int argc, char** argv)
     return 0;
 }
 
-int wine_env(int argc, char** argv)
+COMMAND(wine, env)
 {
     if (argc > 1)
     {
@@ -310,14 +304,7 @@ int wine_env(int argc, char** argv)
     return 0;
 }
 
-int wine_help(int argc, char** argv)
-{
-    fprintf(stderr, USAGE_STR " wine <command>\n\nList of commands:\n");
-
-    print_help(wine_commands, ARRAY_LEN(wine_commands));
-
-    return 0;
-}
+COMMAND_HELP(wine, " wine");
 
 enum wine_type_t check_wine_ver(char* winepath, size_t size)
 {

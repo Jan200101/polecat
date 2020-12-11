@@ -1,7 +1,9 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-int main_help(int, char**);
-int main_env(int, char**);
+#include "command.h"
+
+COMMAND(main, env);
+COMMAND(main, help);
 
 #endif

@@ -16,21 +16,9 @@ const static struct Command lutris_commands[] = {
     { .name = "info",    .func = lutris_info,    .description = "show information about a lutris script" },
 };
 
-int lutris(int argc, char** argv)
-{
-    if (argc > 1)
-    {
-        for (int i = 0; i < ARRAY_LEN(lutris_commands); ++i)
-        {
-            if (!strcmp(lutris_commands[i].name, argv[1])) return lutris_commands[i].func(argc-1, argv+1);
-        }
-    }
+COMMAND_GROUP_FUNC(lutris)
 
-    return lutris_help(argc-1, argv+1);
-}
-
-
-int lutris_install(int argc, char** argv)
+COMMAND(lutris, install)
 {
     if (argc == 2)
     {
@@ -149,7 +137,7 @@ int lutris_install(int argc, char** argv)
     return 0;
 }
 
-int lutris_info(int argc, char** argv)
+COMMAND(lutris, info)
 {
     if (argc == 2)
     {
@@ -207,14 +195,7 @@ int lutris_info(int argc, char** argv)
     return 0;
 }
 
-int lutris_help(int argc, char** argv)
-{
-    puts(USAGE_STR " lutris <command>\n\nList of commands:");
-
-    print_help(lutris_commands, ARRAY_LEN(lutris_commands));
-
-    return 0;
-}
+COMMAND_HELP(lutris, " lutris")
 
 void lutris_getInstallerURL(char* buffer, char* name, size_t size)
 {

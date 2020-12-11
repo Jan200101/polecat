@@ -18,20 +18,9 @@ const static struct Command main_commands[] = {
 };
 
 
-int main(int argc, char** argv)
-{
-    if (argc > 1)
-    {
-        for (int i = 0; i < ARRAY_LEN(main_commands); ++i)
-        {
-            if (!strcmp(main_commands[i].name, argv[1])) return main_commands[i].func(argc-1, argv+1);
-        }
-    } 
+COMMAND_GROUP_FUNC(main)
 
-    return main_help(argc-1, argv+1);
-}
-
-int main_env(int argc, char** argv)
+COMMAND(main, env)
 {
     char buffer[PATH_MAX];
 
@@ -51,11 +40,4 @@ int main_env(int argc, char** argv)
     return 0;
 }
 
-int main_help(int argc, char** argv)
-{
-    puts(USAGE_STR " <command>\n\nList of commands:");
-
-    print_help(main_commands, ARRAY_LEN(main_commands));
-
-    return 0;
-}
+COMMAND_HELP(main, "")
