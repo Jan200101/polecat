@@ -21,6 +21,7 @@ const static struct Command wine_commands[] = {
     { .name = "run",            .func = wine_run,       .description = "run an installed wine version" },
     { .name = "list-installed", .func = wine_installed, .description = "list already installed wine versions" },
     { .name = "env",            .func = wine_env,       .description = "add wine to your PATH in a POSIX shell"},
+    { .name = "fish-env",       .func = wine_env,       .description = "add wine to your PATH in the fish shell"},
 };
 
 COMMAND_GROUP_FUNC(wine)
@@ -279,6 +280,9 @@ COMMAND(wine, env)
 {
     if (argc > 1)
     {
+        // instead of creating redundant copies we just check for fish
+        bool fish_env = (strcmp(argv[0], "fish-env") == 0);
+
         char winepath[PATH_MAX];
         char* winebinloc = NULL; // to be set by the wine type check
         getWineDir(winepath, sizeof(winepath));
@@ -338,7 +342,14 @@ COMMAND(wine, env)
             }
             else
             {
-                printf("PS1=\"(%s) $PS1\"\nPATH=\"%s:$PATH\"\n", winever, winepath);
+                if (!fish_env)
+                {
+                    printf("PS1=\"(%s) $PS1\"\nPATH=\"%s:$PATH\"\n", winever, winepath);
+                }
+                else
+                {
+                    printf("set PATH %s $PATH\n", winepath);   
+                }
             }
             //printf("PATH=\"%s\"\n# Run this code in your Terminal\n# by running eval `%s`", newpath, argv[0]);
         }
