@@ -337,8 +337,11 @@ COMMAND(wine, env)
             if (isatty(STDOUT_FILENO))
             {
                 printf("To add a wine installation to your PATH\n"
-                       "you have to eval the output.\n\n"
-                       "$ eval `polecat wine env %s`\n", winever);
+                       "you have to eval the output.\n\n");
+                if (!fish_env)
+                    printf("$ eval `polecat wine env %s`\n", winever);
+                else
+                    printf("$ eval (polecat wine fish-env %s)\n", winever);
             }
             else
             {
