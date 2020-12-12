@@ -17,6 +17,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Update system
+      run: sudo apt-get update
+
     - name: Install dependencies
       run: sudo apt-get install libcurl4-openssl-dev libjson-c-dev libarchive-dev cmake make
 
