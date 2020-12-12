@@ -33,22 +33,28 @@ COMMAND(wine, download)
 
         if (runner)
         {
-            struct json_object* versions;
+            struct json_object* versions, *value, *temp;
+            uint8_t found = 0;
             json_object_object_get_ex(runner, "versions", &versions);
 
-            int choice = atoi(argv[1]);
+            char* choice = argv[1];
 
-            if (choice > json_object_array_length(versions) - 1 || choice < 0)
+            for (int i = 0; i < json_object_array_length(versions); ++i)
             {
-                fprintf(stderr, "`%i' is not a valid ID\n\nrun `polecat wine list' to get a valid ID\n", choice);
+                value = json_object_array_get_idx(versions, i);
+                json_object_object_get_ex(value, "version", &temp);
+                if (strcmp(json_object_get_string(temp), choice) == 0)
+                {
+                    found = 1;
+                    break;
+                }
             }
-            else
-            {
-                struct json_object* url;
-                struct json_object* value = json_object_array_get_idx(versions, choice);
 
-                json_object_object_get_ex(value, "url", &url);
-                char* name = basename((char*)json_object_get_string(url));
+            if (found)
+            {
+                json_object_object_get_ex(value, "url", &temp);
+
+                char* name = basename((char*)json_object_get_string(temp));
 
                 char winedir[PATH_MAX];
                 struct MemoryStruct* archive;
@@ -58,7 +64,7 @@ COMMAND(wine, download)
                 
                 fprintf(stderr, "Downloading %s\n", name);
 
-                archive = downloadToRam(json_object_get_string(url));
+                archive = downloadToRam(json_object_get_string(temp));
                 if (archive)
                 {
                     fprintf(stderr, "Extracting %s\n", name);
@@ -73,13 +79,17 @@ COMMAND(wine, download)
                 free(archive->memory);
                 free(archive);
             }
+            else
+            {
+                fprintf(stderr, "Could not find `%s'\n", choice);
+            }
 
             json_object_put(runner);
         }
     }
     else
     {
-        fprintf(stderr, USAGE_STR " wine download <ID>\n\nIDs are obtained via `" NAME " wine list'\n");
+        fprintf(stderr, USAGE_STR " wine download <version>\n\nversions are obtained via `" NAME " wine list'\n");
     }
     return 0;
 }
@@ -144,13 +154,16 @@ COMMAND(wine, list)
         struct json_object* versions, *value, *val;
         json_object_object_get_ex(runner, "versions", &versions);
 
-        if(isatty(STDOUT_FILENO)) puts("Installable wine versions:");
+        int intty = isatty(STDOUT_FILENO);
+
+        if(intty) puts("Installable wine versions:");
 
         for (size_t i = 0; i < json_object_array_length(versions); ++i)
         {
             value = json_object_array_get_idx(versions, i);
             json_object_object_get_ex(value, "version", &val);
-            printf(" [%zu]\t%s\n", i, json_object_get_string(val));
+            if (intty) printf(" - ");
+            printf("%s\n", json_object_get_string(val));
         }
 
         json_object_put(runner);

@@ -31,35 +31,43 @@ COMMAND(dxvk, download)
         if (runner)
         {
 
-            int choice = atoi(argv[1]);
+            struct json_object* value, *temp, *temp2;
+            uint8_t found = 0;
 
-            if (choice > json_object_array_length(runner) - 1 || choice < 0)
+            char* choice = argv[1];
+
+            for (int i = 0; i < json_object_array_length(runner); ++i)
             {
-                fprintf(stderr, "`%i' is not a valid ID\n\nrun `" NAME " dxvk list' to get a valid ID", choice);
+                value = json_object_array_get_idx(runner, i);
+                json_object_object_get_ex(value, "tag_name", &temp);
+                if (strcmp(json_object_get_string(temp), choice) == 0)
+                {
+                    found = 1;
+                    break;
+                }
             }
-            else
+
+            if (found)
             {
-                struct json_object* version = json_object_array_get_idx(runner, choice);
-                struct json_object* assets;
+                json_object_object_get_ex(value, "assets", &temp);
+                temp2 = json_object_array_get_idx(temp, 0);
 
-                json_object_object_get_ex(version, "assets", &assets);
-                version =json_object_array_get_idx(assets, 0);
+                json_object_object_get_ex(temp2, "browser_download_url", &temp);
 
-                json_object_object_get_ex(version, "browser_download_url", &assets);
-
-                char* name = basename((char*)json_object_get_string(assets));
-                struct MemoryStruct* archive;
+                char* name = basename((char*)json_object_get_string(temp));
 
                 char dxvkdir[PATH_MAX];
+                struct MemoryStruct* archive;
+
                 getDXVKDir(dxvkdir, sizeof(dxvkdir));
                 makeDir(dxvkdir);
                 
                 fprintf(stderr, "Downloading %s\n", name);
 
-                archive = downloadToRam(json_object_get_string(assets));
+                archive = downloadToRam(json_object_get_string(temp));
                 if (archive)
                 {
-                    printf("Extracting %s\n", name);
+                    fprintf(stderr, "Extracting %s\n", name);
                     extract(archive, dxvkdir);
                     fprintf(stderr, "Done\n");
                 }
@@ -71,13 +79,17 @@ COMMAND(dxvk, download)
                 free(archive->memory);
                 free(archive);
             }
+            else
+            {
+                fprintf(stderr, "Could not find `%s'\n", choice);
+            }
 
             json_object_put(runner);
         }
     }
     else
     {
-        fprintf(stderr, USAGE_STR " dxvk download <ID>\n\nIDs are obtained via `" NAME " dxvk list'\n");
+        fprintf(stderr, USAGE_STR " dxvk download <version>\n\nversions are obtained via `" NAME " dxvk list'\n");
     }
     return 0;
 }
@@ -125,15 +137,17 @@ COMMAND(dxvk, list)
 
     if (runner)
     {
-        if (isatty(STDOUT_FILENO)) puts("Installable DXVK versions:");
+        int istty = isatty(STDOUT_FILENO); 
+        if (istty) puts("Installable DXVK versions:");
 
         for (size_t i = 0; i < json_object_array_length(runner); ++i)
         {
             struct json_object* version = json_object_array_get_idx(runner, i);
             struct json_object* name;
 
-            json_object_object_get_ex(version, "name", &name);
-            printf(" [%zu]\t%s\n", i, json_object_get_string(name));
+            json_object_object_get_ex(version, "tag_name", &name);
+            if (istty) printf(" - ");
+            printf("%s\n", json_object_get_string(name));
         }
     }
 
