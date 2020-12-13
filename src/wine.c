@@ -1,6 +1,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include <string.h>
 #include <json.h>
 #include <libgen.h>
@@ -15,7 +16,7 @@
 #include "common.h"
 
 const static struct Command wine_commands[] = {
-    { .name = "download",       .func = wine_download,  .description = "download and extract a wine version" },
+    { .name = "download",       .func = wine_download,  .description = "download and extract a wine versions" },
     { .name = "remove",         .func = wine_remove,    .description = "remove a wine version" },
     { .name = "list",           .func = wine_list,      .description = "list installable wine versions" },
     { .name = "run",            .func = wine_run,       .description = "run an installed wine version" },
@@ -28,61 +29,66 @@ COMMAND_GROUP_FUNC(wine)
 
 COMMAND(wine, download)
 {
-    if (argc == 2)
+    if (argc >= 2)
     {
         struct json_object* runner = fetchJSON(WINE_API);
 
         if (runner)
         {
             struct json_object* versions, *value, *temp;
-            uint8_t found = 0;
+            bool found;
             json_object_object_get_ex(runner, "versions", &versions);
 
-            char* choice = argv[1];
-
-            for (int i = 0; i < json_object_array_length(versions); ++i)
+            for (int i = 1; i < argc; ++i)
             {
-                value = json_object_array_get_idx(versions, i);
-                json_object_object_get_ex(value, "version", &temp);
-                if (strcmp(json_object_get_string(temp), choice) == 0)
+                found = false;
+                char* choice = argv[i];
+
+
+                for (int i = 0; i < json_object_array_length(versions); ++i)
                 {
-                    found = 1;
-                    break;
+                    value = json_object_array_get_idx(versions, i);
+                    json_object_object_get_ex(value, "version", &temp);
+                    if (strcmp(json_object_get_string(temp), choice) == 0)
+                    {
+                        found = true;
+                        break;
+                    }
                 }
-            }
 
-            if (found)
-            {
-                json_object_object_get_ex(value, "url", &temp);
-
-                char* name = basename((char*)json_object_get_string(temp));
-
-                char winedir[PATH_MAX];
-                struct MemoryStruct* archive;
-
-                getWineDir(winedir, sizeof(winedir));
-                makeDir(winedir);
-                
-                fprintf(stderr, "Downloading %s\n", name);
-
-                archive = downloadToRam(json_object_get_string(temp));
-                if (archive)
+                if (found)
                 {
-                    fprintf(stderr, "Extracting %s\n", name);
-                    extract(archive, winedir);
-                    fprintf(stderr, "Done\n");
+                    json_object_object_get_ex(value, "url", &temp);
+
+                    char* name = basename((char*)json_object_get_string(temp));
+
+                    char winedir[PATH_MAX];
+                    struct MemoryStruct* archive;
+
+                    getWineDir(winedir, sizeof(winedir));
+                    makeDir(winedir);
+                    
+                    fprintf(stderr, "Downloading %s\n", name);
+
+                    archive = downloadToRam(json_object_get_string(temp));
+                    if (archive)
+                    {
+                        fprintf(stderr, "Extracting %s\n", name);
+                        extract(archive, winedir);
+                        fprintf(stderr, "Done\n");
+                    }
+                    else
+                    {
+                        fprintf(stderr, "Something went wrong. The archive went missing\n");
+                    }
+
+                    free(archive->memory);
+                    free(archive);
                 }
                 else
                 {
-                    fprintf(stderr, "Something went wrong. The archive went missing\n");
+                    fprintf(stderr, "Could not find `%s'\n", choice);
                 }
-
-                free(archive->memory);
-                free(archive);
-            }
-            else
-            {
-                fprintf(stderr, "Could not find `%s'\n", choice);
             }
 
             json_object_put(runner);
@@ -90,7 +96,7 @@ COMMAND(wine, download)
     }
     else
     {
-        fprintf(stderr, USAGE_STR " wine download <version>\n\nversions are obtained via `" NAME " wine list'\n");
+        fprintf(stderr, USAGE_STR " wine download [versions]\n\nversions are obtained via `" NAME " wine list'\n");
     }
     return 0;
 }
