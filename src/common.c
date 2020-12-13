@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <dirent.h>
+#include <errno.h>
 
 #include "common.h"
 
@@ -54,15 +55,29 @@ bool isDir(const char* path)
 
 int makeDir(const char* path)
 {
-    // we do not care about the contents but what stat returns
-    struct stat sb;
+    char pathcpy[PATH_MAX];
+    char *index;
 
-    if (stat(path, &sb) < 0)
+    strncpy(pathcpy, path, PATH_MAX); // make a mutable copy of the path
+
+    for(index = pathcpy+1; *index; ++index)
     {
-        return mkdir(path, 0755);
+
+        if (*index == '/')
+        {
+            *index = '\0';
+
+            if (mkdir(pathcpy, 0755) != 0)
+            {
+                if (errno != EEXIST)
+                    return -1;
+            }
+
+            *index = '/';
+        }
     }
 
-    return 0; // directory exists, pretend we made it
+    return mkdir(path, 0755);
 }
 
 int removeDir(const char *path) {
