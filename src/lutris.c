@@ -11,9 +11,36 @@
 static const struct Command lutris_commands[] = {
 #ifdef DEBUG
     { .name = "install", .func = lutris_install, .description = "install a lutris script" },
+    { .name = "debug",   .func = lutris_debug,   .description = "" },
 #endif
     { .name = "info",    .func = lutris_info,    .description = "show information about a lutris script" },
 };
+
+void func()
+{
+    printf("I got called because $func was found\n");
+}
+
+COMMAND(lutris, debug)
+{
+    struct list_t variables[] = {
+        { .key = "string",     .type = value_string,   .value.str  = "output" },
+        { .key = "func",       .type = value_function, .value.func = func },
+    };
+
+    char* str = malloc(255);
+
+    strcpy(str, "$string and $func $fun");
+
+    printf("Input: %s\n", str);
+    parseVar(&str, variables, ARRAY_LEN(variables));
+    printf("Output: %s\n", str);
+
+
+    free(str);
+
+    return 0;
+}
 
 COMMAND_GROUP_FUNC(lutris)
 

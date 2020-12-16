@@ -139,6 +139,8 @@ struct script_t {
 
 #include "command.h"
 
+COMMAND(lutris, debug);
+
 COMMAND_GROUP(lutris);
 COMMAND(lutris, install);
 COMMAND(lutris, info);
