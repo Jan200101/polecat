@@ -519,3 +519,93 @@ void lutris_freeInstaller(struct script_t* installer)
         }
     }
 }
+
+size_t parseVar(char** pvar, struct list_t* variables, size_t variable_count)
+{
+    char* var = *pvar;
+    char* head = var;
+    char* tail, *end;
+    char* buf, *key;
+
+    size_t varcount = 0;
+
+    while (*head != '\0')
+    {
+        if (*head == VARIABLESIGN)
+        {
+            // ensure sanity by clearing variables
+            buf = NULL;
+            key = NULL;
+
+            end = strlen(var) + var;
+
+            int bufend = (head-var);
+
+            // find variable key 
+            tail = ++head;
+            while (*tail <= 'z' && *tail >= 'A') // we ONLY accept ascii variables
+            {
+
+                ++tail;
+            }
+
+            if ((tail-head) > 0)
+            {
+                // resolve variable key and store it
+                buf = malloc(tail-head);
+                strncpy(buf, head, tail-head);
+                for (size_t i = 0; i < variable_count; ++i)
+                {
+                    if (strncmp(variables[i].key, buf, tail-head) == 0)
+                    {
+                        switch (variables[i].type)
+                        {
+                            case value_string:
+                                key = variables[i].value.str;
+                                break;
+
+                            case value_function:
+                                variables[i].value.func();
+                                break;
+
+                            default:
+                                UNREACHABLE
+                                break;
+                        }
+                    }
+                }
+                free(buf);
+            }
+
+            if (!key) continue;
+
+            // copy everything from variable key end to end of string
+            buf = malloc(end-tail+1);
+            strncpy(buf, tail, end-tail+1);
+
+            size_t varsize = (head-var) + strlen(key) + (end-tail) + 1;
+
+            var = realloc(var, varsize);
+            // end of the string up until the variable
+            // we cannot fetch this after the realloc because it points to completly different memory making pointer math impossible
+            var[bufend] = '\0';
+            strncat(var, key,  varsize - strlen(var) - 1);
+            strncat(var, buf, varsize - strlen(var) - 1);   
+            // cleanup
+            free(buf);
+            buf = NULL;
+
+            varcount++;
+
+            // bring your head back to the world of living memory
+            head = var;
+        }
+
+        head++;
+    }
+
+    // point pvar back to the string
+    *pvar = var;
+
+    return varcount;
+}

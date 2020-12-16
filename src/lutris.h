@@ -4,6 +4,8 @@
 #include <stddef.h>
 #include <json.h>
 
+#define VARIABLESIGN '$'
+
 enum keyword {
     MOVE = 0,
     MERGE,
@@ -100,8 +102,8 @@ struct file_t {
 };
 
 enum value_type_t {
-    string,
-    function
+    value_string,
+    value_function
 };
 
 struct list_t {
@@ -145,5 +147,7 @@ COMMAND(lutris, help);
 void lutris_getInstallerURL(char*, char*, size_t);
 struct script_t lutris_getInstaller(char*);
 void lutris_freeInstaller(struct script_t*);
+
+size_t parseVar(char**, struct list_t*, size_t);
 
 #endif
