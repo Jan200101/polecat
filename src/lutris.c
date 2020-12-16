@@ -16,15 +16,18 @@ static const struct Command lutris_commands[] = {
     { .name = "info",    .func = lutris_info,    .description = "show information about a lutris script" },
 };
 
-void func()
+char* func()
 {
-    printf("I got called because $func was found\n");
+    char* str = malloc(5);
+    strncpy(str, "FUNC", 4+1);
+
+    return str;
 }
 
 COMMAND(lutris, debug)
 {
     struct list_t variables[] = {
-        { .key = "string",     .type = value_string,   .value.str  = "output" },
+        { .key = "string",     .type = value_string,   .value.str  = "STRING" },
         { .key = "func",       .type = value_function, .value.func = func },
     };
 
@@ -552,7 +555,7 @@ size_t parseVar(char** pvar, struct list_t* variables, size_t variable_count)
     char* var = *pvar;
     char* head = var;
     char* tail, *end;
-    char* buf, *key;
+    char* buf, *value;
 
     size_t varcount = 0;
     size_t offset = 0;
@@ -563,7 +566,7 @@ size_t parseVar(char** pvar, struct list_t* variables, size_t variable_count)
         {
             // ensure sanity by clearing variables
             buf = NULL;
-            key = NULL;
+            value = NULL;
 
             end = strlen(var) + var;
 
@@ -591,11 +594,12 @@ size_t parseVar(char** pvar, struct list_t* variables, size_t variable_count)
                         switch (variables[i].type)
                         {
                             case value_string:
-                                key = variables[i].value.str;
+                                value = malloc(strlen(variables[i].value.str) + 1);
+                                strncpy(value, variables[i].value.str, strlen(variables[i].value.str) + 1);
                                 break;
 
                             case value_function:
-                                variables[i].value.func();
+                                value = variables[i].value.func();
                                 break;
 
                             default:
@@ -607,23 +611,23 @@ size_t parseVar(char** pvar, struct list_t* variables, size_t variable_count)
                 free(buf);
             }
 
-            if (!key) continue;
+            if (!value) continue;
 
             // copy everything from variable key end to end of string
             buf = malloc(end-tail+1);
             strncpy(buf, tail, end-tail+1);
 
-            size_t varsize = (head-var) + strlen(key) + (end-tail) + 1;
+            size_t varsize = (head-var) + strlen(value) + (end-tail) + 1;
 
             var = realloc(var, varsize);
             // end of the string up until the variable
             // we cannot fetch this after the realloc because it points to completly different memory making pointer math impossible
             var[bufend] = '\0';
-            strncat(var, key,  varsize - strlen(var) - 1);
+            strncat(var, value,  varsize - strlen(var) - 1);
             strncat(var, buf, varsize - strlen(var) - 1);   
             // cleanup
+            free(value);
             free(buf);
-            buf = NULL;
 
             varcount++;
 

@@ -112,7 +112,7 @@ struct list_t {
     union
     {
         char* str;
-        void (*func)();
+        char* (*func)();
     } value;
 };
 
