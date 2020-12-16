@@ -8,7 +8,7 @@
 #include "lutris.h"
 #include "net.h"
 
-const static struct Command lutris_commands[] = {
+static const struct Command lutris_commands[] = {
 #ifdef DEBUG
     { .name = "install", .func = lutris_install, .description = "install a lutris script" },
 #endif
@@ -93,7 +93,7 @@ COMMAND(lutris, install)
                             break;
 
                         default:
-                            unreachable;
+                            UNREACHABLE
                             break;
                     }
                 }
@@ -126,7 +126,7 @@ COMMAND(lutris, install)
                     break;
 
                 default:
-                    unreachable;
+                    UNREACHABLE
                     break;
             }
         }
@@ -155,7 +155,7 @@ COMMAND(lutris, info)
             if (installer.filecount)
             {
                 puts("\nFiles:");
-                for (int i = 0; i < installer.filecount; ++i)
+                for (size_t i = 0; i < installer.filecount; ++i)
                 {
                     printf("\t%s ->%s\n", installer.files[i]->filename, installer.files[i]->url);
                 }
@@ -165,13 +165,13 @@ COMMAND(lutris, info)
             {
 
                 puts("\nDirectives:");
-                for (int i = 0; i < installer.directivecount; ++i)
+                for (size_t i = 0; i < installer.directivecount; ++i)
                 {
                     printf("\t%s", keywordstr[installer.directives[i]->command]);
 
                     if (installer.directives[i]->task != NO_TASK) printf(" %s", taskKeywordstr[installer.directives[i]->task]);
 
-                    for (int j = 0; j < installer.directives[i]->size; ++j)
+                    for (size_t j = 0; j < installer.directives[i]->size; ++j)
                     {
                         printf(" %s", installer.directives[i]->arguments[j]);
                     }
@@ -297,7 +297,7 @@ struct script_t lutris_getInstaller(char* installername)
                         installer.filecount = json_object_array_length(files);
  
                         installer.files = malloc(installer.filecount * sizeof(void*));
-                        for (int i = 0; i < installer.filecount; ++i)
+                        for (size_t i = 0; i < installer.filecount; ++i)
                         {
                             struct json_object* file = json_object_array_get_idx(files, i);
                             struct lh_entry* entry = json_object_get_object(file)->head;
@@ -337,7 +337,7 @@ struct script_t lutris_getInstaller(char* installername)
                         installer.directivecount = json_object_array_length(scriptinstall);
 
                         installer.directives = malloc(installer.directivecount * sizeof(void*));
-                        for (int i = 0; i < installer.directivecount; ++i)
+                        for (size_t i = 0; i < installer.directivecount; ++i)
                         {
                             struct json_object* step = json_object_array_get_idx(scriptinstall, i);
                             struct json_object* directive;
@@ -457,7 +457,7 @@ struct script_t lutris_getInstaller(char* installername)
                                     }
 
                                     installer.directives[i]->arguments = malloc(installer.directives[i]->size * sizeof(char*));
-                                    for (int j = 0; j < installer.directives[i]->size; ++j)
+                                    for (size_t j = 0; j < installer.directives[i]->size; ++j)
                                     {
                                         str = json_object_get_string(options[j+offset]);
                                         installer.directives[i]->arguments[j] = malloc(strlen(str) * sizeof(char) +1);
@@ -494,9 +494,9 @@ void lutris_freeInstaller(struct script_t* installer)
 
         if (installer->directives)
         {
-            for (int i = 0; i < installer->directivecount; ++i)
+            for (size_t i = 0; i < installer->directivecount; ++i)
             {
-                for (int j = 0; j < installer->directives[i]->size; ++j)
+                for (size_t j = 0; j < installer->directives[i]->size; ++j)
                 {
                     free(installer->directives[i]->arguments[j]);
                 }
@@ -509,7 +509,7 @@ void lutris_freeInstaller(struct script_t* installer)
 
         if (installer->files)
         {
-            for (int i = 0; i < installer->filecount; ++i)
+            for (size_t i = 0; i < installer->filecount; ++i)
             {
                 free(installer->files[i]->filename);
                 free(installer->files[i]->url);

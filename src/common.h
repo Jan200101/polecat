@@ -28,9 +28,15 @@
 #define USAGE_STR "Usage: " NAME
 
 #ifdef DEBUG
-#define unreachable printf("unreachable code reached\n" __FILE__ ":L%i\n", __LINE__); exit(0);
+#define UNREACHABLE printf("unreachable code reached\n" __FILE__ ":L%i\n", __LINE__); exit(0);
 #else
-#define unreachable
+#define UNREACHABLE
+#endif
+
+#ifdef __GNUC__
+#define UNUSED __attribute__((__unused__))
+#else
+#define UNUSED
 #endif
 
 struct MemoryStruct {

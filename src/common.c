@@ -58,7 +58,7 @@ int makeDir(const char* path)
     char pathcpy[PATH_MAX];
     char *index;
 
-    strncpy(pathcpy, path, PATH_MAX); // make a mutable copy of the path
+    strncpy(pathcpy, path, PATH_MAX-1); // make a mutable copy of the path
 
     for(index = pathcpy+1; *index; ++index)
     {

@@ -33,7 +33,7 @@ find_library(JSONC_LIB
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(JsonC DEFAULT_MSG JSONC_LIB JSONC_INC)
-mark_as_advanced(JSON_INC JSON_LIB)
+mark_as_advanced(JSONC_INC JSONC_LIB)
 
 if(JSONC_FOUND)
 	set(JSONC_INCLUDE_DIRS ${JSONC_INC})

@@ -15,7 +15,7 @@
 #include "config.h"
 #include "common.h"
 
-const static struct Command wine_commands[] = {
+static const struct Command wine_commands[] = {
     { .name = "download",       .func = wine_download,  .description = "download and extract a wine versions" },
     { .name = "remove",         .func = wine_remove,    .description = "remove a wine version" },
     { .name = "list",           .func = wine_list,      .description = "list installable wine versions" },
@@ -45,7 +45,7 @@ COMMAND(wine, download)
                 char* choice = argv[i];
 
 
-                for (int i = 0; i < json_object_array_length(versions); ++i)
+                for (size_t i = 0; i < json_object_array_length(versions); ++i)
                 {
                     value = json_object_array_get_idx(versions, i);
                     json_object_object_get_ex(value, "version", &temp);
@@ -377,7 +377,7 @@ COMMAND(wine, env)
     return 0;
 }
 
-COMMAND_HELP(wine, " wine");
+COMMAND_HELP(wine, " wine")
 
 enum wine_type_t check_wine_ver(char* winepath, size_t size)
 {

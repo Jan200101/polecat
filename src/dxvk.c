@@ -12,7 +12,7 @@
 #include "tar.h"
 #include "config.h"
 
-const static struct Command dxvk_commands[] = {
+static const struct Command dxvk_commands[] = {
     { .name = "download",       .func = dxvk_download,   .description = "download and install a dxvk version" },
     { .name = "remove",         .func = dxvk_remove,     .description = "remove a dxvk version" },
     { .name = "list",           .func = dxvk_list,       .description = "list available dxvk versions" },
@@ -36,7 +36,7 @@ COMMAND(dxvk, download)
 
             char* choice = argv[1];
 
-            for (int i = 0; i < json_object_array_length(runner); ++i)
+            for (size_t i = 0; i < json_object_array_length(runner); ++i)
             {
                 value = json_object_array_get_idx(runner, i);
                 json_object_object_get_ex(value, "tag_name", &temp);
@@ -221,4 +221,4 @@ COMMAND(dxvk, installed)
     return 0;
 }
 
-COMMAND_HELP(dxvk, " dxvk");
+COMMAND_HELP(dxvk, " dxvk")

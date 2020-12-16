@@ -5,7 +5,7 @@
 #include "common.h"
 
 #define COMMAND(GROUP, COMMAND)\
-int GROUP##_##COMMAND(int argc, char** argv)
+int GROUP##_##COMMAND(UNUSED int argc, UNUSED char** argv)
 
 
 #define COMMAND_HELP(GROUP, MSG) \
@@ -24,7 +24,7 @@ int GROUP##_##COMMAND(int argc, char** argv)
     COMMAND_GROUP(GROUP) \
     { \
         if (argc > 1) \
-            for (int i = 0; i < ARRAY_LEN(GROUP##_commands); ++i) \
+            for (unsigned long i = 0; i < ARRAY_LEN(GROUP##_commands); ++i) \
                 if (!strcmp(GROUP##_commands[i].name, argv[1])) return GROUP##_commands[i].func(argc-1, argv+1); \
         return GROUP##_help(argc-1, argv+1); \
     }

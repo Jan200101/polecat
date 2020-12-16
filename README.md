@@ -15,13 +15,15 @@ Installers are planned and on their way
 
 ### Fedora
 polecat is available as a [COPR repository](https://copr.fedorainfracloud.org/coprs/sentry/polecat/)    
-`sudo dnf copr enable sentry/polecat`    
-`sudo dnf install polecat`
+```
+sudo dnf copr enable sentry/polecat
+sudo dnf install polecat
+```
 
 ### Arch
-polecat is available on the AUR
-use your favorite AUR manager to install it
+polecat is available on the [AUR](https://aur.archlinux.org/packages/polecat/)
 
+##
 
 ## Dependencies
 
