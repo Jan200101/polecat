@@ -30,7 +30,7 @@ COMMAND(lutris, debug)
 
     char* str = malloc(255);
 
-    strcpy(str, "$string and $func $fun");
+    strcpy(str, "$string $str $func $fun");
 
     printf("Input: %s\n", str);
     parseVar(&str, variables, ARRAY_LEN(variables));
@@ -555,6 +555,7 @@ size_t parseVar(char** pvar, struct list_t* variables, size_t variable_count)
     char* buf, *key;
 
     size_t varcount = 0;
+    size_t offset = 0;
 
     while (*head != '\0')
     {
@@ -565,6 +566,8 @@ size_t parseVar(char** pvar, struct list_t* variables, size_t variable_count)
             key = NULL;
 
             end = strlen(var) + var;
+
+            offset = head - var;
 
             int bufend = (head-var);
 
@@ -583,7 +586,7 @@ size_t parseVar(char** pvar, struct list_t* variables, size_t variable_count)
                 strncpy(buf, head, tail-head);
                 for (size_t i = 0; i < variable_count; ++i)
                 {
-                    if (strncmp(variables[i].key, buf, tail-head) == 0)
+                    if (strncmp(variables[i].key, buf, tail-head+1) == 0)
                     {
                         switch (variables[i].type)
                         {
@@ -625,7 +628,7 @@ size_t parseVar(char** pvar, struct list_t* variables, size_t variable_count)
             varcount++;
 
             // bring your head back to the world of living memory
-            head = var;
+            head = var + offset;
         }
 
         head++;
