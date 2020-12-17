@@ -182,7 +182,7 @@ COMMAND(lutris, info)
         }
         else
         {
-            printf("Couldn't find an installer by the name `%s'\n", argv[1]);
+            printf("Couldn't find an installer by the name '%s'\n", argv[1]);
         }
 
         lutris_freeInstaller(&installer);

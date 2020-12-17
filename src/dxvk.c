@@ -81,7 +81,7 @@ COMMAND(dxvk, download)
             }
             else
             {
-                fprintf(stderr, "Could not find `%s'\n", choice);
+                fprintf(stderr, "Could not find '%s'\n", choice);
             }
 
             json_object_put(runner);
@@ -89,7 +89,7 @@ COMMAND(dxvk, download)
     }
     else
     {
-        fprintf(stderr, USAGE_STR " dxvk download <version>\n\nversions are obtained via `" NAME " dxvk list'\n");
+        fprintf(stderr, USAGE_STR " dxvk download <version>\n\nversions are obtained via '" NAME " dxvk list'\n");
     }
     return 0;
 }
@@ -109,7 +109,7 @@ COMMAND(dxvk, remove)
 
         if (!isDir(dxvkpath))
         {
-            fprintf(stderr, "`%s' is not an downloaded DXVK version\n", dxvkver);
+            fprintf(stderr, "'%s' is not an downloaded DXVK version\n", dxvkver);
             return 0;
         }
 
@@ -126,7 +126,7 @@ COMMAND(dxvk, remove)
         return retval;
     }
 
-    fprintf(stderr, USAGE_STR " dxvk remove <version>\n\nInstalled dxvk versions can be obtained by using `" NAME " dxvk list-installed\n");
+    fprintf(stderr, USAGE_STR " dxvk remove <version>\n\nInstalled dxvk versions can be obtained by using '" NAME " dxvk list-installed\n");
 
     return 0;
 }
@@ -167,7 +167,7 @@ COMMAND(dxvk, install)
 
         if (!isDir(dxvkpath))
         {
-            fprintf(stderr, "`%s' is not an downloaded DXVK version\n", dxvkver);
+            fprintf(stderr, "'%s' is not an downloaded DXVK version\n", dxvkver);
             return 0;
         }
 
@@ -181,13 +181,13 @@ COMMAND(dxvk, install)
         }
         else
         {
-            fprintf(stderr, "cannot find the setup script for `%s'\n", dxvkver);
+            fprintf(stderr, "cannot find the setup script for '%s'\n", dxvkver);
         }
 
     }
     else
     {
-        fprintf(stderr, "Specify a what DXVK version to install.\nUse `" NAME " dxvk list-installed' to list available versions\n");
+        fprintf(stderr, "Specify a what DXVK version to install.\nUse '" NAME " dxvk list-installed' to list available versions\n");
     }
 
         

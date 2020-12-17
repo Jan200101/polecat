@@ -87,7 +87,7 @@ COMMAND(wine, download)
                 }
                 else
                 {
-                    fprintf(stderr, "Could not find `%s'\n", choice);
+                    fprintf(stderr, "Could not find '%s'\n", choice);
                 }
             }
 
@@ -96,7 +96,7 @@ COMMAND(wine, download)
     }
     else
     {
-        fprintf(stderr, USAGE_STR " wine download [versions]\n\nversions are obtained via `" NAME " wine list'\n");
+        fprintf(stderr, USAGE_STR " wine download [versions]\n\nversions are obtained via '" NAME " wine list'\n");
     }
     return 0;
 }
@@ -129,7 +129,7 @@ COMMAND(wine, remove)
             // if it still doesn't exist tell this wine version is not installed
             if (!isDir(winepath))
             {
-                fprintf(stderr, "`%s' is not an installed wine version\n", winever);
+                fprintf(stderr, "'%s' is not an installed wine version\n", winever);
                 return 0;
             }
         }
@@ -147,7 +147,7 @@ COMMAND(wine, remove)
         return retval;
     }
 
-    fprintf(stderr, USAGE_STR " wine remove <version>\n\nInstalled wine versions can be obtained by using `" NAME " wine list-installed\n");
+    fprintf(stderr, USAGE_STR " wine remove <version>\n\nInstalled wine versions can be obtained by using '" NAME " wine list-installed\n");
 
     return 0;
 }
@@ -194,7 +194,7 @@ COMMAND(wine, run)
         if (!isDir(winepath))
         {
 
-            // if the wine version does not exist try appending the system arch e.g. x86_64
+            // try appending the system arch to find the wine version
             struct utsname buffer;
 
             if (!uname(&buffer))
@@ -203,11 +203,11 @@ COMMAND(wine, run)
                 strncat(winepath, buffer.machine, sizeof(winepath) - strlen(winepath) - 1);
             }
 
-            // if it still doesn't exist tell this wine version is not installed
+            // if we still cannot find anything tell the user and exit
             if (!isDir(winepath))
             {
-                fprintf(stderr, "`%s' is not an installed wine version\n", winever);
-                return 0;
+                fprintf(stderr, "'%s' is not an installed wine version\n", winever);
+                return 1;
             }
         }
 
@@ -223,7 +223,7 @@ COMMAND(wine, run)
 
             default:
                 #ifdef DEBUG
-                fprintf(stderr, "Couldn't find figure out if this `%s' is Wine or Proton, defaulting to Wine\n", winever);
+                fprintf(stderr, "Couldn't find figure out if this '%s' is Wine or Proton, defaulting to Wine\n", winever);
                 #endif
                 winebinloc = WINEBIN;
                 break;
@@ -235,6 +235,7 @@ COMMAND(wine, run)
         {
             for (int i = 2; i < argc; ++i)
             {
+                // make sure the passed arguments are in quotes so spaces don't cause problems
                 strncat(winepath, " \"", sizeof(winepath) - strlen(winepath) - 1);
                 strncat(winepath, argv[i], sizeof(winepath) - strlen(winepath) - 1);
                 strncat(winepath, "\"", sizeof(winepath) - strlen(winepath) - 1);
@@ -244,12 +245,12 @@ COMMAND(wine, run)
         }
         else
         {
-            fprintf(stderr, "cannot find wine for `%s'\n", winever);
+            fprintf(stderr, "cannot find wine for '%s'\n", winever);
         }
 
     }
 
-    fprintf(stderr, "Specify a what wine version to run.\nUse `" NAME " wine list-installed' to list available versions\n");
+    fprintf(stderr, "Specify a what wine version to run.\nUse '" NAME " wine list-installed' to list available versions\n");
         
     return 0;
 }
@@ -312,7 +313,7 @@ COMMAND(wine, env)
             // if it still doesn't exist tell this wine version is not installed
             if (!isDir(winepath))
             {
-                fprintf(stderr, "`%s' is not an installed wine version\n", winever);
+                fprintf(stderr, "'%s' is not an installed wine version\n", winever);
                 return 0;
             }
         }
@@ -329,7 +330,7 @@ COMMAND(wine, env)
 
             default:
                 #ifdef DEBUG
-                fprintf(stderr, "Couldn't find figure out if this `%s' is Wine or Proton, defaulting to Wine", winever);
+                fprintf(stderr, "Couldn't find figure out if this '%s' is Wine or Proton, defaulting to Wine", winever);
                 #endif
                 winebinloc = WINEBIN;
                 break;
@@ -345,7 +346,7 @@ COMMAND(wine, env)
                 printf("To add a wine installation to your PATH\n"
                        "you have to eval the output.\n\n");
                 if (!fish_env)
-                    printf("$ eval `polecat wine env %s`\n", winever);
+                    printf("$ eval 'polecat wine env %s'\n", winever);
                 else
                     printf("$ eval (polecat wine fish-env %s)\n", winever);
             }
@@ -360,17 +361,17 @@ COMMAND(wine, env)
                     printf("set PATH %s $PATH\n", winepath);   
                 }
             }
-            //printf("PATH=\"%s\"\n# Run this code in your Terminal\n# by running eval `%s`", newpath, argv[0]);
+            //printf("PATH=\"%s\"\n# Run this code in your Terminal\n# by running eval '%s'", newpath, argv[0]);
         }
         else
         {
-            fprintf(stderr, "cannot find wine for `%s'\n", winever);
+            fprintf(stderr, "cannot find wine for '%s'\n", winever);
         }
 
     }
     else
     {
-        fprintf(stderr, "Specify a what wine version to run.\nUse `" NAME " wine list-installed' to list available versions\n");
+        fprintf(stderr, "Specify a what wine version to run.\nUse '" NAME " wine list-installed' to list available versions\n");
     }
 
         
