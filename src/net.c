@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <unistd.h>
 #include <curl/curl.h>
 #include <json.h>
 
@@ -48,14 +49,19 @@ static int xferinfo(void *p, curl_off_t dltotal, curl_off_t dlnow, UNUSED curl_o
 
     fprintf(stderr, "\rProgress: %3" CURL_FORMAT_CURL_OFF_T "%%", progress);
 
+    if (progress == 100) fprintf(stderr, "\r");
+
     return 0;
 }
 
-struct MemoryStruct* downloadToRam(const char* URL, long progress)
+struct MemoryStruct* downloadToRam(const char* URL, long noprogress)
 {
     CURL* curl_handle;
     CURLcode res = CURLE_OK;
     struct progress prog;
+
+    if (!isatty(STDERR_FILENO))
+        noprogress = 1L;
 
     struct MemoryStruct* chunk = malloc(sizeof(struct MemoryStruct));
 
@@ -75,7 +81,7 @@ struct MemoryStruct* downloadToRam(const char* URL, long progress)
         curl_easy_setopt(curl_handle, CURLOPT_FOLLOWLOCATION, 1L);
         curl_easy_setopt(curl_handle, CURLOPT_XFERINFOFUNCTION, xferinfo);
         curl_easy_setopt(curl_handle, CURLOPT_XFERINFODATA, &prog); 
-        curl_easy_setopt(curl_handle, CURLOPT_NOPROGRESS, progress);
+        curl_easy_setopt(curl_handle, CURLOPT_NOPROGRESS, noprogress);
 
         res = curl_easy_perform(curl_handle);
 
