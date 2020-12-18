@@ -12,18 +12,18 @@
 
 void print_help(const struct Command* commands, const size_t size)
 {
-    int longestCommand = 0;
+    size_t longestCommand = 0;
 
     for (size_t i = 0; i < size; ++i)
     {
-        int commandLength = strlen(commands[i].name);
+        size_t commandLength = strlen(commands[i].name);
 
         if (commandLength > longestCommand) longestCommand = commandLength;
     }
 
     for (size_t i = 0; i < size; ++i)
     {
-        printf("\t%-*s\t %s\n", longestCommand, commands[i].name, commands[i].description);
+        printf("\t%-*s\t %s\n", (int)longestCommand, commands[i].name, commands[i].description);
     }
 }
 

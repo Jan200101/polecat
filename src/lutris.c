@@ -22,7 +22,7 @@ COMMAND(lutris, install)
     if (argc == 2)
     {
         struct script_t installer = lutris_getInstaller(argv[1]);
-        char inp;
+        int inp;
 
         if (installer.error == NONE)
         {
@@ -30,7 +30,7 @@ COMMAND(lutris, install)
 
             printf("Install %s - %s to the current directory?\nThis may download files and install wine versions\n(y/n)\n", installer.name, installer.version);
 
-            if ((inp=getchar()) == 'y')
+            if ((inp = getchar()) == 'y')
             {
                 // fetch all files required by installer
                 // TODO: think about storing files on disk for larger files
