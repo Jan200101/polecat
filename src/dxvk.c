@@ -36,7 +36,7 @@ COMMAND(dxvk, download)
 
             char* choice = argv[1];
 
-            for (size_t i = 0; i < json_object_array_length(runner); ++i)
+            for (JSON_LENGTH_TYPE i = 0; i < json_object_array_length(runner); ++i)
             {
                 value = json_object_array_get_idx(runner, i);
                 json_object_object_get_ex(value, "tag_name", &temp);
@@ -140,7 +140,7 @@ COMMAND(dxvk, list)
         int istty = isatty(STDOUT_FILENO); 
         if (istty) puts("Installable DXVK versions:");
 
-        for (size_t i = 0; i < json_object_array_length(runner); ++i)
+        for (JSON_LENGTH_TYPE i = 0; i < json_object_array_length(runner); ++i)
         {
             struct json_object* version = json_object_array_get_idx(runner, i);
             struct json_object* name;

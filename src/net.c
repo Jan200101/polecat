@@ -10,11 +10,6 @@
 #include "net.h"
 #include "common.h"
 
-struct progress {
-  TIMETYPE lastruntime;
-  CURL *curl;
-};
-
 static size_t memoryCallback(void* contents, size_t size, size_t nmemb, void* userp)
 {
     size_t realsize = size * nmemb;
@@ -35,14 +30,8 @@ static size_t memoryCallback(void* contents, size_t size, size_t nmemb, void* us
     return realsize;
 }
 
-static int xferinfo(void *p, curl_off_t dltotal, curl_off_t dlnow, UNUSED curl_off_t ultotal, UNUSED curl_off_t ulnow)
+static int xferinfo(UNUSED void *p, curl_off_t dltotal, curl_off_t dlnow, UNUSED curl_off_t ultotal, UNUSED curl_off_t ulnow)
 {
-    struct progress *myp = (struct progress *)p;
-    CURL *curl = myp->curl;
-    TIMETYPE curtime = 0;
-
-    curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME_T, &curtime);
-
     curl_off_t progress = 0;
     if (dltotal != 0)
         progress = ((float)dlnow / dltotal) * 100;
@@ -58,7 +47,6 @@ struct MemoryStruct* downloadToRam(const char* URL, long noprogress)
 {
     CURL* curl_handle;
     CURLcode res = CURLE_OK;
-    struct progress prog;
 
     if (!isatty(STDERR_FILENO))
         noprogress = 1L;
@@ -80,7 +68,6 @@ struct MemoryStruct* downloadToRam(const char* URL, long noprogress)
         curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, USER_AGENT);
         curl_easy_setopt(curl_handle, CURLOPT_FOLLOWLOCATION, 1L);
         curl_easy_setopt(curl_handle, CURLOPT_XFERINFOFUNCTION, xferinfo);
-        curl_easy_setopt(curl_handle, CURLOPT_XFERINFODATA, &prog); 
         curl_easy_setopt(curl_handle, CURLOPT_NOPROGRESS, noprogress);
 
         res = curl_easy_perform(curl_handle);

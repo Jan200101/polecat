@@ -39,6 +39,16 @@
 #define UNUSED
 #endif
 
+#include <json.h>
+
+// since json-c 0.13 json_object_array_length returns a size_t
+#if defined(JSON_C_MINOR_VERSION) && JSON_C_MINOR_VERSION >= 13
+#define JSON_LENGTH_TYPE size_t
+#else
+#define JSON_LENGTH_TYPE int
+#endif
+
+
 struct MemoryStruct {
     uint8_t* memory;
     size_t size;

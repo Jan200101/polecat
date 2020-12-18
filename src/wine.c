@@ -45,7 +45,7 @@ COMMAND(wine, download)
                 char* choice = argv[i];
 
 
-                for (size_t i = 0; i < json_object_array_length(versions); ++i)
+                for (JSON_LENGTH_TYPE i = 0; i < json_object_array_length(versions); ++i)
                 {
                     value = json_object_array_get_idx(versions, i);
                     json_object_object_get_ex(value, "version", &temp);
@@ -165,7 +165,7 @@ COMMAND(wine, list)
 
         if(intty) puts("Installable wine versions:");
 
-        for (size_t i = 0; i < json_object_array_length(versions); ++i)
+        for (JSON_LENGTH_TYPE i = 0; i < json_object_array_length(versions); ++i)
         {
             value = json_object_array_get_idx(versions, i);
             json_object_object_get_ex(value, "version", &val);
