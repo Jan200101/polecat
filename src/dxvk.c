@@ -62,7 +62,7 @@ COMMAND(dxvk, download)
                 getDXVKDir(dxvkdir, sizeof(dxvkdir));
                 makeDir(dxvkdir);
                 
-                fprintf(stderr, "Downloading %s\n", name);
+                fprintf(stderr, "Downloading %s...\n", name);
 
                 archive = downloadToRam(json_object_get_string(temp), 0L);
                 if (archive)
