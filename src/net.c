@@ -46,7 +46,7 @@ static int xferinfo(void *p, curl_off_t dltotal, curl_off_t dlnow, UNUSED curl_o
     if (dltotal != 0)
         progress = ((float)dlnow / dltotal) * 100;
 
-    fprintf(stderr, "Progress: %3" CURL_FORMAT_CURL_OFF_T "%%  \r", progress);
+    fprintf(stderr, "\rProgress: %3" CURL_FORMAT_CURL_OFF_T "%%", progress);
 
     return 0;
 }
