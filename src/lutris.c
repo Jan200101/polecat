@@ -39,7 +39,7 @@ COMMAND(lutris, install)
                 {
                     char* filename = basename(installer.files[i]->url);
                     printf("Dowloading %s...\n", filename);
-                    files[i] = downloadToRam(installer.files[i]->url);
+                    files[i] = downloadToRam(installer.files[i]->url, 0L);
                 }
 
 

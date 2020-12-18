@@ -70,7 +70,7 @@ COMMAND(wine, download)
                     
                     fprintf(stderr, "Downloading %s\n", name);
 
-                    archive = downloadToRam(json_object_get_string(temp));
+                    archive = downloadToRam(json_object_get_string(temp), 0L);
                     if (archive)
                     {
                         fprintf(stderr, "Extracting %s\n", name);

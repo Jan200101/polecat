@@ -9,7 +9,12 @@
 #include "net.h"
 #include "common.h"
 
-size_t memoryCallback(void* contents, size_t size, size_t nmemb, void* userp)
+struct progress {
+  TIMETYPE lastruntime;
+  CURL *curl;
+};
+
+static size_t memoryCallback(void* contents, size_t size, size_t nmemb, void* userp)
 {
     size_t realsize = size * nmemb;
     struct MemoryStruct* mem = (struct MemoryStruct*)userp;
@@ -29,10 +34,28 @@ size_t memoryCallback(void* contents, size_t size, size_t nmemb, void* userp)
     return realsize;
 }
 
-struct MemoryStruct* downloadToRam(const char* URL)
+static int xferinfo(void *p, curl_off_t dltotal, curl_off_t dlnow, UNUSED curl_off_t ultotal, UNUSED curl_off_t ulnow)
+{
+    struct progress *myp = (struct progress *)p;
+    CURL *curl = myp->curl;
+    TIMETYPE curtime = 0;
+
+    curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME_T, &curtime);
+
+    curl_off_t progress = 0;
+    if (dltotal != 0)
+        progress = ((float)dlnow / dltotal) * 100;
+
+    fprintf(stderr, "Progress: %3" CURL_FORMAT_CURL_OFF_T "%%  \r", progress);
+
+    return 0;
+}
+
+struct MemoryStruct* downloadToRam(const char* URL, long progress)
 {
     CURL* curl_handle;
-    CURLcode res;
+    CURLcode res = CURLE_OK;
+    struct progress prog;
 
     struct MemoryStruct* chunk = malloc(sizeof(struct MemoryStruct));
 
@@ -50,6 +73,9 @@ struct MemoryStruct* downloadToRam(const char* URL)
         curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void*)chunk);
         curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, USER_AGENT);
         curl_easy_setopt(curl_handle, CURLOPT_FOLLOWLOCATION, 1L);
+        curl_easy_setopt(curl_handle, CURLOPT_XFERINFOFUNCTION, xferinfo);
+        curl_easy_setopt(curl_handle, CURLOPT_XFERINFODATA, &prog); 
+        curl_easy_setopt(curl_handle, CURLOPT_NOPROGRESS, progress);
 
         res = curl_easy_perform(curl_handle);
 
@@ -77,7 +103,7 @@ struct MemoryStruct* downloadToRam(const char* URL)
 
 struct json_object* fetchJSON(const char* URL)
 {
-    struct MemoryStruct* chunk = downloadToRam(URL);
+    struct MemoryStruct* chunk = downloadToRam(URL, 1L);
 
     struct json_object* json = NULL;
 
