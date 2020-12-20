@@ -18,7 +18,7 @@ static size_t memoryCallback(void* contents, size_t size, size_t nmemb, void* us
     uint8_t* ptr = realloc(mem->memory, mem->size + realsize + 1);
     if(ptr == NULL)
     {
-        puts("out of memory");
+        fprintf(stderr, "Unable to allocate memory\n");
         return 0;
     }
 
@@ -55,6 +55,7 @@ struct MemoryStruct* downloadToRam(const char* URL, long noprogress)
 
     if (chunk)
     {
+        // if we managed to allocate the chunk lets assume we can allocate at least 1 byte
         chunk->memory = malloc(1);
         chunk->size = 0;
 
@@ -89,6 +90,10 @@ struct MemoryStruct* downloadToRam(const char* URL, long noprogress)
 
         curl_easy_cleanup(curl_handle);
         curl_global_cleanup();
+    }
+    else
+    {
+        fprintf(stderr, "Unable to allocate memory\n");
     }
 
     return chunk;

@@ -385,22 +385,29 @@ enum wine_type_t check_wine_ver(char* winepath, size_t size)
     char* winepathcopy = NULL;
 
     winepathcopy = malloc(size);
-    strncpy(winepathcopy, winepath, size);
-    strncat(winepathcopy, WINEBIN, size - strlen(winepathcopy));
-
-    if (isFile(winepathcopy))
+    if (winepathcopy)
     {
-        free(winepathcopy);
-        return WINE_NORMAL;
+        strncpy(winepathcopy, winepath, size);
+        strncat(winepathcopy, WINEBIN, size - strlen(winepathcopy));
+
+        if (isFile(winepathcopy))
+        {
+            free(winepathcopy);
+            return WINE_NORMAL;
+        }
+
+        strncpy(winepathcopy, winepath, size);
+        strncat(winepathcopy, PROTONBIN, size - strlen(winepathcopy));
+
+        if (isFile(winepathcopy))
+        {
+            free(winepathcopy);
+            return WINE_PROTON;
+        }
     }
-
-    strncpy(winepathcopy, winepath, size);
-    strncat(winepathcopy, PROTONBIN, size - strlen(winepathcopy));
-
-    if (isFile(winepathcopy))
+    else
     {
-        free(winepathcopy);
-        return WINE_PROTON;
+        fprintf(stderr, "Unable to allocate memory\n");
     }
 
     return WINE_NONE;
