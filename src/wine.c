@@ -233,6 +233,15 @@ COMMAND(wine, run)
 
         if (isFile(winepath))
         {
+            // quote the winepath so whitespace won't cause trouble
+            {
+                char winepathcpy[PATH_MAX] = {0};
+                strncat(winepathcpy, "\"", sizeof(winepathcpy) - strlen(winepathcpy) - 1);
+                strncat(winepathcpy, winepath, sizeof(winepathcpy) - strlen(winepathcpy) - 1);
+                strncat(winepathcpy, "\"", sizeof(winepathcpy) - strlen(winepathcpy) - 1);
+                strncpy(winepath, winepathcpy, sizeof(winepathcpy));
+            }
+
             for (int i = 2; i < argc; ++i)
             {
                 // make sure the passed arguments are in quotes so spaces don't cause problems

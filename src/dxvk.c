@@ -175,6 +175,14 @@ COMMAND(dxvk, install)
 
         if (isFile(dxvkpath))
         {
+            // quote the dxvkpath so whitespace won't cause trouble
+            {
+                char dxvkpathcpy[PATH_MAX] = {0};
+                strncat(dxvkpathcpy, "\"", sizeof(dxvkpathcpy) - strlen(dxvkpathcpy) - 1);
+                strncat(dxvkpathcpy, dxvkpath, sizeof(dxvkpathcpy) - strlen(dxvkpathcpy) - 1);
+                strncat(dxvkpathcpy, "\"", sizeof(dxvkpathcpy) - strlen(dxvkpathcpy) - 1);
+                strncpy(dxvkpath, dxvkpathcpy, sizeof(dxvkpathcpy));
+            }
             strncat(dxvkpath, " install", sizeof(dxvkpath) - strlen(dxvkpath) - 1);
 
             return system(dxvkpath);
