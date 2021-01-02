@@ -557,8 +557,11 @@ size_t parseVar(char** pvar, struct list_t* variables, size_t variable_count)
     char* tail, *end;
     char* buf, *value;
 
+    size_t offset;
+    size_t keylen, backlen;
+
     size_t varcount = 0;
-    size_t offset = 0;
+
 
     while (*head != '\0')
     {
@@ -570,9 +573,7 @@ size_t parseVar(char** pvar, struct list_t* variables, size_t variable_count)
 
             end = strlen(var) + var;
 
-            offset = head - var;
-
-            int bufend = (head-var);
+            offset = (size_t)(head-var);
 
             // find variable key 
             tail = ++head;
@@ -582,14 +583,18 @@ size_t parseVar(char** pvar, struct list_t* variables, size_t variable_count)
                 ++tail;
             }
 
-            if ((tail-head) > 0)
+            // setup variables for reuse
+            keylen = (size_t)(tail-head);
+            backlen = (size_t)(end-tail);
+
+            if (keylen > 0)
             {
                 // resolve variable key and store it
-                buf = malloc(tail-head);
-                strncpy(buf, head, tail-head);
+                buf = malloc(keylen);
+                strncpy(buf, head, keylen);
                 for (size_t i = 0; i < variable_count; ++i)
                 {
-                    if (strncmp(variables[i].key, buf, tail-head+1) == 0)
+                    if (strncmp(variables[i].key, buf, keylen+1) == 0)
                     {
                         switch (variables[i].type)
                         {
@@ -614,15 +619,15 @@ size_t parseVar(char** pvar, struct list_t* variables, size_t variable_count)
             if (!value) continue;
 
             // copy everything from variable key end to end of string
-            buf = malloc(end-tail+1);
-            strncpy(buf, tail, end-tail+1);
+            buf = malloc(backlen+1);
+            strncpy(buf, tail, backlen+1);
 
-            size_t varsize = (head-var) + strlen(value) + (end-tail) + 1;
+            size_t varsize = offset + strlen(value) + backlen + 1;
 
             var = realloc(var, varsize);
             // end of the string up until the variable
             // we cannot fetch this after the realloc because it points to completly different memory making pointer math impossible
-            var[bufend] = '\0';
+            var[offset] = '\0';
             strncat(var, value,  varsize - strlen(var) - 1);
             strncat(var, buf, varsize - strlen(var) - 1);   
             // cleanup
