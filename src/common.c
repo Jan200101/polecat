@@ -80,7 +80,8 @@ int makeDir(const char* path)
     return mkdir(path, 0755);
 }
 
-int removeDir(const char *path) {
+int removeDir(const char *path)
+{
     DIR *d = opendir(path);
     size_t path_len = strlen(path);
     int r = -1;

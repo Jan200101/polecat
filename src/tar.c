@@ -22,7 +22,8 @@ static int copy_data(struct archive* ar, struct archive* aw)
         if (r == ARCHIVE_EOF) return (ARCHIVE_OK);
         if (r < ARCHIVE_OK) return (r);
 
-        r = archive_write_data_block(aw, buff, size, offset);
+        // why does read return an int but write not?
+        r = (int)archive_write_data_block(aw, buff, size, offset);
 
         if (r < ARCHIVE_OK)
         {
