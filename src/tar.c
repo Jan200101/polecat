@@ -9,7 +9,7 @@
 #include "common.h"
 #include "tar.h"
 
-static int copy_data(struct archive* ar, struct archive* aw)
+static inline int copy_data(struct archive* ar, struct archive* aw)
 {
     int r;
     const void *buff;
@@ -63,7 +63,7 @@ void extract(const struct MemoryStruct* tar, const char* outputdir)
     archive_write_disk_set_options(ext, flags);
     archive_write_disk_set_standard_lookup(ext);
 
-    if ((r = archive_read_open_memory(a, tar->memory, tar->size))) return;
+    if (archive_read_open_memory(a, tar->memory, tar->size)) return;
 
     for (;;)
     {

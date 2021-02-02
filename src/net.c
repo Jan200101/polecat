@@ -10,7 +10,7 @@
 #include "net.h"
 #include "common.h"
 
-static size_t memoryCallback(void* contents, size_t size, size_t nmemb, void* userp)
+static inline size_t memoryCallback(void* contents, size_t size, size_t nmemb, void* userp)
 {
     size_t realsize = size * nmemb;
     struct MemoryStruct* mem = (struct MemoryStruct*)userp;
@@ -30,7 +30,7 @@ static size_t memoryCallback(void* contents, size_t size, size_t nmemb, void* us
     return realsize;
 }
 
-static int xferinfo(UNUSED void *p, curl_off_t dltotal, curl_off_t dlnow, UNUSED curl_off_t ultotal, UNUSED curl_off_t ulnow)
+static inline int xferinfo(UNUSED void *p, curl_off_t dltotal, curl_off_t dlnow, UNUSED curl_off_t ultotal, UNUSED curl_off_t ulnow)
 {
     curl_off_t progress = 0;
     if (dltotal != 0)
@@ -99,6 +99,25 @@ struct MemoryStruct* downloadToRam(const char* URL, long noprogress)
     return chunk;
 }
 
+void downloadToFile(const char* URL, const char* path)
+{
+    struct MemoryStruct* chunk = downloadToRam(URL, 1L);
+
+    if (chunk)
+    {
+        FILE* fp = fopen(path, "wb");
+
+        if (fp)
+        {
+            fwrite(chunk->memory, sizeof(uint8_t), chunk->size, fp);
+            fclose(fp);
+        }
+
+        free(chunk->memory);
+        free(chunk);
+    }
+}
+
 struct json_object* fetchJSON(const char* URL)
 {
     struct MemoryStruct* chunk = downloadToRam(URL, 1L);
@@ -111,7 +130,6 @@ struct json_object* fetchJSON(const char* URL)
 
         free(chunk->memory);
         free(chunk);
-
     }
 
     return json;

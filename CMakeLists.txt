@@ -16,10 +16,10 @@ message(STATUS "Version: ${CMAKE_PROJECT_VERSION}")
 set(FILES common config dxvk lutris main net tar wine)
 
 foreach(FILE ${FILES})
-	set(SOURCES ${SOURCES} ${CMAKE_CURRENT_LIST_DIR}/src/${FILE}.c ${CMAKE_CURRENT_LIST_DIR}/src/${FILE}.h)
+	set(SOURCES ${SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/src/${FILE}.c ${CMAKE_CURRENT_SOURCE_DIR}/src/${FILE}.h)
 endforeach()
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 find_package(Libcurl REQUIRED)
 find_package(JsonC REQUIRED)

@@ -70,14 +70,15 @@ COMMAND(dxvk, download)
                     fprintf(stderr, "Extracting %s\n", name);
                     extract(archive, dxvkdir);
                     fprintf(stderr, "Done\n");
+
+                    free(archive->memory);
+                    free(archive);
                 }
                 else
                 {
                     fprintf(stderr, "Something went wrong. The archive went missing\n");
                 }
 
-                free(archive->memory);
-                free(archive);
             }
             else
             {

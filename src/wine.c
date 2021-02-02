@@ -76,14 +76,15 @@ COMMAND(wine, download)
                         fprintf(stderr, "Extracting %s\n", name);
                         extract(archive, winedir);
                         fprintf(stderr, "Done\n");
+
+                        free(archive->memory);
+                        free(archive);
                     }
                     else
                     {
                         fprintf(stderr, "Something went wrong. The archive went missing\n");
                     }
 
-                    free(archive->memory);
-                    free(archive);
                 }
                 else
                 {
@@ -397,6 +398,8 @@ enum wine_type_t check_wine_ver(char* winepath, size_t size)
             free(winepathcopy);
             return WINE_PROTON;
         }
+
+        free(winepathcopy);
     }
     else
     {
