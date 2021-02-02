@@ -97,7 +97,7 @@ struct directive_t {
 };
 
 struct file_t {
-    char* filename;
+    char* name;
     char* url;
 };
 

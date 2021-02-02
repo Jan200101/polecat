@@ -52,24 +52,19 @@ COMMAND(lutris, install)
     if (argc == 2)
     {
         struct script_t installer = lutris_getInstaller(argv[1]);
-        int inp;
 
         if (installer.error == NONE)
         {
-            struct MemoryStruct** files = NULL;
-
             printf("Install %s - %s to the current directory?\nThis may download files and install wine versions\n(y/n)\n", installer.name, installer.version);
 
-            if ((inp = getchar()) == 'y')
+            if (getchar() == 'y')
             {
                 // fetch all files required by installer
-                // TODO: think about storing files on disk for larger files
-                files = malloc( installer.filecount * sizeof(void*) );
                 for (size_t i = 0; i < installer.filecount; ++i)
                 {
                     char* filename = basename(installer.files[i]->url);
                     printf("Dowloading %s...\n", filename);
-                    files[i] = downloadToRam(installer.files[i]->url, 0L);
+                    downloadToFile(installer.files[i]->url, filename);
                 }
 
 
@@ -127,15 +122,6 @@ COMMAND(lutris, install)
                             break;
                     }
                 }
-
-                // cleanup all files kept in memory
-                for (size_t i = 0; i < installer.filecount; ++i)
-                {
-                    free(files[i]->memory);
-                    free(files[i]);
-                }
-
-                free(files);
             }
         }
         else
@@ -187,7 +173,7 @@ COMMAND(lutris, info)
                 puts("\nFiles:");
                 for (size_t i = 0; i < installer.filecount; ++i)
                 {
-                    printf("\t%s ->%s\n", installer.files[i]->filename, installer.files[i]->url);
+                    printf("\t%s -> %s\n", installer.files[i]->name, installer.files[i]->url);
                 }
             }
 
@@ -325,8 +311,10 @@ struct script_t lutris_getInstaller(char* installername)
                     if (json_object_object_get_ex(script, "files", &files))
                     {
                         installer.filecount = json_object_array_length(files);
+                        installer.variablecount = installer.filecount;
  
                         installer.files = malloc(installer.filecount * sizeof(void*));
+                        installer.variables = malloc(installer.variablecount * sizeof(void*));
                         for (size_t i = 0; i < installer.filecount; ++i)
                         {
                             struct json_object* file = json_object_array_get_idx(files, i);
@@ -336,8 +324,8 @@ struct script_t lutris_getInstaller(char* installername)
 
                             {
                                 size_t namelen = strlen((char*)entry->k);
-                                installer.files[i]->filename = malloc(namelen * sizeof(char) +1);
-                                strcpy(installer.files[i]->filename, (char*)entry->k);
+                                installer.files[i]->name = malloc(namelen * sizeof(char) +1);
+                                strcpy(installer.files[i]->name, (char*)entry->k);
                             }
 
                             const char* urlstr;
@@ -359,6 +347,12 @@ struct script_t lutris_getInstaller(char* installername)
                                 installer.files[i]->url = malloc(urllen * sizeof(char) +1);
                                 strcpy(installer.files[i]->url, urlstr);
                             }
+
+                            installer.variables[i] = malloc(sizeof(struct list_t));
+                            installer.variables[i]->key = installer.files[i]->name;
+                            installer.variables[i]->type = value_string;
+                            installer.variables[i]->value.str = basename(installer.files[i]->url);
+
                         }
                     }
 
@@ -541,11 +535,20 @@ void lutris_freeInstaller(struct script_t* installer)
         {
             for (size_t i = 0; i < installer->filecount; ++i)
             {
-                free(installer->files[i]->filename);
+                free(installer->files[i]->name);
                 free(installer->files[i]->url);
                 free(installer->files[i]);
             }
             free(installer->files);
+        }
+
+        if (installer->variables)
+        {
+            for (size_t i = 0; i < installer->variablecount; ++i)
+            {
+                free(installer->variables[i]);
+            }
+            free(installer->variables);
         }
     }
 }
