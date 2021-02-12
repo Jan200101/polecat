@@ -6,7 +6,7 @@
 
 #define VARIABLESIGN '$'
 
-enum keyword {
+enum keyword_t {
     MOVE = 0,
     MERGE,
     EXTRACT,
@@ -39,7 +39,7 @@ static const char keywordstr[KEYWORDMAX][0xF] = {
     "task",
 };
 
-enum task {
+enum task_t {
     WINEEXEC = 0,
     WINETRICKS,
     CREATE_PREFIX,
@@ -90,8 +90,8 @@ enum errors {
 };
 
 struct directive_t {
-    enum keyword command;
-    enum task task;
+    enum keyword_t command;
+    enum task_t task;
     char** arguments;
     size_t size;
 };
@@ -150,6 +150,6 @@ void lutris_getInstallerURL(char*, char*, size_t);
 struct script_t lutris_getInstaller(char*);
 void lutris_freeInstaller(struct script_t*);
 
-size_t parseVar(char**, struct list_t*, size_t);
+size_t parseVar(char**, struct list_t**, size_t);
 
 #endif

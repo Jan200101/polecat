@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include <linux/limits.h>
 #include <libgen.h>
 
@@ -11,38 +12,16 @@
 static const struct Command lutris_commands[] = {
 #ifdef DEBUG
     { .name = "install", .func = lutris_install, .description = "install a lutris script" },
-    { .name = "debug",   .func = lutris_debug,   .description = "" },
 #endif
     { .name = "info",    .func = lutris_info,    .description = "show information about a lutris script" },
 };
 
-char* func()
+
+char* getpwd()
 {
-    char* str = malloc(5);
-    strncpy(str, "FUNC", 4+1);
-
-    return str;
-}
-
-COMMAND(lutris, debug)
-{
-    struct list_t variables[] = {
-        { .key = "string",     .type = value_string,   .value.str  = "STRING" },
-        { .key = "func",       .type = value_function, .value.func = func },
-    };
-
-    char* str = malloc(255);
-
-    strcpy(str, "$string $str $func $fun");
-
-    printf("Input: %s\n", str);
-    parseVar(&str, variables, ARRAY_LEN(variables));
-    printf("Output: %s\n", str);
-
-
-    free(str);
-
-    return 0;
+    char* pwd = malloc(255);
+    pwd = getcwd(pwd, 255);
+    return pwd;
 }
 
 COMMAND_GROUP_FUNC(lutris)
@@ -55,7 +34,7 @@ COMMAND(lutris, install)
 
         if (installer.error == NONE)
         {
-            printf("Install %s - %s to the current directory?\nThis may download files and install wine versions\n(y/n)\n", installer.name, installer.version);
+            printf("Install %s - %s to the current directory? (y/n)\n", installer.name, installer.version);
 
             if (getchar() == 'y')
             {
@@ -63,8 +42,15 @@ COMMAND(lutris, install)
                 for (size_t i = 0; i < installer.filecount; ++i)
                 {
                     char* filename = basename(installer.files[i]->url);
-                    printf("Dowloading %s...\n", filename);
-                    downloadToFile(installer.files[i]->url, filename);
+                    if (isFile(filename))
+                    {
+                        printf("%s found. Not Downloading\n", filename);
+                    }
+                    else
+                    {
+                        printf("Dowloading %s\n", filename);
+                        downloadToFile(installer.files[i]->url, filename, 1);
+                    }
                 }
 
 
@@ -102,7 +88,12 @@ COMMAND(lutris, install)
                             break;
 
                         case INPUT_MENU:
-                            // TODO
+                            installer.variablecount++;
+                            installer.variables = realloc(installer.variables, installer.variablecount * sizeof(void*));
+                            installer.variables[installer.variablecount-1] = malloc(sizeof(struct list_t));
+                            installer.variables[installer.variablecount-1]->key = installer.directives[i]->arguments[0];
+                            installer.variables[installer.variablecount-1]->type = value_string;
+                            installer.variables[installer.variablecount-1]->value.str = installer.directives[i]->arguments[1];
                             break;
 
                         case INSERT_DISC:
@@ -110,7 +101,42 @@ COMMAND(lutris, install)
                             break;
 
                         case TASK:
-                            // TODO
+
+                            parseVar(&installer.directives[i]->arguments[0], installer.variables, installer.variablecount);
+                            setenv("WINEPREFIX", installer.directives[i]->arguments[0], 1);
+                            switch(installer.directives[i]->task)
+                            {
+                                case WINEEXEC:
+                                    printf("WINEEXEC\n");
+                                    break;
+
+                                case WINETRICKS:
+                                    printf("WINETRICKS\n");
+                                    break;
+
+                                case CREATE_PREFIX:
+                                    printf("CREATE_PREFIX\n");
+                                    setenv("WINEDEBUG", "-all", 1);
+                                    system("wineboot");
+                                    unsetenv("WINEDEBUG");
+                                    break;
+
+                                case SET_REGEDIT:
+                                    printf("SET_REGEDIT\n");
+                                    break;
+
+                                case WINEKILL:
+                                    printf("WINEKILL\n");
+                                    break;
+
+                                case TASKKEYWORDMAX:
+                                case NO_TASK:
+                                    break;
+
+                                case UNKNOWN_TASK:
+                                    printf("Unknown Task\n");
+                                    break;
+                            }
                             break;
 
                         case UNKNOWN_DIRECTIVE:
@@ -167,6 +193,30 @@ COMMAND(lutris, info)
 
             if (installer.description) puts(installer.description);
             if (installer.notes) puts(installer.notes);
+
+
+            if (installer.variablecount)
+            {
+                puts("\nVariables:");
+                for (size_t i = 0; i < installer.variablecount; ++i)
+                {
+                    printf("\t%s -> ", installer.variables[i]->key);
+                    switch (installer.variables[i]->type)
+                    {
+                        case value_function:
+                            {
+                                char* out = installer.variables[i]->value.func();
+                                puts(out);
+                                free(out);
+                            }
+                            break;
+
+                        case value_string:
+                            puts(installer.variables[i]->value.str);
+                            break;
+                    }
+                }
+            }
 
             if (installer.filecount)
             {
@@ -276,7 +326,7 @@ struct script_t lutris_getInstaller(char* installername)
                         {
                             if(!strcmp(runnerstr, runnerStr[i]))
                             {
-                                installer.runner = i;
+                                installer.runner = (enum runner_t)i;
                                 break;
                             }
                         }
@@ -311,7 +361,8 @@ struct script_t lutris_getInstaller(char* installername)
                     if (json_object_object_get_ex(script, "files", &files))
                     {
                         installer.filecount = json_object_array_length(files);
-                        installer.variablecount = installer.filecount;
+                        // we need to assign variables for all files and for the GAMEDIR
+                        installer.variablecount = installer.filecount + 1;
  
                         installer.files = malloc(installer.filecount * sizeof(void*));
                         installer.variables = malloc(installer.variablecount * sizeof(void*));
@@ -352,8 +403,12 @@ struct script_t lutris_getInstaller(char* installername)
                             installer.variables[i]->key = installer.files[i]->name;
                             installer.variables[i]->type = value_string;
                             installer.variables[i]->value.str = basename(installer.files[i]->url);
-
                         }
+
+                        installer.variables[installer.variablecount-1] = malloc(sizeof(struct list_t));
+                        installer.variables[installer.variablecount-1]->key = "GAMEDIR";
+                        installer.variables[installer.variablecount-1]->type = value_function;
+                        installer.variables[installer.variablecount-1]->value.func = getpwd;
                     }
 
                     if (json_object_object_get_ex(script, "installer", &scriptinstall))
@@ -392,6 +447,7 @@ struct script_t lutris_getInstaller(char* installername)
                                             break;
 
                                         case CHMODX:
+                                            options[0] = directive;
                                             installer.directives[i]->size = 1;
                                             break;
 
@@ -442,13 +498,14 @@ struct script_t lutris_getInstaller(char* installername)
                                                     switch(k)
                                                     {
                                                         case WINEEXEC:
-                                                            json_object_object_get_ex(directive, "executable", &options[1]);
-                                                            installer.directives[i]->size = 1;
+                                                            json_object_object_get_ex(directive, "prefix", &options[1]);
+                                                            json_object_object_get_ex(directive, "executable", &options[2]);
+                                                            installer.directives[i]->size = 2;
                                                             break;
 
                                                         case WINETRICKS:
-                                                            json_object_object_get_ex(directive, "app", &options[1]);
-                                                            json_object_object_get_ex(directive, "prefix", &options[2]);
+                                                            json_object_object_get_ex(directive, "prefix", &options[1]);
+                                                            json_object_object_get_ex(directive, "app", &options[2]);
                                                             installer.directives[i]->size = 2;
                                                             break;
 
@@ -459,19 +516,20 @@ struct script_t lutris_getInstaller(char* installername)
                                                             break;
 
                                                         case SET_REGEDIT:
-                                                            json_object_object_get_ex(directive, "path", &options[1]);
-                                                            json_object_object_get_ex(directive, "key", &options[2]);
-                                                            json_object_object_get_ex(directive, "value", &options[3]);
-                                                            installer.directives[i]->size = 3;
+                                                            json_object_object_get_ex(directive, "prefix", &options[1]);
+                                                            json_object_object_get_ex(directive, "path", &options[2]);
+                                                            json_object_object_get_ex(directive, "key", &options[3]);
+                                                            json_object_object_get_ex(directive, "value", &options[4]);
+                                                            installer.directives[i]->size = 4;
                                                             break;
                                                     }
-                                                    installer.directives[i]->task = k;
+                                                    installer.directives[i]->task = (enum task_t)k;
                                                     break;
                                                 }
                                             }
                                             break;
                                     }
-                                    installer.directives[i]->command = l;
+                                    installer.directives[i]->command = (enum keyword_t)l;
 
                                     const char* str;
                                     uint8_t offset = 0;
@@ -553,7 +611,7 @@ void lutris_freeInstaller(struct script_t* installer)
     }
 }
 
-size_t parseVar(char** pvar, struct list_t* variables, size_t variable_count)
+size_t parseVar(char** pvar, struct list_t** variables, size_t variable_count)
 {
     char* var = *pvar;
     char* head = var;
@@ -593,21 +651,22 @@ size_t parseVar(char** pvar, struct list_t* variables, size_t variable_count)
             if (keylen > 0)
             {
                 // resolve variable key and store it
-                buf = malloc(keylen);
-                strncpy(buf, head, keylen);
+                buf = malloc(keylen+1);
+                strncpy(buf, head, keylen+1);
+                buf[keylen] = '\0';
                 for (size_t i = 0; i < variable_count; ++i)
                 {
-                    if (strncmp(variables[i].key, buf, keylen+1) == 0)
+                    if (strncmp(variables[i]->key, buf, keylen+1) == 0)
                     {
-                        switch (variables[i].type)
+                        switch (variables[i]->type)
                         {
                             case value_string:
-                                value = malloc(strlen(variables[i].value.str) + 1);
-                                strncpy(value, variables[i].value.str, strlen(variables[i].value.str) + 1);
+                                value = malloc(strlen(variables[i]->value.str) + 1);
+                                strncpy(value, variables[i]->value.str, strlen(variables[i]->value.str) + 1);
                                 break;
 
                             case value_function:
-                                value = variables[i].value.func();
+                                value = variables[i]->value.func();
                                 break;
 
                             default:

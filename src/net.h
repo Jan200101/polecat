@@ -7,8 +7,8 @@
 #define TIMEOPT CURLINFO_TOTAL_TIME_T
 
 size_t WriteMemoryCallback(void*, size_t, size_t, void*);
-struct MemoryStruct* downloadToRam(const char* URL, long);
-void downloadToFile(const char*, const char*);
+struct MemoryStruct* downloadToRam(const char* URL, int);
+void downloadToFile(const char*, const char*, int);
 struct json_object* fetchJSON(const char*);
 
 #endif

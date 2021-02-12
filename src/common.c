@@ -1,7 +1,5 @@
-
 #include <stdio.h>
 #include <string.h>
-#include <stdbool.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -39,14 +37,14 @@ struct stat getStat(const char* path)
     return sb;
 }
 
-bool isFile(const char* path)
+int isFile(const char* path)
 {
     struct stat sb = getStat(path);
 
     return S_ISREG(sb.st_mode) || S_ISLNK(sb.st_mode);
 }
 
-bool isDir(const char* path)
+int isDir(const char* path)
 {
     struct stat sb = getStat(path);
 

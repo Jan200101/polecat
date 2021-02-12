@@ -43,13 +43,13 @@ static inline int xferinfo(UNUSED void *p, curl_off_t dltotal, curl_off_t dlnow,
     return 0;
 }
 
-struct MemoryStruct* downloadToRam(const char* URL, long noprogress)
+struct MemoryStruct* downloadToRam(const char* URL, int progress)
 {
     CURL* curl_handle;
     CURLcode res = CURLE_OK;
 
     if (!isatty(STDERR_FILENO))
-        noprogress = 1L;
+        progress = 0;
 
     struct MemoryStruct* chunk = malloc(sizeof(struct MemoryStruct));
 
@@ -69,7 +69,7 @@ struct MemoryStruct* downloadToRam(const char* URL, long noprogress)
         curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, USER_AGENT);
         curl_easy_setopt(curl_handle, CURLOPT_FOLLOWLOCATION, 1L);
         curl_easy_setopt(curl_handle, CURLOPT_XFERINFOFUNCTION, xferinfo);
-        curl_easy_setopt(curl_handle, CURLOPT_NOPROGRESS, noprogress);
+        curl_easy_setopt(curl_handle, CURLOPT_NOPROGRESS, !progress);
 
         res = curl_easy_perform(curl_handle);
 
@@ -99,9 +99,9 @@ struct MemoryStruct* downloadToRam(const char* URL, long noprogress)
     return chunk;
 }
 
-void downloadToFile(const char* URL, const char* path)
+void downloadToFile(const char* URL, const char* path, int progress)
 {
-    struct MemoryStruct* chunk = downloadToRam(URL, 1L);
+    struct MemoryStruct* chunk = downloadToRam(URL, progress);
 
     if (chunk)
     {
@@ -120,7 +120,7 @@ void downloadToFile(const char* URL, const char* path)
 
 struct json_object* fetchJSON(const char* URL)
 {
-    struct MemoryStruct* chunk = downloadToRam(URL, 1L);
+    struct MemoryStruct* chunk = downloadToRam(URL, 0);
 
     struct json_object* json = NULL;
 

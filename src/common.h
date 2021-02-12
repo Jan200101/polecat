@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <stdbool.h>
 #include <sys/stat.h>
 
 #define ARRAY_LEN(arr) sizeof(arr) / sizeof(arr[0])
@@ -63,8 +62,8 @@ struct Command {
 void print_help(const struct Command*, size_t);
 
 struct stat getStat(const char* path);
-bool isFile(const char*);
-bool isDir(const char*);
+int isFile(const char*);
+int isDir(const char*);
 
 int makeDir(const char* path);
 int removeDir(const char *path);

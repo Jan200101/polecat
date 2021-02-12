@@ -1,7 +1,6 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <stdbool.h>
 #include <string.h>
 #include <json.h>
 #include <libgen.h>
@@ -36,12 +35,12 @@ COMMAND(wine, download)
         if (runner)
         {
             struct json_object* versions, *value, *temp;
-            bool found;
+            int found;
             json_object_object_get_ex(runner, "versions", &versions);
 
             for (int i = 1; i < argc; ++i)
             {
-                found = false;
+                found = 0;
                 char* choice = argv[i];
 
 
@@ -51,7 +50,7 @@ COMMAND(wine, download)
                     json_object_object_get_ex(value, "version", &temp);
                     if (strcmp(json_object_get_string(temp), choice) == 0)
                     {
-                        found = true;
+                        found = 1;
                         break;
                     }
                 }
@@ -70,7 +69,7 @@ COMMAND(wine, download)
                     
                     fprintf(stderr, "Downloading %s...\n", name);
 
-                    archive = downloadToRam(json_object_get_string(temp), 0L);
+                    archive = downloadToRam(json_object_get_string(temp), 1);
                     if (archive)
                     {
                         fprintf(stderr, "Extracting %s\n", name);
@@ -282,7 +281,7 @@ COMMAND(wine, env)
     if (argc > 1)
     {
         // instead of creating redundant copies we just check for fish
-        bool fish_env = (strcmp(argv[0], "fish-env") == 0);
+        int fish_env = (strcmp(argv[0], "fish-env") == 0);
 
         char winepath[PATH_MAX];
         char* winebinloc = NULL; // to be set by the wine type check
