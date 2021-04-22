@@ -5,14 +5,13 @@
 #include <unistd.h>
 #include <linux/limits.h>
 #include <libgen.h>
-
 #include "lutris.h"
 #include "net.h"
 
 static const struct Command lutris_commands[] = {
-#ifdef DEBUG
+    { .name = "search",  .func = lutris_search,  .description = "search for lutris installers" },
+    { .name = "list",    .func = lutris_list,    .description = "list installers for a game"},
     { .name = "install", .func = lutris_install, .description = "install a lutris script" },
-#endif
     { .name = "info",    .func = lutris_info,    .description = "show information about a lutris script" },
 };
 
@@ -26,6 +25,106 @@ char* getpwd()
 
 COMMAND_GROUP_FUNC(lutris)
 
+COMMAND(lutris, search)
+{
+    if (argc == 2 && argv[1][0] != '\0')
+    {
+        // argv being modifyable is not always a given so lets
+        // lets make a mutable copy
+        char* str = strdup(argv[1]);
+        // in the case we need to do replacing we allocate more
+        // since we'll free in anyway
+        size_t allocsize = strlen(str) * 2;
+        str = realloc(str, allocsize);
+        lutris_escapeString(str, allocsize);
+        char* url = malloc(strlen(GAME_SEARCH_API) + strlen(str));
+        sprintf(url, GAME_SEARCH_API, str);
+
+        struct json_object* queryresult = fetchJSON(url);
+        free(str);
+        free(url);
+
+        if (queryresult)
+        {
+            struct json_object* searchresults;
+            json_object_object_get_ex(queryresult, "results", &searchresults);
+            if (searchresults)
+            {
+                struct json_object* values[2];
+                size_t arrlen = json_object_array_length(searchresults);
+
+                for (size_t i = 0; i < arrlen; ++i)
+                {
+                    struct json_object* entry = json_object_array_get_idx(searchresults, i);
+                    json_object_object_get_ex(entry, "name", &values[0]);
+                    json_object_object_get_ex(entry, "slug", &values[1]);
+
+                    printf("%s - %s\n", json_object_get_string(values[0]), json_object_get_string(values[1]));
+                }
+            }
+
+            json_object_put(queryresult);
+        }
+    }
+    else
+    {
+        puts(USAGE_STR " lutris search <text>\nSearch for games and list their slug");
+    }
+
+    return 0;
+}
+
+COMMAND(lutris, list)
+{
+    if (argc == 2)
+    {
+        // argv being modifyable is not always a given so lets
+        // lets make a mutable copy
+        char* str = strdup(argv[1]);
+        // in the case we need to do replacing we allocate more
+        // since we'll free in anyway
+        size_t allocsize = strlen(str) * 2;
+        str = realloc(str, allocsize);
+        lutris_escapeString(str, allocsize);
+        char* url = malloc(strlen(GAME_INSTALLER_API) + strlen(str));
+        sprintf(url, GAME_INSTALLER_API, str);
+
+        struct json_object* queryresult = fetchJSON(url);
+        free(str);
+        free(url);
+
+        if (queryresult)
+        {
+            struct json_object* installers;
+            json_object_object_get_ex(queryresult, "installers", &installers);
+            if (installers)
+            {
+                struct json_object* values[4];
+                size_t arrlen = json_object_array_length(installers);
+
+                for (size_t i = 0; i < arrlen; ++i)
+                {
+                    struct json_object* entry = json_object_array_get_idx(installers, i);
+                    json_object_object_get_ex(entry, "slug", &values[0]);
+                    json_object_object_get_ex(entry, "runner", &values[1]);
+                    json_object_object_get_ex(entry, "name", &values[2]);
+                    json_object_object_get_ex(entry, "version", &values[3]);
+
+                    printf("%s - (%s) %s %s\n", json_object_get_string(values[0]), json_object_get_string(values[1]), json_object_get_string(values[2]), json_object_get_string(values[3]));
+                }
+            }
+
+            json_object_put(queryresult);
+        }
+    }
+    else
+    {
+        puts(USAGE_STR " lutris list <slug>\nList game installers");
+    }
+
+    return 0;
+}
+
 COMMAND(lutris, install)
 {
     if (argc == 2)
@@ -34,9 +133,10 @@ COMMAND(lutris, install)
 
         if (installer.error == NONE)
         {
-            printf("Install %s - %s to the current directory? (y/n)\n", installer.name, installer.version);
+            printf("Install %s - %s to the current directory?\n\nNOTE:\tpolecat will use the wine that is on your path\n\t\tit is suggested to install the right wine version\n\t\tand use `wine env` to put it on the path\n\n(y/N)\n", installer.name, installer.version);
 
-            if (getchar() == 'y')
+            int inp = getchar();
+            if (inp == 'y' || inp == 'Y')
             {
                 // fetch all files required by installer
                 for (size_t i = 0; i < installer.filecount; ++i)
@@ -183,7 +283,8 @@ COMMAND(lutris, info)
     if (argc == 2)
     {
         struct script_t installer = lutris_getInstaller(argv[1]);
-        if (installer.error > NO_JSON || installer.error == NONE)
+
+        if (installer.error > NO_SLUG || installer.error == NONE)
         {
 
             printf("[%s]", runnerStr[installer.runner]);
@@ -262,10 +363,54 @@ COMMAND(lutris, info)
 
 COMMAND_HELP(lutris, " lutris")
 
-void lutris_getInstallerURL(char* buffer, char* name, size_t size)
+void lutris_escapeString(char* str, size_t size)
 {
-        strncpy(buffer, INSTALLER_API, size);
-        strncat(buffer, name, size - strlen(buffer));
+    char* tail = str + size;
+
+    while (str != tail)
+    {
+        switch (*str)
+        {
+            // from rfc3986 https://tools.ietf.org/html/rfc3986#page-13
+            // we generally don't want delimiters
+            // so we strip them if found
+            case ':':
+            case '/':
+            case '?':
+            case '#':
+            case '[':
+            case ']':
+            case '@':
+            case '!':
+            case '$':
+            case '&':
+            case '\'':
+            case '(':
+            case ')':
+            case '*':
+            case '+':
+            case ',':
+            case ';':
+            case '=':
+                // since dest and src overlap we need a non overlapping solution
+                memmove(str, str+1, (size_t)(tail-str-1));
+                break;
+
+            case ' ':
+                // spaces are special and need to be encoded
+                memmove(str+3, str+1, (size_t)(tail-str-3));
+                str[0] = '%';
+                str[1] = '2';
+                str[2] = '0';
+                str += 3;
+                if (str >= tail) str[3] = '\0';
+                break;
+
+            /* fallthrough */
+            default:
+                ++str;
+        }
+    }
 }
 
 struct script_t lutris_getInstaller(char* installername)
@@ -288,7 +433,8 @@ struct script_t lutris_getInstaller(char* installername)
     if (installername)
     {
         char installerurl[PATH_MAX];
-        lutris_getInstallerURL(installerurl, installername, sizeof(installerurl));
+        strncpy(installerurl, INSTALLER_API, sizeof(installerurl));
+        strncat(installerurl, installername, sizeof(installerurl) - strlen(installerurl) - 1);
 
         struct json_object* installerjson = fetchJSON(installerurl);
 
@@ -542,6 +688,9 @@ struct script_t lutris_getInstaller(char* installername)
                                     for (size_t j = 0; j < installer.directives[i]->size; ++j)
                                     {
                                         str = json_object_get_string(options[j+offset]);
+                                        // there will always be some attributes ommited
+                                        // from an installer, just replace those with an empty string
+                                        if (!str) str = "";
                                         installer.directives[i]->arguments[j] = malloc(strlen(str) * sizeof(char) +1);
                                         strcpy(installer.directives[i]->arguments[j], str);
                                     }
@@ -640,7 +789,6 @@ size_t parseVar(char** pvar, struct list_t** variables, size_t variable_count)
             tail = ++head;
             while (*tail <= 'z' && *tail >= 'A') // we ONLY accept ascii variables
             {
-
                 ++tail;
             }
 
@@ -661,8 +809,7 @@ size_t parseVar(char** pvar, struct list_t** variables, size_t variable_count)
                         switch (variables[i]->type)
                         {
                             case value_string:
-                                value = malloc(strlen(variables[i]->value.str) + 1);
-                                strncpy(value, variables[i]->value.str, strlen(variables[i]->value.str) + 1);
+                                value = strdup(variables[i]->value.str);
                                 break;
 
                             case value_function:

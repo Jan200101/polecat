@@ -139,14 +139,14 @@ struct script_t {
 
 #include "command.h"
 
-COMMAND(lutris, debug);
-
 COMMAND_GROUP(lutris);
+COMMAND(lutris, search);
+COMMAND(lutris, list);
 COMMAND(lutris, install);
 COMMAND(lutris, info);
 COMMAND(lutris, help);
 
-void lutris_getInstallerURL(char*, char*, size_t);
+void lutris_escapeString(char*, size_t);
 struct script_t lutris_getInstaller(char*);
 void lutris_freeInstaller(struct script_t*);
 

@@ -8,9 +8,15 @@
 
 #define ARRAY_LEN(arr) sizeof(arr) / sizeof(arr[0])
 
-#define WINE_API "https://lutris.net/api/runners/wine"
-#define DXVK_API "https://api.github.com/repos/lutris/dxvk/releases"
-#define INSTALLER_API "https://lutris.net/api/installers/"
+#define GITHUB_API "https://api.github.com"
+#define LUTRIS_API "https://lutris.net/api"
+#define WINE_API LUTRIS_API "/runners/wine"
+#define DXVK_API GITHUB_API"/repos/lutris/dxvk/releases"
+#define INSTALLER_API LUTRIS_API "/installers/"
+#define GAME_API LUTRIS_API "/games"
+#define GAME_SEARCH_API GAME_API "?search=%s"
+#define GAME_INSTALLER_API GAME_API "/%s/installers"
+
 
 #ifndef NAME
 #warning "no name specified, setting it to \"polecat\""
