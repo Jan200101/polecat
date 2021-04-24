@@ -34,7 +34,9 @@ COMMAND(lutris, search)
         char* str = strdup(argv[1]);
         // in the case we need to do replacing we allocate more
         // since we'll free in anyway
-        size_t allocsize = strlen(str) * 2;
+        // the smallest strlen can return is 0 the longest
+        // escapeString can return is strlen*3
+        size_t allocsize = strlen(str) * 3;
         str = realloc(str, allocsize);
         lutris_escapeString(str, allocsize);
         char* url = malloc(strlen(GAME_SEARCH_API) + strlen(str));
@@ -83,7 +85,9 @@ COMMAND(lutris, list)
         char* str = strdup(argv[1]);
         // in the case we need to do replacing we allocate more
         // since we'll free in anyway
-        size_t allocsize = strlen(str) * 2;
+        // the smallest strlen can return is 0 the longest
+        // escapeString can return is strlen*3
+        size_t allocsize = strlen(str) * 3;
         str = realloc(str, allocsize);
         lutris_escapeString(str, allocsize);
         char* url = malloc(strlen(GAME_INSTALLER_API) + strlen(str));
