@@ -9,12 +9,15 @@
 #include "net.h"
 
 static const struct Command lutris_commands[] = {
-    { .name = "search",  .func = lutris_search,  .description = "search for lutris installers" },
-    { .name = "list",    .func = lutris_list,    .description = "list installers for a game"},
-    { .name = "install", .func = lutris_install, .description = "install a lutris script" },
     { .name = "info",    .func = lutris_info,    .description = "show information about a lutris script" },
+    { .name = "install", .func = lutris_install, .description = "install a lutris script" },
+    { .name = "list",    .func = lutris_list,    .description = "list installers for a game"},
+    { .name = "search",  .func = lutris_search,  .description = "search for lutris installers" },
 };
 
+static const struct Flag lutris_flags[] = {
+    { .name = "help", .variant = DOUBLE, .func = lutris_help, .description = "show this message"}
+};
 
 char* getpwd()
 {

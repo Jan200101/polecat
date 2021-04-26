@@ -8,20 +8,59 @@
 
 #include "common.h"
 
-void print_help(const struct Command* commands, const size_t size)
+void print_help(const struct Command* commands, const size_t commands_size,
+                const struct Flag* flags, size_t flags_size)
 {
-    size_t longestCommand = 0;
+    size_t longestStr;
+    size_t length;
 
-    for (size_t i = 0; i < size; ++i)
+    if (commands_size)
     {
-        size_t commandLength = strlen(commands[i].name);
+        longestStr = 0;
 
-        if (commandLength > longestCommand) longestCommand = commandLength;
+        for (size_t i = 0; i < commands_size; ++i)
+        {
+            length = strlen(commands[i].name);
+
+            if (length > longestStr) longestStr = length;
+        }
+
+        fprintf(stderr, "\nList of commands:\n");
+        for (size_t i = 0; i < commands_size; ++i)
+        {
+            fprintf(stderr, "\t%-*s\t %s\n", (int)longestStr, commands[i].name, commands[i].description);
+        }
     }
 
-    for (size_t i = 0; i < size; ++i)
+
+    if (flags_size)
     {
-        printf("\t%-*s\t %s\n", (int)longestCommand, commands[i].name, commands[i].description);
+        longestStr = 0;
+
+        for (size_t i = 0; i < flags_size; ++i)
+        {
+            length = strlen(flags[i].name);
+
+            if (length > longestStr) longestStr = length;
+        }
+
+        fprintf(stderr, "\nList of flags:\n");
+        for (size_t i = 0; i < flags_size; ++i)
+        {
+            fprintf(stderr, "\t");
+            if (flags[i].variant & SINGLE)
+                fprintf(stderr, "-%c", flags[i].name[0]);
+            else
+                fprintf(stderr, "   ");
+
+            if (flags[i].variant & DOUBLE)
+            {
+                if (flags[i].variant & SINGLE) fprintf(stderr, ",");
+                fprintf(stderr, " --%-*s", (int)longestStr, flags[i].name);
+            }
+
+            fprintf(stderr, "\t %s\n", flags[i].description);
+        }
     }
 }
 
@@ -96,7 +135,7 @@ int removeDir(const char *path)
             if (!strcmp(p->d_name, ".") || !strcmp(p->d_name, ".."))
                 continue;
 
-            len = path_len + strlen(p->d_name) + 2; 
+            len = path_len + strlen(p->d_name) + 2;
             buf = malloc(len);
 
             if (buf) {

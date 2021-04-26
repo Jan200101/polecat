@@ -4,6 +4,7 @@
 #include "command.h"
 
 COMMAND(main, env);
+COMMAND(main, version);
 COMMAND(main, help);
 
 #endif

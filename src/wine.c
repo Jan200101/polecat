@@ -16,12 +16,16 @@
 
 static const struct Command wine_commands[] = {
     { .name = "download",       .func = wine_download,  .description = "download and extract a wine versions" },
-    { .name = "remove",         .func = wine_remove,    .description = "remove a wine version" },
-    { .name = "list",           .func = wine_list,      .description = "list installable wine versions" },
-    { .name = "run",            .func = wine_run,       .description = "run an installed wine version" },
-    { .name = "list-installed", .func = wine_installed, .description = "list already installed wine versions" },
     { .name = "env",            .func = wine_env,       .description = "add wine to your PATH in a POSIX shell"},
-    { .name = "fish-env",       .func = wine_env,       .description = "add wine to your PATH in the fish shell"},
+    { .name = "env-fish",       .func = wine_env,       .description = "add wine to your PATH in the fish shell"},
+    { .name = "list",           .func = wine_list,      .description = "list installable wine versions" },
+    { .name = "list-installed", .func = wine_installed, .description = "list already installed wine versions" },
+    { .name = "remove",         .func = wine_remove,    .description = "remove a wine version" },
+    { .name = "run",            .func = wine_run,       .description = "run an installed wine version" },
+};
+
+static const struct Flag wine_flags[] = {
+    { .name = "help", .variant = DOUBLE, .func = wine_help, .description = "show this message"}
 };
 
 COMMAND_GROUP_FUNC(wine)
@@ -281,7 +285,7 @@ COMMAND(wine, env)
     if (argc > 1)
     {
         // instead of creating redundant copies we just check for fish
-        int fish_env = (strcmp(argv[0], "fish-env") == 0);
+        int fish_env = (strcmp(argv[0], "env-fish") == 0);
 
         char winepath[PATH_MAX];
         char* winebinloc = NULL; // to be set by the wine type check

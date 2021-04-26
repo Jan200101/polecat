@@ -14,10 +14,14 @@
 
 static const struct Command dxvk_commands[] = {
     { .name = "download",       .func = dxvk_download,   .description = "download and install a dxvk version" },
-    { .name = "remove",         .func = dxvk_remove,     .description = "remove a dxvk version" },
-    { .name = "list",           .func = dxvk_list,       .description = "list available dxvk versions" },
     { .name = "install",        .func = dxvk_install,    .description = "run the DXVK installer" },
+    { .name = "list",           .func = dxvk_list,       .description = "list available dxvk versions" },
     { .name = "list-installed", .func = dxvk_installed,  .description = "list installed dxvk versions" },
+    { .name = "remove",         .func = dxvk_remove,     .description = "remove a dxvk version" },
+};
+
+static const struct Flag dxvk_flags[] = {
+    { .name = "help", .variant = DOUBLE, .func = dxvk_help, .description = "show this message"}
 };
 
 COMMAND_GROUP_FUNC(dxvk)

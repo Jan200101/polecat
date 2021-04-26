@@ -65,7 +65,20 @@ struct Command {
     char* description;
 };
 
-void print_help(const struct Command*, size_t);
+enum flag_variants {
+	SINGLE = 1,
+	DOUBLE = 2,
+	BOTH   = SINGLE + DOUBLE
+};
+
+struct Flag {
+    char* name;
+    enum flag_variants variant;
+    int (*func)(int, char**);
+    char* description;
+};
+
+void print_help(const struct Command*, size_t, const struct Flag*, size_t);
 
 struct stat getStat(const char* path);
 int isFile(const char*);

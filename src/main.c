@@ -17,6 +17,10 @@ static const struct Command main_commands[] = {
     { .name = "env",    .func = main_env,  .description = "show some information about polecat" },
 };
 
+static const struct Flag main_flags[] = {
+    { .name = "help",    .variant = DOUBLE, .func = main_help,    .description = "show this message"},
+    { .name = "version", .variant = BOTH,   .func = main_version, .description = "prints the program version"}
+};
 
 COMMAND_GROUP_FUNC(main)
 
@@ -25,10 +29,7 @@ COMMAND(main, env)
     char buffer[PATH_MAX];
 
 
-    printf("version:\t\t%s\n"
-           "user-Agent:\t\t%s\n",
-           VERSION,
-           USER_AGENT);
+    printf("user-Agent:\t\t%s\n", USER_AGENT);
 
     getConfigDir(buffer, sizeof(buffer));
     printf("config dir\t\t%s\n", buffer);
@@ -36,6 +37,13 @@ COMMAND(main, env)
     getDataDir(buffer, sizeof(buffer));
     printf("data dir\t\t%s\n", buffer);
 
+
+    return 0;
+}
+
+COMMAND(main, version)
+{
+    puts(VERSION);
 
     return 0;
 }
