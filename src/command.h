@@ -65,9 +65,9 @@
                 \
                 for (unsigned long i = 0; i < ARRAY_LEN(GROUP##_flags); ++i) \
                 { \
-                    if (GROUP##_flags[i].variant & SINGLE && argv[j][1] == GROUP##_flags[i].name[0] || \
-                        GROUP##_flags[i].variant & DOUBLE && argv[j][1] == '-' \
-                        && !strcmp(GROUP##_flags[i].name, argv[j]+2)) \
+                    if ((GROUP##_flags[i].variant & SINGLE && argv[j][1] == GROUP##_flags[i].name[0]) || \
+                        (GROUP##_flags[i].variant & DOUBLE && argv[j][1] == '-' \
+                         && !strcmp(GROUP##_flags[i].name, argv[j]+2))) \
                     { \
                       return GROUP##_flags[i].func(0, NULL); \
                     } \

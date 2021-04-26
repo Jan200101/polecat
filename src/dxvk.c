@@ -182,11 +182,14 @@ COMMAND(dxvk, install)
         {
             // quote the dxvkpath so whitespace won't cause trouble
             {
-                char dxvkpathcpy[PATH_MAX] = {0};
-                strncat(dxvkpathcpy, "\"", sizeof(dxvkpathcpy) - strlen(dxvkpathcpy) - 1);
-                strncat(dxvkpathcpy, dxvkpath, sizeof(dxvkpathcpy) - strlen(dxvkpathcpy) - 1);
-                strncat(dxvkpathcpy, "\"", sizeof(dxvkpathcpy) - strlen(dxvkpathcpy) - 1);
-                strncpy(dxvkpath, dxvkpathcpy, sizeof(dxvkpathcpy));
+                size_t size = strlen(dxvkpath) + 1;
+                if (size > sizeof(dxvkpath)) size = sizeof(dxvkpath);
+
+                memmove(dxvkpath+1, dxvkpath, size - 1);
+                dxvkpath[0] = '"';
+
+                strncat(dxvkpath, "\"", sizeof(dxvkpath) - size);
+
             }
             strncat(dxvkpath, " install", sizeof(dxvkpath) - strlen(dxvkpath) - 1);
 
