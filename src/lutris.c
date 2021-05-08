@@ -3,7 +3,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#include <linux/limits.h>
+#include <limits.h>
+#include <sys/stat.h>
 #include <libgen.h>
 #include "lutris.h"
 #include "net.h"
@@ -16,7 +17,7 @@ static const struct Command lutris_commands[] = {
 };
 
 static const struct Flag lutris_flags[] = {
-    { .name = "help", .variant = DOUBLE, .func = lutris_help, .description = "show this message"}
+    { .name = "help", .variant = TWO, .func = lutris_help, .description = "show this message"}
 };
 
 char* getpwd()
@@ -180,7 +181,7 @@ COMMAND(lutris, install)
                             // TODO
                             break;
                         case CHMODX:
-                            // TODO
+                            chmod(installer.directives[i]->arguments[0], S_IXUSR);
                             break;
                         case EXECUTE:
                             // TODO
@@ -210,7 +211,11 @@ COMMAND(lutris, install)
                         case TASK:
 
                             parseVar(&installer.directives[i]->arguments[0], installer.variables, installer.variablecount);
+                            #ifdef _WIN32
+                            #warning TODO
+                            #else
                             setenv("WINEPREFIX", installer.directives[i]->arguments[0], 1);
+                            #endif
                             switch(installer.directives[i]->task)
                             {
                                 case WINEEXEC:
@@ -223,9 +228,17 @@ COMMAND(lutris, install)
 
                                 case CREATE_PREFIX:
                                     printf("CREATE_PREFIX\n");
+                                    #ifdef _WIN32
+                                    #warning TODO
+                                    #else
                                     setenv("WINEDEBUG", "-all", 1);
+                                    #endif
                                     system("wineboot");
+                                    #ifdef _WIN32
+                                    #warning TODO
+                                    #else
                                     unsetenv("WINEDEBUG");
+                                    #endif
                                     break;
 
                                 case SET_REGEDIT:

@@ -53,6 +53,10 @@
 #define JSON_LENGTH_TYPE int
 #endif
 
+#ifdef _WIN32
+#define mkdir(path, perm) mkdir(path)
+#endif
+
 
 struct MemoryStruct {
     uint8_t* memory;
@@ -66,9 +70,9 @@ struct Command {
 };
 
 enum flag_variants {
-	SINGLE = 1,
-	DOUBLE = 2,
-	BOTH   = SINGLE + DOUBLE
+	ONE = 1 << 0,
+	TWO = 1 << 1,
+	BOTH   = ONE + TWO,
 };
 
 struct Flag {

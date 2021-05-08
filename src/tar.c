@@ -4,7 +4,7 @@
 #include <archive.h>
 #include <archive_entry.h>
 #include <fcntl.h>
-#include <linux/limits.h>
+#include <limits.h>
 
 #include "common.h"
 #include "tar.h"

@@ -4,7 +4,7 @@
 #include <json.h>
 #include <libgen.h>
 #include <unistd.h>
-#include <linux/limits.h>
+#include <limits.h>
 #include <dirent.h>
 
 #include "dxvk.h"
@@ -21,7 +21,7 @@ static const struct Command dxvk_commands[] = {
 };
 
 static const struct Flag dxvk_flags[] = {
-    { .name = "help", .variant = DOUBLE, .func = dxvk_help, .description = "show this message"}
+    { .name = "help", .variant = TWO, .func = dxvk_help, .description = "show this message"}
 };
 
 COMMAND_GROUP_FUNC(dxvk)
@@ -215,6 +215,9 @@ COMMAND(dxvk, installed)
     char dxvkdir[PATH_MAX];
     getDXVKDir(dxvkdir, sizeof(dxvkdir));
 
+    size_t dxvklen = strlen(dxvkdir)+1;
+    dxvkdir[dxvklen-1] = '/';
+
     DIR *dir;
     struct dirent *ent;
 
@@ -225,13 +228,17 @@ COMMAND(dxvk, installed)
     {
         while ((ent = readdir(dir)) != NULL)
         {
-            if (ent->d_name[0] != '.' && ent->d_type == DT_DIR)
-            {
-                if (intty) printf(" - ");
-                printf("%s\n", ent->d_name);
-            }
+            if (ent->d_name[0] == '.') continue;
+            strncat(dxvkdir, ent->d_name, sizeof(dxvkdir) - dxvklen - 1);
+            int isdirec = isDir(dxvkdir);
+            dxvkdir[dxvklen] = '\0';
+
+            if (!isdirec) continue;
+
+            if (intty) printf(" - ");
+            printf("%s\n", ent->d_name);
         }
-        closedir (dir);
+        closedir(dir);
     } 
 
     return 0;

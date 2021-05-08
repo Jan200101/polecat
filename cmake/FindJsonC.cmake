@@ -28,6 +28,7 @@ find_library(JSONC_LIB
 		ENV jsoncPath${_lib_suffix}
 		ENV jsoncPath
 		${_JSONC_LIBRARY_DIRS}
+		${_JSONC_STATIC_LIBRARY_DIRS}
 	PATHS
 		/usr/lib /usr/local/lib)
 
@@ -38,4 +39,7 @@ mark_as_advanced(JSONC_INC JSONC_LIB)
 if(JSONC_FOUND)
 	set(JSONC_INCLUDE_DIRS ${JSONC_INC})
 	set(JSONC_LIBRARIES ${JSONC_LIB})
+	if (BUILD_STATIC)
+		set(JSONC_LIBRARIES ${JSONC_LIBRARIES} ${_JSONC_STATIC_LIBRARY_DIRS})
+	endif()
 endif()

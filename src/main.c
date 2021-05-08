@@ -1,7 +1,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <linux/limits.h>
+#include <limits.h>
 
 #include "main.h"
 #include "wine.h"
@@ -11,14 +11,16 @@
 #include "config.h"
 
 static const struct Command main_commands[] = {
+#ifndef _WIN32
     { .name = "wine",   .func = wine,      .description = "manage wine versions" },
+#endif
     { .name = "dxvk",   .func = dxvk,      .description = "manage DXVK versions" },
     { .name = "lutris", .func = lutris,    .description = "run lutris instraller"},
     { .name = "env",    .func = main_env,  .description = "show some information about polecat" },
 };
 
 static const struct Flag main_flags[] = {
-    { .name = "help",    .variant = DOUBLE, .func = main_help,    .description = "show this message"},
+    { .name = "help",    .variant = TWO,    .func = main_help,    .description = "show this message"},
     { .name = "version", .variant = BOTH,   .func = main_version, .description = "prints the program version"}
 };
 

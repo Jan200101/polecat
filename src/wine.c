@@ -25,7 +25,7 @@ static const struct Command wine_commands[] = {
 };
 
 static const struct Flag wine_flags[] = {
-    { .name = "help", .variant = DOUBLE, .func = wine_help, .description = "show this message"}
+    { .name = "help", .variant = TWO, .func = wine_help, .description = "show this message"}
 };
 
 COMMAND_GROUP_FUNC(wine)
@@ -257,6 +257,9 @@ COMMAND(wine, installed)
     char winedir[PATH_MAX];
     getWineDir(winedir, sizeof(winedir));
 
+    size_t winelen = strlen(winedir)+1;
+    winedir[winelen-1] = '/';
+
     DIR *dir;
     struct dirent *ent;
 
@@ -268,13 +271,17 @@ COMMAND(wine, installed)
     {
         while ((ent = readdir (dir)) != NULL)
         {
-            if (ent->d_name[0] != '.' && ent->d_type == DT_DIR)
-            {
-                if (intty) printf(" - ");
-                printf("%s\n", ent->d_name);
-            }
+            if (ent->d_name[0] == '.') continue;
+            strncat(winedir, ent->d_name, sizeof(winedir) - winelen - 1);
+            int isdirec = isDir(winedir);
+            winedir[winelen] = '\0';
+
+            if (!isdirec) continue;
+
+            if (intty) printf(" - ");
+            printf("%s\n", ent->d_name);
         }
-        closedir (dir);
+        closedir(dir);
     } 
 
     return 0;

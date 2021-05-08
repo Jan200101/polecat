@@ -8,6 +8,12 @@
 #include "config.h"
 #include "common.h"
 
+#ifdef _WIN32
+#define HOMEVAR "USERPROFILE"
+#else
+#define HOMEVAR "HOME"
+#endif
+
 static void getXDGDir(const char* envvar, const char* homeext, char* config, const size_t size)
 {
     char* xdg_var = getenv(envvar);
@@ -18,7 +24,8 @@ static void getXDGDir(const char* envvar, const char* homeext, char* config, con
     }
     else
     {
-        char* home = getenv("HOME");
+        char* home = getenv(HOMEVAR);
+        if (!home) home = "";
         strncpy(config, home, size);
         strncat(config, homeext, size - strlen(config));
     }

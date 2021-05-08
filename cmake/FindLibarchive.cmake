@@ -16,18 +16,19 @@ endif()
 find_path(LIBARCHIVE_INC
 	NAMES archive.h archive_entry.h
 	HINTS
-		ENV libarcguvePath${_lib_suffix}
-		ENV libarcguvePath
-		${_JSONC_INCLUDE_DIRS}
+		ENV libarchivePath${_lib_suffix}
+		ENV libarchivePath
+		${_LIBARCHIVE_INCLUDE_DIRS}
 	PATHS
 		/usr/include /usr/local/include)
 
 find_library(LIBARCHIVE_LIB
 	NAMES ${_LIBARCHIVE_LIBRARIES} archive
 	HINTS
-		ENV libarcguvePath${_lib_suffix}
-		ENV libarcguvePath
+		ENV libarchivePath${_lib_suffix}
+		ENV libarchivePath
 		${_LIBARCHIVE_LIBRARY_DIRS}
+		${_LIBARCHIVE_STATIC_LIBRARY_DIRS}
 	PATHS
 		/usr/lib /usr/local/lib)
 
@@ -38,4 +39,7 @@ mark_as_advanced(LIBARCHIVE_INC LIBARCHIVE_LIB)
 if(LIBARCHIVE_FOUND)
 	set(LIBARCHIVE_INCLUDE_DIRS ${LIBARCHIVE_INC})
 	set(LIBARCHIVE_LIBRARIES ${LIBARCHIVE_LIB})
+	if (BUILD_STATIC)
+		set(LIBARCHIVE_LIBRARIES ${LIBARCHIVE_LIBRARIES} ${_LIBARCHIVE_STATIC_LIBRARIES})
+	endif()
 endif()

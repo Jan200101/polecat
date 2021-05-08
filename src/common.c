@@ -48,14 +48,14 @@ void print_help(const struct Command* commands, const size_t commands_size,
         for (size_t i = 0; i < flags_size; ++i)
         {
             fprintf(stderr, "\t");
-            if (flags[i].variant & SINGLE)
+            if (flags[i].variant & ONE)
                 fprintf(stderr, "-%c", flags[i].name[0]);
             else
                 fprintf(stderr, "   ");
 
-            if (flags[i].variant & DOUBLE)
+            if (flags[i].variant & TWO)
             {
-                if (flags[i].variant & SINGLE) fprintf(stderr, ",");
+                if (flags[i].variant & ONE) fprintf(stderr, ",");
                 fprintf(stderr, " --%-*s", (int)longestStr, flags[i].name);
             }
 
@@ -80,14 +80,22 @@ int isFile(const char* path)
 {
     struct stat sb = getStat(path);
 
-    return S_ISREG(sb.st_mode) || S_ISLNK(sb.st_mode);
+    return S_ISREG(sb.st_mode)
+#ifndef _WIN32
+           || S_ISLNK(sb.st_mode)
+#endif
+            ;
 }
 
 int isDir(const char* path)
 {
     struct stat sb = getStat(path);
 
-    return S_ISDIR(sb.st_mode) || S_ISLNK(sb.st_mode);
+    return S_ISDIR(sb.st_mode)
+#ifndef _WIN32
+           || S_ISLNK(sb.st_mode)
+#endif
+            ;
 }
 
 int makeDir(const char* path)
@@ -145,8 +153,10 @@ int removeDir(const char *path)
                 if (!stat(buf, &statbuf)) {
                     if (S_ISDIR(statbuf.st_mode))
                         r = removeDir(buf);
+#ifndef _WIN32
                     else if (S_ISLNK(statbuf.st_mode))
                         r = unlink(buf);
+#endif
                     else
                         r = remove(buf);
                 }

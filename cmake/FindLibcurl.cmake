@@ -4,7 +4,7 @@
 
 find_package(PkgConfig QUIET)
 if (PKG_CONFIG_FOUND)
-	pkg_check_modules(_CURL QUIET curl)
+	pkg_check_modules(_CURL REQUIRED QUIET libcurl)
 endif()
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -28,6 +28,7 @@ find_library(CURL_LIB
 		ENV curlPath${_lib_suffix}
 		ENV curlPath
 		${_CURL_LIBRARY_DIRS}
+		${_CURL_STATIC_LIBRARY_DIRS}
 	PATHS
 		/usr/lib /usr/local/lib)
 
@@ -38,4 +39,8 @@ mark_as_advanced(CURL_INC CURL_LIB)
 if(LIBCURL_FOUND)
 	set(LIBCURL_INCLUDE_DIRS ${CURL_INC})
 	set(LIBCURL_LIBRARIES ${CURL_LIB})
+	if (BUILD_STATIC)
+		set(LIBCURL_LIBRARIES ${LIBCURL_LIBRARIES} ${_CURL_STATIC_LIBRARIES})
+		add_compile_definitions(CURL_STATICLIB)
+	endif()
 endif()

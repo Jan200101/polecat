@@ -13,7 +13,10 @@ add_compile_definitions(VERSION="${CMAKE_PROJECT_VERSION}")
 message(STATUS "Name: ${CMAKE_PROJECT_NAME}")
 message(STATUS "Version: ${CMAKE_PROJECT_VERSION}")
 
-set(FILES common config dxvk lutris main net tar wine)
+set(FILES common config dxvk lutris main net tar)
+if(NOT WIN32)
+	set(FILES ${FILES} wine)
+endif()
 
 foreach(FILE ${FILES})
 	set(SOURCES ${SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/src/${FILE}.c ${CMAKE_CURRENT_SOURCE_DIR}/src/${FILE}.h)
@@ -38,6 +41,10 @@ target_link_libraries(${CMAKE_PROJECT_NAME} LINK_PUBLIC ${LIBARCHIVE_LIBRARIES})
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ${LIBCURL_INCLUDE_DIRS})
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ${JSONC_INCLUDE_DIRS})
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ${LIBARCHIVE_INCLUDE_DIRS})
+
+if (BUILD_STATIC)
+	add_compile_definitions(CURL_STATICLIB)
+endif()
 
 target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic -Wconversion)
 
