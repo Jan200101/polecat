@@ -1,11 +1,11 @@
-
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <limits.h>
-#include <sys/stat.h>
 #include <libgen.h>
+#include <sys/stat.h>
+
 #include "lutris.h"
 #include "net.h"
 

@@ -1,11 +1,10 @@
-
 #include <stdio.h>
 #include <string.h>
-#include <json.h>
 #include <libgen.h>
 #include <unistd.h>
 #include <limits.h>
 #include <dirent.h>
+#include <json.h>
 
 #include "dxvk.h"
 #include "net.h"
