@@ -36,12 +36,15 @@ COMMAND(lutris, search)
         // argv being modifyable is not always a given so lets
         // lets make a mutable copy
         char* str = strdup(argv[1]);
+        if (!str) return 1;
+
         // in the case we need to do replacing we allocate more
         // since we'll free in anyway
         // the smallest strlen can return is 0 the longest
         // escapeString can return is strlen*3
         size_t allocsize = strlen(str) * 3;
         str = realloc(str, allocsize);
+	    if (!str) return 1;
         lutris_escapeString(str, allocsize);
         char* url = malloc(strlen(GAME_SEARCH_API) + strlen(str));
         sprintf(url, GAME_SEARCH_API, str);
@@ -87,12 +90,15 @@ COMMAND(lutris, list)
         // argv being modifyable is not always a given so lets
         // lets make a mutable copy
         char* str = strdup(argv[1]);
+        if (!str) return 1;
+
         // in the case we need to do replacing we allocate more
         // since we'll free in anyway
         // the smallest strlen can return is 0 the longest
         // escapeString can return is strlen*3
         size_t allocsize = strlen(str) * 3;
         str = realloc(str, allocsize);
+        if (!str) return 1;
         lutris_escapeString(str, allocsize);
         char* url = malloc(strlen(GAME_INSTALLER_API) + strlen(str));
         sprintf(url, GAME_INSTALLER_API, str);
