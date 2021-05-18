@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <limits.h>
+#include <libgen.h>
 
 #include "main.h"
 #include "wine.h"
@@ -8,6 +9,11 @@
 #include "lutris.h"
 #include "common.h"
 #include "config.h"
+
+// if something fails
+// we need to free the new argv
+char** nargv;
+static void free_nargv() { free(nargv); }
 
 static const struct Command main_commands[] = {
 #ifndef _WIN32
@@ -23,7 +29,34 @@ static const struct Flag main_flags[] = {
     { .name = "version", .variant = BOTH,   .func = main_version, .description = "prints the program version"}
 };
 
-COMMAND_GROUP_FUNC(main)
+COMMAND_GROUP(main)
+{
+#ifndef _WIN32
+    char* arg0 = basename(argv[0]);
+    if (!strncmp(WINE_PREFIX, arg0, strlen(WINE_PREFIX)))
+    {
+        int nargc = argc + 3;
+        nargv = malloc((size_t)(nargc+1) * sizeof(char*));
+
+        nargv[0] = argv[0];
+        nargv[1] = "wine";
+        nargv[2] = "run";
+        nargv[3] = arg0 + strlen(WINE_PREFIX);
+        for (int i = 1; i < argc; ++i) nargv[3+i] = argv[i];
+        nargv[nargc] = NULL;
+
+        argc = nargc;
+        argv = nargv;
+
+        /* we cannot free nargv before the body parsed it
+         * and we cannot free it after because the body
+         * returns, so call this at exit to free the leak
+         */
+        atexit(free_nargv);
+    }
+#endif
+    COMMAND_GROUP_BODY(main)
+}
 
 COMMAND(main, env)
 {

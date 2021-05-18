@@ -70,7 +70,7 @@ COMMAND(wine, download)
 
                     getWineDir(winedir, sizeof(winedir));
                     makeDir(winedir);
-                    
+
                     fprintf(stderr, "Downloading %s...\n", name);
 
                     archive = downloadToRam(json_object_get_string(temp), 1);
@@ -248,7 +248,7 @@ COMMAND(wine, run)
     }
 
     fprintf(stderr, "Specify a what wine version to run.\nUse '" NAME " wine list-installed' to list available versions\n");
-        
+
     return 0;
 }
 
@@ -282,7 +282,7 @@ COMMAND(wine, installed)
             printf("%s\n", ent->d_name);
         }
         closedir(dir);
-    } 
+    }
 
     return 0;
 }
@@ -362,10 +362,9 @@ COMMAND(wine, env)
                 }
                 else
                 {
-                    printf("set PATH %s $PATH\n", winepath);   
+                    printf("set PATH %s $PATH\n", winepath);
                 }
             }
-            //printf("PATH=\"%s\"\n# Run this code in your Terminal\n# by running eval '%s'", newpath, argv[0]);
         }
         else
         {
@@ -378,7 +377,6 @@ COMMAND(wine, env)
         fprintf(stderr, "Specify a what wine version to run.\nUse '" NAME " wine list-installed' to list available versions\n");
     }
 
-        
     return 0;
 }
 
