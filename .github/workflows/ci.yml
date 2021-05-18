@@ -33,14 +33,34 @@ jobs:
     - name: Configure CMake
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE:STRING=$BUILD_TYPE -DBUILD_MOCK:BOOL=ON
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
       shell: bash
       run: cmake --build . --config $BUILD_TYPE
 
-    - name: Get environment feedback
+    - name: Test `wine list`
+      working-directory: ${{runner.workspace}}/build
+      shell: bash
+      run: ./polecat_mock wine list
+
+    - name: Test `dxvk list`
+      working-directory: ${{runner.workspace}}/build
+      shell: bash
+      run: ./polecat_mock dxvk list
+
+    - name: Test `lutris search`
+      working-directory: ${{runner.workspace}}/build
+      shell: bash
+      run: ./polecat_mock lutris search game
+
+    - name: Get mock environment
+      working-directory: ${{runner.workspace}}/build
+      shell: bash
+      run: ./polecat_mock env
+
+    - name: Get environment
       working-directory: ${{runner.workspace}}/build
       shell: bash
       run: ./polecat env
