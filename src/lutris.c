@@ -20,7 +20,7 @@ static const struct Flag lutris_flags[] = {
     { .name = "help", .variant = TWO, .func = lutris_help, .description = "show this message"}
 };
 
-char* getpwd()
+static char* getpwd()
 {
     char* pwd = malloc(255);
     pwd = getcwd(pwd, 255);

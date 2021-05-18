@@ -54,8 +54,13 @@ struct MemoryStruct* downloadToRam(const char* URL, int progress)
 
     if (chunk)
     {
-        // if we managed to allocate the chunk lets assume we can allocate at least 1 byte
         chunk->memory = malloc(1);
+        if (!chunk->memory)
+        {
+            free(chunk);
+            return NULL;
+        }
+        chunk->memory[0] = 0;
         chunk->size = 0;
 
         curl_global_init(CURL_GLOBAL_ALL);
@@ -73,18 +78,22 @@ struct MemoryStruct* downloadToRam(const char* URL, int progress)
         res = curl_easy_perform(curl_handle);
 
         long http_code = 0;
-        curl_easy_getinfo (curl_handle, CURLINFO_RESPONSE_CODE, &http_code);
+        curl_easy_getinfo(curl_handle, CURLINFO_RESPONSE_CODE, &http_code);
 
         if(res != CURLE_OK) {
+            free(chunk->memory);
+            free(chunk);
             puts(curl_easy_strerror(res));
-            return NULL;
+            chunk = NULL;
         }
         else if (http_code != 200)
         {
+            free(chunk->memory);
+            free(chunk);
 #ifdef DEBUG
             printf("HTTP Error %li\n", http_code);
 #endif
-            return NULL;
+            chunk = NULL;
         }
 
         curl_easy_cleanup(curl_handle);
@@ -119,9 +128,8 @@ void downloadToFile(const char* URL, const char* path, int progress)
 
 struct json_object* fetchJSON(const char* URL)
 {
-    struct MemoryStruct* chunk = downloadToRam(URL, 0);
-
     struct json_object* json = NULL;
+    struct MemoryStruct* chunk = downloadToRam(URL, 0);
 
     if (chunk)
     {

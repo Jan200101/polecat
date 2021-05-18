@@ -48,9 +48,9 @@ COMMAND(wine, download)
                 char* choice = argv[i];
 
 
-                for (JSON_LENGTH_TYPE i = 0; i < json_object_array_length(versions); ++i)
+                for (JSON_LENGTH_TYPE j = 0; j < json_object_array_length(versions); ++j)
                 {
-                    value = json_object_array_get_idx(versions, i);
+                    value = json_object_array_get_idx(versions, j);
                     json_object_object_get_ex(value, "version", &temp);
                     if (strcmp(json_object_get_string(temp), choice) == 0)
                     {
