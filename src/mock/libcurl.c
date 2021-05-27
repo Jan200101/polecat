@@ -2,6 +2,8 @@
 #include <stdarg.h>
 #include <curl/curl.h>
 
+#include "../defines.h"
+
 char* url = NULL;
 void* data = NULL;
 
@@ -9,7 +11,7 @@ void* data = NULL;
 #undef curl_easy_setopt
 #endif
 
-CURLcode curl_global_init(long flags)
+CURLcode curl_global_init(UNUSED long flags)
 {
 	puts("[MOCK] curl_global_init(...)");
 	return CURLE_OK;
@@ -21,7 +23,7 @@ CURL* curl_easy_init()
 	return NULL;
 }
 
-CURLcode curl_easy_setopt(CURL *handle, CURLoption option, ...)
+CURLcode curl_easy_setopt(UNUSED CURL *handle, CURLoption option, ...)
 {
 	puts("[MOCK] curl_easy_setopt(...)");
 
@@ -49,7 +51,7 @@ CURLcode curl_easy_setopt(CURL *handle, CURLoption option, ...)
 	return CURLE_OK;
 }
 
-CURLcode curl_easy_perform(CURL *easy_handle)
+CURLcode curl_easy_perform(UNUSED CURL *easy_handle)
 {
 	puts("[MOCK] curl_easy_perform(...)");
 	return CURLE_OK;
@@ -59,7 +61,7 @@ CURLcode curl_easy_perform(CURL *easy_handle)
 #undef curl_easy_getinfo
 #endif
 
-CURLcode curl_easy_getinfo(CURL *curl, CURLINFO info, ...)
+CURLcode curl_easy_getinfo(UNUSED CURL *curl, CURLINFO info, ...)
 {
 	puts("[MOCK] curl_easy_getinfo(...)");
 
@@ -76,7 +78,7 @@ CURLcode curl_easy_getinfo(CURL *curl, CURLINFO info, ...)
 	return CURLE_OK;
 }
 
-const char* curl_easy_strerror(CURLcode error)
+const char* curl_easy_strerror(UNUSED CURLcode error)
 {
 	puts("[MOCK] curl_easy_strerror(...)");
 	return "error";

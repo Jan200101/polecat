@@ -20,7 +20,8 @@ static const struct Command dxvk_commands[] = {
 };
 
 static const struct Flag dxvk_flags[] = {
-    { .name = "help", .variant = TWO, .func = dxvk_help, .description = "show this message"}
+    { .name = "help",       .variant = TWO, .returns = 1, .func = dxvk_help,    .description = "show this message"},
+    { .name = "no-net",     .variant = TWO, .returns = 0, .func = set_no_net,   .description = "run commands without commitment"}
 };
 
 COMMAND_GROUP_FUNC(dxvk)

@@ -25,7 +25,8 @@ static const struct Command wine_commands[] = {
 };
 
 static const struct Flag wine_flags[] = {
-    { .name = "help", .variant = TWO, .func = wine_help, .description = "show this message"}
+    { .name = "help",       .variant = TWO, .returns = 1, .func = wine_help,    .description = "show this message"},
+    { .name = "no-net",     .variant = TWO, .returns = 0, .func = set_no_net,   .description = "run commands without commitment"}
 };
 
 COMMAND_GROUP_FUNC(wine)

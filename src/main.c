@@ -25,8 +25,8 @@ static const struct Command main_commands[] = {
 };
 
 static const struct Flag main_flags[] = {
-    { .name = "help",    .variant = TWO,    .func = main_help,    .description = "show this message"},
-    { .name = "version", .variant = BOTH,   .func = main_version, .description = "prints the program version"}
+    { .name = "help",    .variant = TWO,    .returns = 1,   .func = main_help,    .description = "show this message"},
+    { .name = "version", .variant = BOTH,   .returns = 1,   .func = main_version, .description = "prints the program version"}
 };
 
 COMMAND_GROUP(main)
@@ -55,7 +55,7 @@ COMMAND_GROUP(main)
         atexit(free_nargv);
     }
 #endif
-    COMMAND_GROUP_BODY(main)
+    COMMAND_GROUP_BODY(main, COMMANDS, FLAGS)
 }
 
 COMMAND(main, env)

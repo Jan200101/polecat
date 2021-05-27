@@ -41,33 +41,48 @@
 #define COMMAND_GROUP(GROUP) \
     int GROUP(int argc, char** argv)
 
+#define COMMAND_GROUP_BODY_COMMANDS(GROUP) \
+    for (unsigned long i = 0; i < ARRAY_LEN(GROUP##_commands); ++i) \
+        if (!strcmp(GROUP##_commands[i].name, argv[1])) return GROUP##_commands[i].func(argc-1, argv+1);
+
+#define COMMAND_GROUP_BODY_FLAGS(GROUP) \
+    uint8_t found; \
+    \
+    for (int j = 1; j < argc; ++j) \
+    { \
+        found = 0; \
+        if (argv[j][0] != '-') continue; \
+        \
+        for (unsigned long i = 0; i < ARRAY_LEN(GROUP##_flags); ++i) \
+        { \
+            if ((GROUP##_flags[i].variant & ONE && argv[j][1] == GROUP##_flags[i].name[0]) || \
+                (GROUP##_flags[i].variant & TWO && argv[j][1] == '-' \
+                 && !strcmp(GROUP##_flags[i].name, argv[j]+2))) \
+            { \
+                found = 1; \
+                int retval = GROUP##_flags[i].func(0, NULL); \
+                if (GROUP##_flags[i].returns) return retval; \
+            } \
+        } \
+        \
+        if (!found) \
+        { \
+            fprintf(stderr, NAME ": '%s' is not a flag\n", argv[j]); \
+            return 0; \
+        } \
+    }
 
 /*
  * the body is split up so we can construct our own group function for
  * e.g. ARGV0 parsing
  */
-#define COMMAND_GROUP_BODY(GROUP) \
+#define COMMAND_GROUP_BODY(GROUP, FIRST, SECOND) \
     if (argc > 1) \
     { \
-        for (unsigned long i = 0; i < ARRAY_LEN(GROUP##_commands); ++i) \
-            if (!strcmp(GROUP##_commands[i].name, argv[1])) return GROUP##_commands[i].func(argc-1, argv+1); \
+        COMMAND_GROUP_BODY_##FIRST(GROUP) \
+        COMMAND_GROUP_BODY_##SECOND(GROUP) \
         \
-        for (int j = 1; j < argc; ++j) \
-        { \
-            if (argv[j][0] != '-') continue; \
-            \
-            for (unsigned long i = 0; i < ARRAY_LEN(GROUP##_flags); ++i) \
-            { \
-                if ((GROUP##_flags[i].variant & ONE && argv[j][1] == GROUP##_flags[i].name[0]) || \
-                    (GROUP##_flags[i].variant & TWO && argv[j][1] == '-' \
-                     && !strcmp(GROUP##_flags[i].name, argv[j]+2))) \
-                { \
-                  return GROUP##_flags[i].func(0, NULL); \
-                } \
-            } \
-        } \
-        \
-        fprintf(stderr, NAME ": '%s' is not a command or flag\n", argv[1]); \
+        fprintf(stderr, NAME ": '%s' is not a command\n", argv[1]); \
         return 0; \
     } \
     return GROUP##_help(argc-1, argv+1);
@@ -84,7 +99,7 @@
 #define COMMAND_GROUP_FUNC(GROUP) \
     COMMAND_GROUP(GROUP) \
     { \
-        COMMAND_GROUP_BODY(GROUP) \
+        COMMAND_GROUP_BODY(GROUP, FLAGS, COMMANDS) \
     } \
 
 

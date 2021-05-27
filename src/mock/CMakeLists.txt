@@ -1,8 +1,9 @@
 SET(CURL_SOURCES
-	${CMAKE_CURRENT_SOURCE_DIR}/libcurl/libcurl.c
+	${CMAKE_CURRENT_SOURCE_DIR}/libcurl.c
 )
 
 add_library(mockcurl STATIC ${CURL_SOURCES})
+target_compile_options(mockcurl PUBLIC ${CFLAGS})
 target_include_directories(mockcurl PUBLIC ${LIBCURL_INCLUDE_DIRS})
 
 set(NAME ${CMAKE_PROJECT_NAME}_mock)

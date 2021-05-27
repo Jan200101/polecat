@@ -17,7 +17,8 @@ static const struct Command lutris_commands[] = {
 };
 
 static const struct Flag lutris_flags[] = {
-    { .name = "help", .variant = TWO, .func = lutris_help, .description = "show this message"}
+    { .name = "help",       .variant = TWO, .returns = 1, .func = lutris_help,  .description = "show this message"},
+    { .name = "no-net",     .variant = TWO, .returns = 0, .func = set_no_net,   .description = "run commands without commitment"}
 };
 
 static char* getpwd()

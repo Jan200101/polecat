@@ -44,6 +44,8 @@ static inline int xferinfo(UNUSED void *p, curl_off_t dltotal, curl_off_t dlnow,
 
 struct MemoryStruct* downloadToRam(const char* URL, int progress)
 {
+    if (no_net) return NULL;
+
     CURL* curl_handle;
     CURLcode res = CURLE_OK;
 
@@ -137,6 +139,10 @@ struct json_object* fetchJSON(const char* URL)
 
         free(chunk->memory);
         free(chunk);
+    }
+    else if (isatty(STDERR_FILENO))
+    {
+        fprintf(stderr, "Couldn't fetch JSON\n");
     }
 
     return json;
