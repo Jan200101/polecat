@@ -53,7 +53,7 @@ jobs:
     - name: Test `wine run`
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: ./polecat_mock run mock 1 2 3 4
+      run: ./polecat_mock wine run mock 1 2 3 4
 
     - name: Test `lutris search`
       working-directory: ${{runner.workspace}}/build
