@@ -10,10 +10,12 @@
 #include "common.h"
 #include "config.h"
 
+#ifndef _WIN32
 // if something fails
 // we need to free the new argv
 char** nargv;
 static void free_nargv() { free(nargv); }
+#endif
 
 static const struct Command main_commands[] = {
 #ifndef _WIN32

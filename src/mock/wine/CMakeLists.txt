@@ -1,0 +1,35 @@
+SET(WINE_SOURCES
+	${CMAKE_CURRENT_SOURCE_DIR}/main.c
+)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/mock/bin")
+file(MAKE_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+
+set(WINE_TAR_DIR "${CMAKE_CURRENT_BINARY_DIR}")
+set(WINE_TAR_DIR "${WINE_TAR_DIR}" PARENT_SCOPE)
+
+add_executable(wine ${WINE_SOURCES})
+target_compile_options(wine PUBLIC ${CFLAGS})
+
+
+set(WINE_TAR_FILE_NAME "wine-mock.tar.xz")
+set(WINE_TAR_FILE "${WINE_TAR_DIR}/${WINE_TAR_FILE_NAME}")
+string(REGEX REPLACE "\\.| |-" "_" WINE_TAR_FILE_NAME ${WINE_TAR_FILE_NAME})
+set(WINE_TAR_OUT  "${WINE_TAR_DIR}/${WINE_TAR_FILE_NAME}")
+set(WINE_TAR_OUT  "${WINE_TAR_OUT}" PARENT_SCOPE)
+add_custom_command(
+    OUTPUT ${WINE_TAR_FILE}
+    COMMAND
+    ${CMAKE_COMMAND} -E tar "cfv" "${WINE_TAR_FILE}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+    DEPENDS wine
+)
+
+add_custom_command(
+    OUTPUT ${WINE_TAR_OUT}.c ${WINE_TAR_OUT}.h
+    COMMAND ${CMAKE_COMMAND}
+    "-Dbin_in=${WINE_TAR_FILE}"
+    -P ${CMAKE_SOURCE_DIR}/cmake/FileEmbed.cmake
+    DEPENDS ${WINE_TAR_FILE}
+)
+
+add_custom_target(wine_tar ALL DEPENDS ${WINE_TAR_OUT}.c ${WINE_TAR_OUT}.h)

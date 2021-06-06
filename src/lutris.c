@@ -218,9 +218,7 @@ COMMAND(lutris, install)
                         case TASK:
 
                             parseVar(&installer.directives[i]->arguments[0], installer.variables, installer.variablecount);
-                            #ifdef _WIN32
-                            #warning TODO
-                            #else
+                            #ifndef _WIN32 // TODO
                             setenv("WINEPREFIX", installer.directives[i]->arguments[0], 1);
                             #endif
                             switch(installer.directives[i]->task)
@@ -235,15 +233,11 @@ COMMAND(lutris, install)
 
                                 case CREATE_PREFIX:
                                     printf("CREATE_PREFIX\n");
-                                    #ifdef _WIN32
-                                    #warning TODO
-                                    #else
+                                    #ifndef _WIN32 // TODO
                                     setenv("WINEDEBUG", "-all", 1);
                                     #endif
                                     system("wineboot");
-                                    #ifdef _WIN32
-                                    #warning TODO
-                                    #else
+                                    #ifndef _WIN32 // TODO
                                     unsetenv("WINEDEBUG");
                                     #endif
                                     break;

@@ -9,7 +9,7 @@
 #include "net.h"
 #include "common.h"
 
-static inline size_t memoryCallback(void* contents, size_t size, size_t nmemb, void* userp)
+static inline size_t memoryCallback(const void* contents, size_t size, size_t nmemb, void* userp)
 {
     size_t realsize = size * nmemb;
     struct MemoryStruct* mem = (struct MemoryStruct*)userp;

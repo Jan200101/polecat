@@ -215,8 +215,8 @@ COMMAND(dxvk, installed)
     char dxvkdir[PATH_MAX];
     getDXVKDir(dxvkdir, sizeof(dxvkdir));
 
-    size_t dxvklen = strlen(dxvkdir)+1;
-    dxvkdir[dxvklen-1] = '/';
+    size_t dxvklen = strlen(dxvkdir);
+    dxvkdir[dxvklen] = '/';
 
     DIR *dir;
     struct dirent *ent;
@@ -231,7 +231,7 @@ COMMAND(dxvk, installed)
             if (ent->d_name[0] == '.') continue;
             strncat(dxvkdir, ent->d_name, sizeof(dxvkdir) - dxvklen - 1);
             int isdirec = isDir(dxvkdir);
-            dxvkdir[dxvklen] = '\0';
+            dxvkdir[dxvklen+1] = '\0';
 
             if (!isdirec) continue;
 
