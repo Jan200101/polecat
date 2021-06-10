@@ -13,6 +13,9 @@ uint8_t no_net = 0;
 
 int set_no_net(UNUSED int argc, UNUSED char** argv)
 {
+#ifndef NDEBUG
+    puts("[NO_NET] set");
+#endif
     no_net = 1;
     return 0;
 }

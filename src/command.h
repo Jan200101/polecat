@@ -52,6 +52,7 @@
     { \
         found = 0; \
         if (argv[j][0] != '-') continue; \
+        if(!strcmp(argv[0], "wine") && !strcmp(argv[1], "run")) break;\
         \
         for (unsigned long i = 0; i < ARRAY_LEN(GROUP##_flags); ++i) \
         { \
