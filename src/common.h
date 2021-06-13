@@ -12,6 +12,8 @@
 
 extern uint8_t no_net;
 
+typedef int (*func_t)(int, char**);
+
 struct MemoryStruct {
     uint8_t* memory;
     size_t size;
@@ -19,7 +21,7 @@ struct MemoryStruct {
 
 struct Command {
     char* name;
-    int (*func)(int, char**);
+    func_t func;
     char* description;
 };
 

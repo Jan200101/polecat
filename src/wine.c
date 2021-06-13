@@ -103,7 +103,7 @@ COMMAND(wine, download)
     {
         fprintf(stderr, USAGE_STR " wine download [versions]\n\nversions are obtained via '" NAME " wine list'\n");
     }
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 
@@ -135,7 +135,7 @@ COMMAND(wine, remove)
             if (!isDir(winepath))
             {
                 fprintf(stderr, "'%s' is not an installed wine version\n", winever);
-                return 0;
+                return EXIT_FAILURE;
             }
         }
 
@@ -154,7 +154,7 @@ COMMAND(wine, remove)
 
     fprintf(stderr, USAGE_STR " wine remove <version>\n\nInstalled wine versions can be obtained by using '" NAME " wine list-installed\n");
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 COMMAND(wine, list)
@@ -181,7 +181,7 @@ COMMAND(wine, list)
         json_object_put(runner);
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 COMMAND(wine, run)
@@ -250,7 +250,7 @@ COMMAND(wine, run)
 
     fprintf(stderr, "Specify a what wine version to run.\nUse '" NAME " wine list-installed' to list available versions\n");
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 COMMAND(wine, installed)
@@ -285,7 +285,7 @@ COMMAND(wine, installed)
         closedir(dir);
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 COMMAND(wine, env)
@@ -319,7 +319,7 @@ COMMAND(wine, env)
             if (!isDir(winepath))
             {
                 fprintf(stderr, "'%s' is not an installed wine version\n", winever);
-                return 0;
+                return EXIT_FAILURE;
             }
         }
 
@@ -378,7 +378,7 @@ COMMAND(wine, env)
         fprintf(stderr, "Specify a what wine version to run.\nUse '" NAME " wine list-installed' to list available versions\n");
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 COMMAND_HELP(wine, " wine")

@@ -57,7 +57,7 @@ COMMAND_GROUP(main)
         atexit(free_nargv);
     }
 #endif
-    COMMAND_GROUP_BODY(main, COMMANDS, FLAGS)
+    COMMAND_GROUP_BODY(main)
 }
 
 COMMAND(main, env)
@@ -74,14 +74,14 @@ COMMAND(main, env)
     printf("data dir\t\t%s\n", buffer);
 
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 COMMAND(main, version)
 {
     puts(VERSION);
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 COMMAND_HELP(main, "")

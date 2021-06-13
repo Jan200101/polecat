@@ -96,7 +96,7 @@ COMMAND(dxvk, download)
     {
         fprintf(stderr, USAGE_STR " dxvk download <version>\n\nversions are obtained via '" NAME " dxvk list'\n");
     }
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 COMMAND(dxvk, remove)
@@ -115,7 +115,7 @@ COMMAND(dxvk, remove)
         if (!isDir(dxvkpath))
         {
             fprintf(stderr, "'%s' is not an downloaded DXVK version\n", dxvkver);
-            return 0;
+            return EXIT_SUCCESS;
         }
 
         int retval = removeDir(dxvkpath);
@@ -133,7 +133,7 @@ COMMAND(dxvk, remove)
 
     fprintf(stderr, USAGE_STR " dxvk remove <version>\n\nInstalled dxvk versions can be obtained by using '" NAME " dxvk list-installed\n");
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 COMMAND(dxvk, list)
@@ -156,7 +156,7 @@ COMMAND(dxvk, list)
         }
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 COMMAND(dxvk, install)
@@ -173,7 +173,7 @@ COMMAND(dxvk, install)
         if (!isDir(dxvkpath))
         {
             fprintf(stderr, "'%s' is not an downloaded DXVK version\n", dxvkver);
-            return 0;
+            return EXIT_SUCCESS;
         }
 
         strncat(dxvkpath, DXVKSETUP, sizeof(dxvkpath) - strlen(dxvkpath) - 1);
@@ -207,7 +207,7 @@ COMMAND(dxvk, install)
     }
 
         
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 COMMAND(dxvk, installed)
@@ -241,7 +241,7 @@ COMMAND(dxvk, installed)
         closedir(dir);
     } 
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 COMMAND_HELP(dxvk, " dxvk")

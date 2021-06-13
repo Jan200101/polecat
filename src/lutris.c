@@ -81,7 +81,7 @@ COMMAND(lutris, search)
         puts(USAGE_STR " lutris search <text>\nSearch for games and list their slug");
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 COMMAND(lutris, list)
@@ -137,7 +137,7 @@ COMMAND(lutris, list)
         puts(USAGE_STR " lutris list <slug>\nList game installers");
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 COMMAND(lutris, install)
@@ -296,7 +296,7 @@ COMMAND(lutris, install)
 
         lutris_freeInstaller(&installer);
     }
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 COMMAND(lutris, info)
@@ -379,7 +379,7 @@ COMMAND(lutris, info)
     {
         puts(USAGE_STR " lutris info <installer-name>\nThe Name of an installer can be found by viewing the install script of an installer");
     }
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 COMMAND_HELP(lutris, " lutris")

@@ -17,7 +17,7 @@ int set_no_net(UNUSED int argc, UNUSED char** argv)
     puts("[NO_NET] set");
 #endif
     no_net = 1;
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 void print_help(const struct Command* commands, const size_t commands_size,
