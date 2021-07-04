@@ -64,7 +64,6 @@ COMMAND(main, env)
 {
     char buffer[PATH_MAX];
 
-
     printf("user-Agent:\t\t%s\n", USER_AGENT);
 
     getConfigDir(buffer, sizeof(buffer));

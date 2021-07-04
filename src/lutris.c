@@ -658,7 +658,7 @@ struct script_t lutris_getInstaller(char* installername)
                                         case TASK:
                                             json_object_object_get_ex(directive, "name", &options[0]);
                                             const char* name = json_object_get_string(options[0]);
-                                            for (int k = 0; k <= TASKKEYWORDMAX; ++k)
+                                            for (int k = 0; k < TASKKEYWORDMAX; ++k)
                                             {
                                                 if (!strcmp(name, taskKeywordstr[k]))
                                                 {

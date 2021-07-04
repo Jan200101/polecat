@@ -138,6 +138,7 @@ COMMAND(wine, remove)
                 return EXIT_FAILURE;
             }
         }
+	puts(winepath);
 
         int retval = removeDir(winepath);
         if (!retval)
