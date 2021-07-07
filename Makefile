@@ -84,7 +84,7 @@ OBJ_FILES       := $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.$(OBJ_EXT), $(CC_SRC_
 default: $(BIN_DIR)/$(NAME)$(OUT_EXT)
 
 .PHONY: all
-all: $(BIN_DIR)/$(NAME)$(OUT_EXT) docs test
+all: $(BIN_DIR)/$(NAME)$(OUT_EXT) docs
 
 $(BIN_DIR):
 	${MKDIR} $@
@@ -94,7 +94,7 @@ $(OBJ_DIR):
 
 $(BIN_DIR)/$(NAME)$(OUT_EXT): $(OBJ_FILES) | $(BIN_DIR)
 	${LINK_STATUS}
-	${RECIPE_IF} ${CROSS}${CXX} -o$@ $^ ${CFLAGS} ${WARNFLAGS} ${STATICFLAGS} ${INCLUDEFLAGS} ${DEFINES} ${BINFLAGS} ${RECIPE_RESULT_LINK}
+	${RECIPE_IF} ${CROSS}${CC}    -o$@ $^ ${CFLAGS} ${WARNFLAGS} ${STATICFLAGS} ${INCLUDEFLAGS} ${DEFINES} ${BINFLAGS} ${RECIPE_RESULT_LINK}
 
 
 $(OBJ_DIR)/%.$(OBJ_EXT): $(SRC_DIR)/%.c | $(OBJ_DIR)
