@@ -92,7 +92,7 @@ struct MemoryStruct* downloadToRam(const char* URL, int progress)
         {
             free(chunk->memory);
             free(chunk);
-#ifdef DEBUG
+#ifndef NDEBUG
             printf("HTTP Error %li\n", http_code);
 #endif
             chunk = NULL;

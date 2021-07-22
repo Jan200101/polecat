@@ -6,78 +6,42 @@
 
 #define VARIABLESIGN '$'
 
+#include "lutris/enum.h"
 enum keyword_t {
-    MOVE = 0,
-    MERGE,
-    EXTRACT,
-    COPY,
-    CHMODX,
-    EXECUTE,
-    WRITE_FILE,
-    WRITE_CONFIG,
-    WRITE_JSON,
-    INPUT_MENU,
-    INSERT_DISC,
-    TASK,
+    #include "lutris/keyword.h"
 
     KEYWORDMAX,
-    UNKNOWN_DIRECTIVE
-};
-
-static const char keywordstr[KEYWORDMAX][0xF] = {
-    "move",
-    "merge",
-    "extract",
-    "copy",
-    "chmodx",
-    "execute",
-    "write_file",
-    "write_config",
-    "write_json",
-    "input_menu",
-    "insert-disc",
-    "task",
+    unknown_keyword
 };
 
 enum task_t {
-    WINEEXEC = 0,
-    WINETRICKS,
-    CREATE_PREFIX,
-    SET_REGEDIT,
-    WINEKILL,
+    #include "lutris/task.h"
 
     TASKKEYWORDMAX,
-    NO_TASK,
-    UNKNOWN_TASK
-};
-
-static const char taskKeywordstr[TASKKEYWORDMAX][0xF] = 
-{
-    "wineexec",
-    "winetricks",
-    "create_prefix",
-    "set_regedit",
-    "winekill",
+    no_task,
+    unknown_task
 };
 
 enum runner_t {
-    UNKNOWN_RUNNER,
-    WINE,
-    LINUX,
+    #include "lutris/runner.h"
 
     RUNNERMAX
 };
 
-/*
- * a list of all available runners could be fetched from lutris
- * but we keep a local copy of all supported runners
- * to reduce the amount of API calls needed
- */
+#include "lutris/array.h"
+static const char keywordstr[KEYWORDMAX][0xF] = {
+    #include "lutris/keyword.h"
+};
+
+
+static const char taskKeywordstr[TASKKEYWORDMAX][0xF] = 
+{
+    #include "lutris/task.h"
+};
+
 static const char runnerStr[RUNNERMAX][0xF] = 
 {
-    "unknown",
-    "wine",
-    "linux",
+    #include "lutris/runner.h"
 };
 
 

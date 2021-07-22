@@ -1,0 +1,5 @@
+CREATE_ENUM(wineexec)
+CREATE_ENUM(winetricks)
+CREATE_ENUM(create_prefix)
+CREATE_ENUM(set_regedit)
+CREATE_ENUM(winekill)

@@ -14,24 +14,24 @@
 #include "config.h"
 #include "common.h"
 
-static const struct Command wine_commands[] = {
-    { .name = "download",       .func = wine_download,  .description = "download and extract a wine versions" },
-    { .name = "env",            .func = wine_env,       .description = "add wine to your PATH in a POSIX shell"},
-    { .name = "env-fish",       .func = wine_env,       .description = "add wine to your PATH in the fish shell"},
-    { .name = "list",           .func = wine_list,      .description = "list installable wine versions" },
-    { .name = "list-installed", .func = wine_installed, .description = "list already installed wine versions" },
-    { .name = "remove",         .func = wine_remove,    .description = "remove a wine version" },
-    { .name = "run",            .func = wine_run,       .description = "run an installed wine version" },
+static const struct Command winecmd_commands[] = {
+    { .name = "download",       .func = winecmd_download,  .description = "download and extract a wine versions" },
+    { .name = "env",            .func = winecmd_env,       .description = "add wine to your PATH in a POSIX shell"},
+    { .name = "env-fish",       .func = winecmd_env,       .description = "add wine to your PATH in the fish shell"},
+    { .name = "list",           .func = winecmd_list,      .description = "list installable wine versions" },
+    { .name = "list-installed", .func = winecmd_installed, .description = "list already installed wine versions" },
+    { .name = "remove",         .func = winecmd_remove,    .description = "remove a wine version" },
+    { .name = "run",            .func = winecmd_run,       .description = "run an installed wine version" },
 };
 
-static const struct Flag wine_flags[] = {
-    { .name = "help",       .variant = TWO, .returns = 1, .func = wine_help,    .description = "show this message"},
+static const struct Flag winecmd_flags[] = {
+    { .name = "help",       .variant = TWO, .returns = 1, .func = winecmd_help,    .description = "show this message"},
     { .name = "no-net",     .variant = TWO, .returns = 0, .func = set_no_net,   .description = "run commands without commitment"}
 };
 
-COMMAND_GROUP_FUNC(wine)
+COMMAND_GROUP_FUNC(winecmd)
 
-COMMAND(wine, download)
+COMMAND(winecmd, download)
 {
     if (argc >= 2)
     {
@@ -107,7 +107,7 @@ COMMAND(wine, download)
 }
 
 
-COMMAND(wine, remove)
+COMMAND(winecmd, remove)
 {
     if (argc == 2)
     {
@@ -158,7 +158,7 @@ COMMAND(wine, remove)
     return EXIT_SUCCESS;
 }
 
-COMMAND(wine, list)
+COMMAND(winecmd, list)
 {
     struct json_object* runner = fetchJSON(WINE_API);
 
@@ -185,7 +185,7 @@ COMMAND(wine, list)
     return EXIT_SUCCESS;
 }
 
-COMMAND(wine, run)
+COMMAND(winecmd, run)
 {
     if (argc > 1)
     {
@@ -228,7 +228,7 @@ COMMAND(wine, run)
                 break;
 
             default:
-                #ifdef DEBUG
+                #ifndef NDEBUG
                 fprintf(stderr, "Couldn't find figure out if this '%s' is Wine or Proton, defaulting to Wine\n", winever);
                 #endif
                 winebinloc = WINEBIN;
@@ -254,7 +254,7 @@ COMMAND(wine, run)
     return EXIT_SUCCESS;
 }
 
-COMMAND(wine, installed)
+COMMAND(winecmd, installed)
 {
     char winedir[PATH_MAX];
     getWineDir(winedir, sizeof(winedir));
@@ -289,7 +289,7 @@ COMMAND(wine, installed)
     return EXIT_SUCCESS;
 }
 
-COMMAND(wine, env)
+COMMAND(winecmd, env)
 {
     if (argc > 1)
     {
@@ -335,7 +335,7 @@ COMMAND(wine, env)
                 break;
 
             default:
-                #ifdef DEBUG
+                #ifndef NDEBUG
                 fprintf(stderr, "Couldn't find figure out if this '%s' is Wine or Proton, defaulting to Wine", winever);
                 #endif
                 winebinloc = WINEBIN;
@@ -382,7 +382,7 @@ COMMAND(wine, env)
     return EXIT_SUCCESS;
 }
 
-COMMAND_HELP(wine, " wine")
+COMMAND_HELP(winecmd, " wine")
 
 enum wine_type_t check_wine_ver(char* winepath, size_t size)
 {

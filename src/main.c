@@ -19,7 +19,7 @@ static void free_nargv() { free(nargv); }
 
 static const struct Command main_commands[] = {
 #ifndef _WIN32
-    { .name = "wine",   .func = wine,      .description = "manage wine versions" },
+    { .name = "wine",   .func = winecmd,   .description = "manage wine versions" },
 #endif
     { .name = "dxvk",   .func = dxvk,      .description = "manage DXVK versions" },
     { .name = "lutris", .func = lutris,    .description = "run lutris instraller"},

@@ -14,14 +14,14 @@ enum wine_type_t {
     WINE_PROTON
 };
 
-COMMAND_GROUP(wine);
-COMMAND(wine, download);
-COMMAND(wine, remove);
-COMMAND(wine, list);
-COMMAND(wine, run);
-COMMAND(wine, installed);
-COMMAND(wine, env);
-COMMAND(wine, help);
+COMMAND_GROUP(winecmd);
+COMMAND(winecmd, download);
+COMMAND(winecmd, remove);
+COMMAND(winecmd, list);
+COMMAND(winecmd, run);
+COMMAND(winecmd, installed);
+COMMAND(winecmd, env);
+COMMAND(winecmd, help);
 
 enum wine_type_t check_wine_ver(char*, size_t);
 

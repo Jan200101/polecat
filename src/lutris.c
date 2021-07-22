@@ -9,6 +9,8 @@
 #include "lutris.h"
 #include "net.h"
 
+#define PERCENT_SPACE "%20"
+
 static const struct Command lutris_commands[] = {
     { .name = "info",    .func = lutris_info,    .description = "show information about a lutris script" },
     { .name = "install", .func = lutris_install, .description = "install a lutris script" },
@@ -174,35 +176,35 @@ COMMAND(lutris, install)
                     switch(installer.directives[i]->command)
                     {
 
-                        case MOVE:
+                        case move:
                             // TODO
                             break;
 
-                        case MERGE:
+                        case merge:
                             // TODO
                             break;
-                        case EXTRACT:
+                        case extract:
                             // TODO
                             break;
-                        case COPY:
+                        case copy:
                             // TODO
                             break;
-                        case CHMODX:
+                        case chmodx:
                             chmod(installer.directives[i]->arguments[0], S_IXUSR);
                             break;
-                        case EXECUTE:
+                        case execute:
                             // TODO
                             break;
-                        case WRITE_FILE:
-                        case WRITE_JSON:
-                            // TODO
-                            break;
-
-                        case WRITE_CONFIG:
+                        case write_file:
+                        case write_json:
                             // TODO
                             break;
 
-                        case INPUT_MENU:
+                        case write_config:
+                            // TODO
+                            break;
+
+                        case input_menu:
                             installer.variablecount++;
                             installer.variables = realloc(installer.variables, installer.variablecount * sizeof(void*));
                             installer.variables[installer.variablecount-1] = malloc(sizeof(struct list_t));
@@ -211,11 +213,11 @@ COMMAND(lutris, install)
                             installer.variables[installer.variablecount-1]->value.str = installer.directives[i]->arguments[1];
                             break;
 
-                        case INSERT_DISC:
+                        case insert_disc:
                             // TODO
                             break;
 
-                        case TASK:
+                        case task:
 
                             parseVar(&installer.directives[i]->arguments[0], installer.variables, installer.variablecount);
                             #ifndef _WIN32 // TODO
@@ -223,15 +225,15 @@ COMMAND(lutris, install)
                             #endif
                             switch(installer.directives[i]->task)
                             {
-                                case WINEEXEC:
+                                case wineexec:
                                     printf("WINEEXEC\n");
                                     break;
 
-                                case WINETRICKS:
+                                case winetricks:
                                     printf("WINETRICKS\n");
                                     break;
 
-                                case CREATE_PREFIX:
+                                case create_prefix:
                                     printf("CREATE_PREFIX\n");
                                     #ifndef _WIN32 // TODO
                                     setenv("WINEDEBUG", "-all", 1);
@@ -242,25 +244,26 @@ COMMAND(lutris, install)
                                     #endif
                                     break;
 
-                                case SET_REGEDIT:
+                                case set_regedit:
                                     printf("SET_REGEDIT\n");
                                     break;
 
-                                case WINEKILL:
+                                case winekill:
                                     printf("WINEKILL\n");
                                     break;
 
                                 case TASKKEYWORDMAX:
-                                case NO_TASK:
+                                    UNREACHABLE
+                                case no_task:
                                     break;
 
-                                case UNKNOWN_TASK:
+                                case unknown_task:
                                     printf("Unknown Task\n");
                                     break;
                             }
                             break;
 
-                        case UNKNOWN_DIRECTIVE:
+                        case unknown_keyword:
                             puts("Unknown directive\nIf you see this please report it with your system information and steps to reproduce this.");
                             break;
 
@@ -357,7 +360,7 @@ COMMAND(lutris, info)
                 {
                     printf("\t%s", keywordstr[installer.directives[i]->command]);
 
-                    if (installer.directives[i]->task != NO_TASK) printf(" %s", taskKeywordstr[installer.directives[i]->task]);
+                    if (installer.directives[i]->task != no_task) printf(" %s", taskKeywordstr[installer.directives[i]->task]);
 
                     for (size_t j = 0; j < installer.directives[i]->size; ++j)
                     {
@@ -414,15 +417,13 @@ void lutris_escapeString(char* str, size_t size)
             case ';':
             case '=':
                 // since dest and src overlap we need a non overlapping solution
-                memmove(str, str+1, (size_t)(tail-str-1));
+                memmove(str, str+1, (size_t)(tail-str));
                 break;
 
             case ' ':
                 // spaces are special and need to be encoded
                 memmove(str+3, str+1, (size_t)(tail-str-3));
-                str[0] = '%';
-                str[1] = '2';
-                str[2] = '0';
+                memcpy(str, PERCENT_SPACE, strlen(PERCENT_SPACE));
                 str += 3;
                 if (str >= tail) str[3] = '\0';
                 break;
@@ -439,7 +440,7 @@ struct script_t lutris_getInstaller(char* installername)
     struct script_t installer;
     installer.name = NULL;
     installer.version = NULL;
-    installer.runner = UNKNOWN_RUNNER;
+    installer.runner = unknown_runner;
     installer.description = NULL;
     installer.notes = NULL;
     installer.wine = NULL;
@@ -474,7 +475,7 @@ struct script_t lutris_getInstaller(char* installername)
                 if(json_object_object_get_ex(slug, "script", &script))
                 {
                     {
-                        struct json_object* name, *version, *runner, *description, *notes, *wine, *winever;
+                        struct json_object* name, *version, *runner, *description, *notes, *winever;
                         const char* namestr, *versionstr, *runnerstr, *descriptionstr, *notesstr, *winestr;
 
                         json_object_object_get_ex(slug, "name", &name);
@@ -514,8 +515,8 @@ struct script_t lutris_getInstaller(char* installername)
                             strcpy(installer.notes, notesstr);
                         }
 
-                        json_object_object_get_ex(script, "wine", &wine);
-                        json_object_object_get_ex(wine, "version", &winever);
+                        json_object_object_get_ex(script, "wine", &winever);
+                        json_object_object_get_ex(winever, "version", &winever);
                         if (winever)
                         {
                             winestr = json_object_get_string(winever);
@@ -590,8 +591,8 @@ struct script_t lutris_getInstaller(char* installername)
 
                             installer.directives[i] = malloc(sizeof(struct directive_t));
                             installer.directives[i]->size = 0;
-                            installer.directives[i]->command = UNKNOWN_DIRECTIVE;
-                            installer.directives[i]->task = NO_TASK;
+                            installer.directives[i]->command = unknown_keyword;
+                            installer.directives[i]->task = no_task;
 
                             for (int l = 0; l < KEYWORDMAX; ++l)
                             {
@@ -600,36 +601,36 @@ struct script_t lutris_getInstaller(char* installername)
                                     struct json_object* options[5];
                                     switch (l)
                                     {
-                                        case MOVE:
-                                        case COPY:
-                                        case MERGE:
+                                        case move:
+                                        case copy:
+                                        case merge:
                                             json_object_object_get_ex(directive, "src", &options[0]);
                                             json_object_object_get_ex(directive, "dst", &options[1]);
                                             installer.directives[i]->size = 2;
                                             break;
 
-                                        case EXTRACT:
+                                        case extract:
                                             json_object_object_get_ex(directive, "file", &options[0]);
                                             installer.directives[i]->size = 1;
                                             break;
 
-                                        case CHMODX:
+                                        case chmodx:
                                             options[0] = directive;
                                             installer.directives[i]->size = 1;
                                             break;
 
-                                        case EXECUTE:
+                                        case execute:
                                             if(!json_object_object_get_ex(directive, "command", &options[0])) json_object_object_get_ex(directive, "file", &options[0]);
                                             installer.directives[i]->size = 1;
                                             break;
 
-                                        case WRITE_FILE:
+                                        case write_file:
                                             json_object_object_get_ex(directive, "file", &options[0]);
                                             json_object_object_get_ex(directive, "content", &options[1]);
                                             installer.directives[i]->size = 2;
                                             break;
 
-                                        case WRITE_CONFIG:
+                                        case write_config:
                                             json_object_object_get_ex(directive, "file", &options[0]);
                                             json_object_object_get_ex(directive, "section", &options[1]);
                                             json_object_object_get_ex(directive, "key", &options[2]);
@@ -637,25 +638,25 @@ struct script_t lutris_getInstaller(char* installername)
                                             installer.directives[i]->size = 4;
                                             break;
 
-                                        case WRITE_JSON:
+                                        case write_json:
                                             json_object_object_get_ex(directive, "file", &options[0]);
                                             json_object_object_get_ex(directive, "data", &options[1]);
                                             installer.directives[i]->size = 2;
                                             break;
 
-                                        case INPUT_MENU:
+                                        case input_menu:
                                             json_object_object_get_ex(directive, "id", &options[0]);
                                             json_object_object_get_ex(directive, "preselect", &options[1]);
                                             json_object_object_get_ex(directive, "description", &options[2]);
                                             installer.directives[i]->size = 3;
                                             break;
 
-                                        case INSERT_DISC:
+                                        case insert_disc:
                                             json_object_object_get_ex(directive, "requires", &options[0]);
                                             installer.directives[i]->size = 1;
                                             break;
 
-                                        case TASK:
+                                        case task:
                                             json_object_object_get_ex(directive, "name", &options[0]);
                                             const char* name = json_object_get_string(options[0]);
                                             for (int k = 0; k < TASKKEYWORDMAX; ++k)
@@ -664,25 +665,25 @@ struct script_t lutris_getInstaller(char* installername)
                                                 {
                                                     switch(k)
                                                     {
-                                                        case WINEEXEC:
+                                                        case wineexec:
                                                             json_object_object_get_ex(directive, "prefix", &options[1]);
                                                             json_object_object_get_ex(directive, "executable", &options[2]);
                                                             installer.directives[i]->size = 2;
                                                             break;
 
-                                                        case WINETRICKS:
+                                                        case winetricks:
                                                             json_object_object_get_ex(directive, "prefix", &options[1]);
                                                             json_object_object_get_ex(directive, "app", &options[2]);
                                                             installer.directives[i]->size = 2;
                                                             break;
 
-                                                        case CREATE_PREFIX:
-                                                        case WINEKILL:
+                                                        case create_prefix:
+                                                        case winekill:
                                                             json_object_object_get_ex(directive, "prefix", &options[1]);
                                                             installer.directives[i]->size = 1;
                                                             break;
 
-                                                        case SET_REGEDIT:
+                                                        case set_regedit:
                                                             json_object_object_get_ex(directive, "prefix", &options[1]);
                                                             json_object_object_get_ex(directive, "path", &options[2]);
                                                             json_object_object_get_ex(directive, "key", &options[3]);
@@ -700,7 +701,7 @@ struct script_t lutris_getInstaller(char* installername)
 
                                     const char* str;
                                     uint8_t offset = 0;
-                                    if (installer.directives[i]->task != NO_TASK)
+                                    if (installer.directives[i]->task != no_task)
                                     {
                                         offset = 1;
                                     }

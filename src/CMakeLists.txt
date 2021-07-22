@@ -10,6 +10,11 @@ set(SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dxvk.h
     ${CMAKE_CURRENT_SOURCE_DIR}/lutris.c
     ${CMAKE_CURRENT_SOURCE_DIR}/lutris.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/lutris/array.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/lutris/enum.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/lutris/keyword.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/lutris/runner.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/lutris/task.h
     ${CMAKE_CURRENT_SOURCE_DIR}/main.c
     ${CMAKE_CURRENT_SOURCE_DIR}/main.h
     ${CMAKE_CURRENT_SOURCE_DIR}/net.c
