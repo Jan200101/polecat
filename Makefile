@@ -64,9 +64,9 @@ ifneq ($(DEBUG), 1)
 else
 	COMMONFLAGS += -ggdb3 -Og
 endif
-CFLAGS          := $(COMMONFLAGS) `$(PKGCONFIG) --cflags json-c` `$(PKGCONFIG) --cflags libarchive` `$(PKGCONFIG) --cflags libcurl`  
+CFLAGS          := $(COMMONFLAGS) $(shell $(PKGCONFIG) --cflags json-c) $(shell $(PKGCONFIG) --cflags libarchive) $(shell $(PKGCONFIG) --cflags libcurl)  
 WARNFLAGS       := -Wall -Wextra -pedantic -Wconversion -Wshadow -Wstrict-aliasing  -Winit-self -Wcast-align -Wpointer-arith -Wmissing-declarations -Wmissing-include-dirs -Wno-unused-parameter -Wuninitialized
-LIBS            := `$(PKGCONFIG) --libs json-c` `$(PKGCONFIG) --libs libarchive` `$(PKGCONFIG) --libs libcurl` 
+LIBS            := $(shell $(PKGCONFIG) --libs json-c) $(shell $(PKGCONFIG) --libs libarchive) $(shell $(PKGCONFIG) --libs libcurl) 
 BINFLAGS        := $(LIBS)
 INCLUDEFLAGS    := 
 DEFINES         := -DNAME=\"${NAME}\" -DVERSION=\"${VERSION}\"
