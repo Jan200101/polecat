@@ -107,5 +107,5 @@ void extract(const struct MemoryStruct* tar, const char* outputdir)
     archive_write_close(ext);
     archive_write_free(ext);
 
-    if (err) (void)chdir(cwd);
+    if (err) chdir(cwd);
 }

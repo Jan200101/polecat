@@ -56,10 +56,10 @@ target_include_directories(${CMAKE_PROJECT_NAME}core PUBLIC ${JSONC_INCLUDE_DIRS
 target_include_directories(${CMAKE_PROJECT_NAME}core PUBLIC ${LIBARCHIVE_INCLUDE_DIRS})
 target_include_directories(${CMAKE_PROJECT_NAME}core PUBLIC ${LIBCURL_INCLUDE_DIRS})
 
+target_link_libraries(${CMAKE_PROJECT_NAME} LINK_PUBLIC ${CMAKE_PROJECT_NAME}core)
 target_link_libraries(${CMAKE_PROJECT_NAME} LINK_PUBLIC ${JSONC_LIBRARIES})
 target_link_libraries(${CMAKE_PROJECT_NAME} LINK_PUBLIC ${LIBARCHIVE_LIBRARIES})
 target_link_libraries(${CMAKE_PROJECT_NAME} LINK_PUBLIC ${LIBCURL_LIBRARIES})
-target_link_libraries(${CMAKE_PROJECT_NAME} LINK_PUBLIC ${CMAKE_PROJECT_NAME}core)
 
 target_compile_options(${CMAKE_PROJECT_NAME}core PUBLIC ${CFLAGS})
 target_compile_options(${CMAKE_PROJECT_NAME} PUBLIC ${CFLAGS})

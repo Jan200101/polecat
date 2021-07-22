@@ -37,9 +37,9 @@ target_include_directories(mock PRIVATE ${WINE_TAR_DIR} ${CMAKE_CURRENT_BINARY_D
 set(NAME ${CMAKE_PROJECT_NAME}_mock)
 add_executable(${NAME} ${MAINSOURCES})
 
+target_link_libraries(${NAME} LINK_PUBLIC ${CMAKE_PROJECT_NAME}core)
 target_link_libraries(${NAME} LINK_PUBLIC ${JSONC_LIBRARIES})
 target_link_libraries(${NAME} LINK_PUBLIC ${LIBARCHIVE_LIBRARIES})
-target_link_libraries(${NAME} LINK_PUBLIC ${CMAKE_PROJECT_NAME}core)
 target_link_libraries(${NAME} LINK_PUBLIC mock)
 
 target_compile_options(${NAME} PUBLIC ${CFLAGS})
