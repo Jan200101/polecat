@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Icon=polecat
+Exec=polecat
+Name=polecat
+Keywords=wine;lutris
+Terminal=true
+Categories=Application;Game

@@ -25,47 +25,39 @@ jobs:
       run: sudo apt-get update
 
     - name: Install dependencies
-      run: sudo apt-get install libcurl4-openssl-dev libjson-c-dev libarchive-dev cmake make
+      run: sudo apt-get install libcurl4-openssl-dev libjson-c-dev libarchive-dev cmake make wget
 
     - name: Create Build Environment
       run: cmake -E make_directory ${{runner.workspace}}/build
 
     - name: Configure CMake
       working-directory: ${{runner.workspace}}/build
-      shell: bash
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE:STRING=$BUILD_TYPE -DBUILD_MOCK:BOOL=ON
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_MOCK:BOOL=ON
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
-      shell: bash
-      run: cmake --build . --config $BUILD_TYPE
+      run: cmake --build .
 
-    - name: Test `wine list`
+    - name: Create AppImage
       working-directory: ${{runner.workspace}}/build
-      shell: bash
-      run: ./polecat_mock wine list
+      run: |
+        DESTDIR=AppDir cmake --install .
+        wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+        chmod +x linuxdeploy-x86_64.AppImage
+        ./linuxdeploy-x86_64.AppImage --appdir AppDir \
+                                      --output appimage \
+                                      --desktop-file=$GITHUB_WORKSPACE/polecat.desktop \
+                                      --icon-file=$GITHUB_WORKSPACE/polecat.svg
+        mv polecat*.AppImage polecat.AppImage
 
-    - name: Test `wine download`
-      working-directory: ${{runner.workspace}}/build
-      shell: bash
-      run: ./polecat_mock wine download mock
+    - name: Upload AppIamge
+      uses: actions/upload-artifact@v2
+      with:
+        path: ${{runner.workspace}}/build/polecat.AppImage
 
-    - name: Test `wine run`
+    - name: Test mock build
       working-directory: ${{runner.workspace}}/build
-      shell: bash
-      run: ./polecat_mock wine run mock 1 2 3 4
-
-    - name: Test `lutris search`
-      working-directory: ${{runner.workspace}}/build
-      shell: bash
-      run: ./polecat_mock lutris search game
-
-    - name: Get mock environment
-      working-directory: ${{runner.workspace}}/build
-      shell: bash
-      run: ./polecat_mock env
-
-    - name: Get environment
-      working-directory: ${{runner.workspace}}/build
-      shell: bash
-      run: ./polecat env
+      run: |
+        ./polecat_mock wine list
+        ./polecat_mock wine download mock
+        ./polecat_mock wine run mock 1 2 3 4
