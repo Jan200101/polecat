@@ -34,6 +34,10 @@ set(MAINSOURCES
 )
 endif()
 
+find_package(Libcurl REQUIRED)
+find_package(JsonC REQUIRED)
+find_package(Libarchive REQUIRED)
+
 set(CFLAGS
     -Wall -Wextra -pedantic
     -Wconversion -Wshadow -Wstrict-aliasing
@@ -44,10 +48,6 @@ set(CFLAGS
     ${LIBARCHIVE_CFLAGS}
     ${LIBCURL_CFLAGS}
 )
-
-find_package(Libcurl REQUIRED)
-find_package(JsonC REQUIRED)
-find_package(Libarchive REQUIRED)
 
 add_library(${CMAKE_PROJECT_NAME}core STATIC ${LIBSOURCES})
 add_executable(${CMAKE_PROJECT_NAME} ${MAINSOURCES})
