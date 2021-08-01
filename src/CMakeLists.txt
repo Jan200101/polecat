@@ -15,20 +15,23 @@ set(LIBSOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/lutris/keyword.h
     ${CMAKE_CURRENT_SOURCE_DIR}/lutris/runner.h
     ${CMAKE_CURRENT_SOURCE_DIR}/lutris/task.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/main.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/main.h
     ${CMAKE_CURRENT_SOURCE_DIR}/net.c
     ${CMAKE_CURRENT_SOURCE_DIR}/net.h
     ${CMAKE_CURRENT_SOURCE_DIR}/tar.c
     ${CMAKE_CURRENT_SOURCE_DIR}/tar.h
 )
 
+FILE(WRITE ${CMAKE_BINARY_DIR}/base.c "extern int empty;\n")
+
 set(MAINSOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/main.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/main.h
+    ${CMAKE_BINARY_DIR}/base.c   
 )
 
 if (NOT WIN32)
-set(MAINSOURCES
-    ${MAINSOURCES}
+set(LIBSOURCES
+    ${LIBSOURCES}
     ${CMAKE_CURRENT_SOURCE_DIR}/wine.c
     ${CMAKE_CURRENT_SOURCE_DIR}/wine.h
 )
