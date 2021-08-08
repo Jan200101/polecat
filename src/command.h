@@ -30,7 +30,7 @@
     { \
         fprintf(stderr, USAGE_STR MSG " <command>\n"); \
         print_help(GROUP##_commands, ARRAY_LEN(GROUP##_commands), GROUP##_flags, ARRAY_LEN(GROUP##_flags)); \
-        return EXIT_FAILURE; \
+        return EXIT_SUCCESS; \
     }
 
 /*

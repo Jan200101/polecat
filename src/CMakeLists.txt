@@ -1,6 +1,6 @@
 set(C_STANDARD 99)
 
-set(LIBSOURCES
+set(MAINSOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/command.h
     ${CMAKE_CURRENT_SOURCE_DIR}/common.c
     ${CMAKE_CURRENT_SOURCE_DIR}/common.h
@@ -23,15 +23,9 @@ set(LIBSOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/tar.h
 )
 
-FILE(WRITE ${CMAKE_BINARY_DIR}/base.c "extern int empty;\n")
-
-set(MAINSOURCES
-    ${CMAKE_BINARY_DIR}/base.c   
-)
-
 if (NOT WIN32)
-set(LIBSOURCES
-    ${LIBSOURCES}
+set(MAINSOURCES
+    ${MAINSOURCES}
     ${CMAKE_CURRENT_SOURCE_DIR}/wine.c
     ${CMAKE_CURRENT_SOURCE_DIR}/wine.h
 )
@@ -52,20 +46,19 @@ set(CFLAGS
     ${LIBCURL_CFLAGS}
 )
 
-add_library(${CMAKE_PROJECT_NAME}core STATIC ${LIBSOURCES})
-add_executable(${CMAKE_PROJECT_NAME} ${MAINSOURCES})
+add_library(core OBJECT ${MAINSOURCES})
 
-target_include_directories(${CMAKE_PROJECT_NAME}core PUBLIC ${JSONC_INCLUDE_DIRS})
-target_include_directories(${CMAKE_PROJECT_NAME}core PUBLIC ${LIBARCHIVE_INCLUDE_DIRS})
-target_include_directories(${CMAKE_PROJECT_NAME}core PUBLIC ${LIBCURL_INCLUDE_DIRS})
+target_include_directories(core PUBLIC ${JSONC_INCLUDE_DIRS})
+target_include_directories(core PUBLIC ${LIBARCHIVE_INCLUDE_DIRS})
+target_include_directories(core PUBLIC ${LIBCURL_INCLUDE_DIRS})
 
-target_link_libraries(${CMAKE_PROJECT_NAME} LINK_PUBLIC ${CMAKE_PROJECT_NAME}core)
+target_compile_options(core PUBLIC ${CFLAGS})
+
+add_executable(${CMAKE_PROJECT_NAME} $<TARGET_OBJECTS:core>)
+
 target_link_libraries(${CMAKE_PROJECT_NAME} LINK_PUBLIC ${JSONC_LIBRARIES})
 target_link_libraries(${CMAKE_PROJECT_NAME} LINK_PUBLIC ${LIBARCHIVE_LIBRARIES})
 target_link_libraries(${CMAKE_PROJECT_NAME} LINK_PUBLIC ${LIBCURL_LIBRARIES})
-
-target_compile_options(${CMAKE_PROJECT_NAME}core PUBLIC ${CFLAGS})
-target_compile_options(${CMAKE_PROJECT_NAME} PUBLIC ${CFLAGS})
 
 install(TARGETS ${CMAKE_PROJECT_NAME})
 
