@@ -12,6 +12,8 @@
 #define LUTRIS_GAME_SEARCH_API LUTRIS_GAME_API "?search=%s"
 #define LUTRIS_GAME_INSTALLER_API LUTRIS_GAME_API "/%s/installers"
 
+#define BOTTLES_API "https://raw.githubusercontent.com/bottlesdevs/programs/main"
+#define BOTTLES_API_INDEX BOTTLES_API "/index"
 
 #ifndef NAME
 #warning "no name specified, setting it to \"polecat\""

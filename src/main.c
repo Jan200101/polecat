@@ -13,6 +13,9 @@
 #ifdef LUTRIS_ENABLED
 #include "lutris.h"
 #endif
+#ifdef BOTTLES_ENABLED
+#include "bottles.h"
+#endif
 #include "common.h"
 #include "config.h"
 
@@ -32,6 +35,9 @@ static const struct Command main_commands[] = {
 #endif
 #ifdef LUTRIS_ENABLED
     { .name = "lutris",  .func = lutris,    .description = "run lutris instraller"},
+#endif
+#ifdef BOTTLES_ENABLED
+    { .name = "bottles", .func = bottles,   .description = "run bottles instraller"},
 #endif
     { .name = "env",     .func = main_env,  .description = "show some information about polecat" },
 };

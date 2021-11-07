@@ -32,7 +32,7 @@ jobs:
 
     - name: Configure CMake
       working-directory: ${{runner.workspace}}/build
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_INSTALL_PREFIX=/usr -DENABLE_WINE=ON -DENABLE_DXVK=ON -DENABLE_LUTRIS=ON -DBUILD_MOCK:BOOL=ON
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_INSTALL_PREFIX=/usr -DENABLE_WINE=ON -DENABLE_DXVK=ON -DENABLE_LUTRIS=ON -DENABLE_BOTTLES=ON -DBUILD_MOCK:BOOL=ON
 
     - name: Build
       working-directory: ${{runner.workspace}}/build

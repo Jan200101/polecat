@@ -13,6 +13,7 @@ option(BUILD_MOCK "build polecat against mock libraries" OFF)
 option(ENABLE_WINE "enables wine support [Not on Windows]" ON)
 option(ENABLE_DXVK "enables dxvk support" ON)
 option(ENABLE_LUTRIS "enables lutris support" OFF)
+option(ENABLE_BOTTLES "enables bottles support" ON)
 
 project(polecat VERSION 0.2.0 LANGUAGES C)
 

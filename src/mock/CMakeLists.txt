@@ -47,6 +47,7 @@ set(NAME ${CMAKE_PROJECT_NAME}_mock)
 add_executable(${NAME} ${SOURCES})
 
 target_link_libraries(${NAME} LINK_PUBLIC ${JSONC_LIBRARIES})
+target_link_libraries(${NAME} LINK_PUBLIC ${LIBYAML_LIBRARIES})
 target_link_libraries(${NAME} LINK_PUBLIC ${LIBARCHIVE_LIBRARIES})
 target_link_libraries(${NAME} LINK_PUBLIC mock)
 

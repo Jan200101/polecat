@@ -1,10 +1,12 @@
 
 find_package(Libcurl REQUIRED)
 find_package(JsonC REQUIRED)
+find_package(Libyaml REQUIRED)
 find_package(Libarchive REQUIRED)
 
 include_directories(${LIBCURL_INCLUDE_DIRS})
 include_directories(${JSONC_INCLUDE_DIRS})
+include_directories(${LIBYAML_INCLUDE_DIRS})
 include_directories(${LIBARCHIVE_INCLUDE_DIRS})
 
 list(APPEND
@@ -53,6 +55,18 @@ list(APPEND
 )
 endif()
 
+if(ENABLE_BOTTLES)
+add_compile_definitions(BOTTLES_ENABLED)
+add_library(bottles OBJECT
+    ${CMAKE_CURRENT_SOURCE_DIR}/bottles.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/bottles.h
+)
+
+list(APPEND
+    SOURCES
+    $<TARGET_OBJECTS:bottles>
+)
+endif()
 
 if (ENABLE_WINE AND NOT WIN32)
 add_compile_definitions(WINE_ENABLED)
@@ -75,6 +89,7 @@ set(CFLAGS
     -Wno-unused-parameter -Wuninitialized
     ${LIBCURL_CFLAGS}
     ${JSONC_CFLAGS}
+    ${LIBYAML_CFLAGS}
     ${LIBARCHIVE_CFLAGS}
 )
 
@@ -90,6 +105,7 @@ add_executable(${CMAKE_PROJECT_NAME} ${SOURCES})
 
 target_link_libraries(${CMAKE_PROJECT_NAME} LINK_PUBLIC ${LIBCURL_LIBRARIES})
 target_link_libraries(${CMAKE_PROJECT_NAME} LINK_PUBLIC ${JSONC_LIBRARIES})
+target_link_libraries(${CMAKE_PROJECT_NAME} LINK_PUBLIC ${LIBYAML_LIBRARIES})
 target_link_libraries(${CMAKE_PROJECT_NAME} LINK_PUBLIC ${LIBARCHIVE_LIBRARIES})
 
 install(TARGETS ${CMAKE_PROJECT_NAME})
