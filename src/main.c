@@ -4,13 +4,19 @@
 #include <libgen.h>
 
 #include "main.h"
+#ifdef WINE_ENABLED
 #include "wine.h"
+#endif
+#ifdef DXVK_ENABLED
 #include "dxvk.h"
+#endif
+#ifdef LUTRIS_ENABLED
 #include "lutris.h"
+#endif
 #include "common.h"
 #include "config.h"
 
-#ifndef _WIN32
+#ifndef WINE_ENABLED
 // if something fails
 // we need to free the new argv
 char** nargv;
@@ -18,12 +24,16 @@ static void free_nargv() { free(nargv); }
 #endif
 
 static const struct Command main_commands[] = {
-#ifndef _WIN32
-    { .name = "wine",   .func = winecmd,   .description = "manage wine versions" },
+#ifdef WINE_ENABLED
+    { .name = "wine",    .func = winecmd,   .description = "manage wine versions" },
 #endif
-    { .name = "dxvk",   .func = dxvk,      .description = "manage DXVK versions" },
-    { .name = "lutris", .func = lutris,    .description = "run lutris instraller"},
-    { .name = "env",    .func = main_env,  .description = "show some information about polecat" },
+#ifdef DXVK_ENABLED
+    { .name = "dxvk",    .func = dxvk,      .description = "manage DXVK versions" },
+#endif
+#ifdef LUTRIS_ENABLED
+    { .name = "lutris",  .func = lutris,    .description = "run lutris instraller"},
+#endif
+    { .name = "env",     .func = main_env,  .description = "show some information about polecat" },
 };
 
 static const struct Flag main_flags[] = {
@@ -33,7 +43,7 @@ static const struct Flag main_flags[] = {
 
 COMMAND_GROUP(main)
 {
-#ifndef _WIN32
+#ifndef WINE_ENABLED
     char* arg0 = basename(argv[0]);
     if (!strncmp(WINE_PREFIX, arg0, strlen(WINE_PREFIX)))
     {

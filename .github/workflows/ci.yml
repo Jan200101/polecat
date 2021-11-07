@@ -25,14 +25,14 @@ jobs:
       run: sudo apt-get update
 
     - name: Install dependencies
-      run: sudo apt-get install libcurl4-openssl-dev libjson-c-dev libarchive-dev cmake make wget
+      run: sudo apt-get install libcurl4-openssl-dev libjson-c-dev libyaml-dev libarchive-dev cmake make wget
 
     - name: Create Build Environment
       run: cmake -E make_directory ${{runner.workspace}}/build
 
     - name: Configure CMake
       working-directory: ${{runner.workspace}}/build
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_MOCK:BOOL=ON
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_INSTALL_PREFIX=/usr -DENABLE_WINE=ON -DENABLE_DXVK=ON -DENABLE_LUTRIS=ON -DBUILD_MOCK:BOOL=ON
 
     - name: Build
       working-directory: ${{runner.workspace}}/build

@@ -11,7 +11,7 @@ PRETTY_OUTPUT   := 1
 STATIC          := 0
 
 # COMMAND VARIABLES
-DOXYGEN		:= doxygen
+DOXYGEN         := doxygen
 RM              := rm -rf
 MKDIR           := mkdir -p
 PKGCONFIG       := pkg-config

@@ -2,6 +2,7 @@
 #define COMMAND_H
 
 #include <stdio.h>
+#include <string.h>
 #include "common.h"
 
 /*

@@ -49,8 +49,8 @@ COMMAND(lutris, search)
         str = realloc(str, allocsize);
 	    if (!str) return 1;
         lutris_escapeString(str, allocsize);
-        char* url = malloc(strlen(GAME_SEARCH_API) + strlen(str));
-        sprintf(url, GAME_SEARCH_API, str);
+        char* url = malloc(strlen(LUTRIS_GAME_SEARCH_API) + strlen(str));
+        sprintf(url, LUTRIS_GAME_SEARCH_API, str);
 
         struct json_object* queryresult = fetchJSON(url);
         free(str);
@@ -103,8 +103,8 @@ COMMAND(lutris, list)
         str = realloc(str, allocsize);
         if (!str) return 1;
         lutris_escapeString(str, allocsize);
-        char* url = malloc(strlen(GAME_INSTALLER_API) + strlen(str));
-        sprintf(url, GAME_INSTALLER_API, str);
+        char* url = malloc(strlen(LUTRIS_GAME_INSTALLER_API) + strlen(str));
+        sprintf(url, LUTRIS_GAME_INSTALLER_API, str);
 
         struct json_object* queryresult = fetchJSON(url);
         free(str);

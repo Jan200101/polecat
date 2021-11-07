@@ -8,9 +8,9 @@
 #define WINE_API LUTRIS_API "/runners/wine"
 #define DXVK_API GITHUB_API"/repos/lutris/dxvk/releases"
 #define INSTALLER_API LUTRIS_API "/installers/"
-#define GAME_API LUTRIS_API "/games"
-#define GAME_SEARCH_API GAME_API "?search=%s"
-#define GAME_INSTALLER_API GAME_API "/%s/installers"
+#define LUTRIS_GAME_API LUTRIS_API "/games"
+#define LUTRIS_GAME_SEARCH_API LUTRIS_GAME_API "?search=%s"
+#define LUTRIS_GAME_INSTALLER_API LUTRIS_GAME_API "/%s/installers"
 
 
 #ifndef NAME
