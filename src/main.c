@@ -16,7 +16,7 @@
 #include "common.h"
 #include "config.h"
 
-#ifndef WINE_ENABLED
+#ifdef WINE_ENABLED
 // if something fails
 // we need to free the new argv
 char** nargv;
@@ -43,7 +43,7 @@ static const struct Flag main_flags[] = {
 
 COMMAND_GROUP(main)
 {
-#ifndef WINE_ENABLED
+#ifdef WINE_ENABLED
     char* arg0 = basename(argv[0]);
     if (!strncmp(WINE_PREFIX, arg0, strlen(WINE_PREFIX)))
     {
