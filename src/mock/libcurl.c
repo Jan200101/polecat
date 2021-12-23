@@ -5,8 +5,10 @@
 
 #include "../defines.h"
 
+#ifdef WINE_ENABLED
 #include "wine_mock_tar_xz.h"
 #include "wine_json.h"
+#endif
 
 typedef size_t (*callback_t)(const void*, size_t, size_t, void*);
 typedef int (*xfercallback_t)(void*, curl_off_t, curl_off_t, curl_off_t, curl_off_t);
@@ -89,6 +91,7 @@ CURLcode curl_easy_perform(UNUSED CURL *easy_handle)
     size_t output_size = 0;
 
     debug_printf("[MOCK] %s(...)\n", __func__);
+#ifdef WINE_ENABLED
     if (!strcmp(url, WINE_API))
     {
         output = wine_json;
@@ -99,6 +102,7 @@ CURLcode curl_easy_perform(UNUSED CURL *easy_handle)
         output = wine_mock_tar_xz;
         output_size = wine_mock_tar_xz_size;
     }
+#endif
 
     if (output && data && callbackfunc)
     {

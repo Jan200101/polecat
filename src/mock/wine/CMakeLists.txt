@@ -12,7 +12,6 @@ add_executable(wine_mock ${WINE_SOURCES})
 set_target_properties(wine_mock PROPERTIES  OUTPUT_NAME "wine")
 target_compile_options(wine_mock PUBLIC ${CFLAGS})
 
-
 set(WINE_MOCK_ARCHIVE_FILE_NAME "wine-mock.tar.xz")
 set(WINE_MOCK_ARCHIVE_FILE "${WINE_MOCK_ARCHIVE_DIR}/${WINE_MOCK_ARCHIVE_FILE_NAME}")
 string(REGEX REPLACE "\\.| |-" "_" WINE_MOCK_ARCHIVE_FILE_NAME ${WINE_MOCK_ARCHIVE_FILE_NAME})
