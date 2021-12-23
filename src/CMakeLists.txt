@@ -1,6 +1,14 @@
-set(C_STANDARD 99)
 
-set(MAINSOURCES
+find_package(Libcurl REQUIRED)
+find_package(JsonC REQUIRED)
+find_package(Libarchive REQUIRED)
+
+include_directories(${LIBCURL_INCLUDE_DIRS})
+include_directories(${JSONC_INCLUDE_DIRS})
+include_directories(${LIBARCHIVE_INCLUDE_DIRS})
+
+list(APPEND
+    CORE_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/command.h
     ${CMAKE_CURRENT_SOURCE_DIR}/common.c
     ${CMAKE_CURRENT_SOURCE_DIR}/common.h
@@ -16,17 +24,20 @@ set(MAINSOURCES
 
 if(ENABLE_DXVK)
 add_compile_definitions(DXVK_ENABLED)
-set(MAINSOURCES
-    ${MAINSOURCES}
+add_library(dxvk OBJECT
     ${CMAKE_CURRENT_SOURCE_DIR}/dxvk.c
     ${CMAKE_CURRENT_SOURCE_DIR}/dxvk.h
+)
+
+list(APPEND
+    SOURCES
+    $<TARGET_OBJECTS:dxvk>
 )
 endif()
 
 if(ENABLE_LUTRIS)
 add_compile_definitions(LUTRIS_ENABLED)
-set(MAINSOURCES
-    ${MAINSOURCES}
+add_library(lutris OBJECT
     ${CMAKE_CURRENT_SOURCE_DIR}/lutris.c
     ${CMAKE_CURRENT_SOURCE_DIR}/lutris.h
     ${CMAKE_CURRENT_SOURCE_DIR}/lutris/array.h
@@ -35,21 +46,26 @@ set(MAINSOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/lutris/runner.h
     ${CMAKE_CURRENT_SOURCE_DIR}/lutris/task.h
 )
+
+list(APPEND
+    SOURCES
+    $<TARGET_OBJECTS:lutris>
+)
 endif()
 
 
 if (ENABLE_WINE AND NOT WIN32)
 add_compile_definitions(WINE_ENABLED)
-set(MAINSOURCES
-    ${MAINSOURCES}
+add_library(wine OBJECT
     ${CMAKE_CURRENT_SOURCE_DIR}/wine.c
     ${CMAKE_CURRENT_SOURCE_DIR}/wine.h
 )
-endif()
 
-find_package(Libcurl REQUIRED)
-find_package(JsonC REQUIRED)
-find_package(Libarchive REQUIRED)
+list(APPEND
+    SOURCES
+    $<TARGET_OBJECTS:wine>
+)
+endif()
 
 set(CFLAGS
     -Wall -Wextra -pedantic
@@ -62,15 +78,15 @@ set(CFLAGS
     ${LIBARCHIVE_CFLAGS}
 )
 
-add_library(core OBJECT ${MAINSOURCES})
-
-target_include_directories(core PUBLIC ${LIBCURL_INCLUDE_DIRS})
-target_include_directories(core PUBLIC ${JSONC_INCLUDE_DIRS})
-target_include_directories(core PUBLIC ${LIBARCHIVE_INCLUDE_DIRS})
+add_library(core OBJECT ${CORE_SOURCES})
+list(APPEND
+    SOURCES
+    $<TARGET_OBJECTS:core>
+)
 
 target_compile_options(core PUBLIC ${CFLAGS})
 
-add_executable(${CMAKE_PROJECT_NAME} $<TARGET_OBJECTS:core>)
+add_executable(${CMAKE_PROJECT_NAME} ${SOURCES})
 
 target_link_libraries(${CMAKE_PROJECT_NAME} LINK_PUBLIC ${LIBCURL_LIBRARIES})
 target_link_libraries(${CMAKE_PROJECT_NAME} LINK_PUBLIC ${JSONC_LIBRARIES})

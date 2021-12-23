@@ -15,8 +15,8 @@ add_custom_command(
 add_custom_target(wine_json ALL DEPENDS ${WINE_JSON_OUTFILE}.c ${WINE_JSON_OUTFILE}.h)
 
 set(WINE_MOCK
-	${WINE_TAR_OUT}.c
-	${WINE_TAR_OUT}.h
+	${WINE_MOCK_ARCHIVE_OUT}.c
+	${WINE_MOCK_ARCHIVE_OUT}.h
 )
 
 file(TOUCH ${WINE_MOCK})
@@ -31,11 +31,11 @@ SET(MOCK_SOURCES
 add_library(mock STATIC ${MOCK_SOURCES})
 target_compile_options(mock PUBLIC ${CFLAGS})
 target_include_directories(mock PUBLIC ${LIBCURL_INCLUDE_DIRS})
-add_dependencies(mock wine_tar wine_json)
-target_include_directories(mock PRIVATE ${WINE_TAR_DIR} ${CMAKE_CURRENT_BINARY_DIR})
+add_dependencies(mock wine_mock_archive wine_json)
+target_include_directories(mock PRIVATE ${WINE_MOCK_ARCHIVE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 set(NAME ${CMAKE_PROJECT_NAME}_mock)
-add_executable(${NAME} $<TARGET_OBJECTS:core>)
+add_executable(${NAME} ${SOURCES})
 
 target_link_libraries(${NAME} LINK_PUBLIC ${JSONC_LIBRARIES})
 target_link_libraries(${NAME} LINK_PUBLIC ${LIBARCHIVE_LIBRARIES})
