@@ -5,8 +5,10 @@
 
 #define GITHUB_API "https://api.github.com"
 #define LUTRIS_API "https://lutris.net/api"
+#define GITHUB_RELEASE(repo) GITHUB_API"/repos/" repo "/releases"
+
 #define WINE_API LUTRIS_API "/runners/wine"
-#define DXVK_API GITHUB_API"/repos/lutris/dxvk/releases"
+#define DXVK_API GITHUB_RELEASE("lutris/dxvk")
 #define INSTALLER_API LUTRIS_API "/installers/"
 #define LUTRIS_GAME_API LUTRIS_API "/games"
 #define LUTRIS_GAME_SEARCH_API LUTRIS_GAME_API "?search=%s"

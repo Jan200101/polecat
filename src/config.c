@@ -45,6 +45,10 @@ void getCacheDir(char* config, const size_t size)
 {
     getXDGDir("XDG_CACHE_HOME", "/.cache/" NAME, config, size);
 }
+void getSteamDir(char* config, const size_t size)
+{
+    getXDGDir("XDG_DATA_HOME", "/.local/share/Steam", config, size);
+}
 
 void getWineDir(char* config, const size_t size)
 {
@@ -56,4 +60,10 @@ void getDXVKDir(char* config, const size_t size)
 {
     getDataDir(config, size);
     strncat(config, "/dxvk", size - strlen(config) - 1);
+}
+
+void getProtonDir(char* config, const size_t size)
+{
+    getSteamDir(config, size);
+    strncat(config, "/compatibilitytools.d", size - strlen(config) - 1);
 }

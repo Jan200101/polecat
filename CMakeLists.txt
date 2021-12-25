@@ -11,6 +11,7 @@ endif()
 
 option(BUILD_MOCK "build polecat against mock libraries" OFF)
 option(ENABLE_WINE "enables wine support [Not on Windows]" ON)
+option(ENABLE_PROTON "enables proton support [Not on Windows]" ON)
 option(ENABLE_DXVK "enables dxvk support" ON)
 option(ENABLE_LUTRIS "enables lutris support" OFF)
 

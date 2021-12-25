@@ -67,6 +67,19 @@ list(APPEND
 )
 endif()
 
+if (ENABLE_PROTON AND NOT WIN32)
+add_compile_definitions(PROTON_ENABLED)
+add_library(proton OBJECT
+    ${CMAKE_CURRENT_SOURCE_DIR}/proton.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/proton.h
+)
+
+list(APPEND
+    SOURCES
+    $<TARGET_OBJECTS:proton>
+)
+endif()
+
 set(CFLAGS
     -Wall -Wextra -pedantic
     -Wconversion -Wshadow -Wstrict-aliasing

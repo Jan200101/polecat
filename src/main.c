@@ -7,6 +7,9 @@
 #ifdef WINE_ENABLED
 #include "wine.h"
 #endif
+#ifdef PROTON_ENABLED
+#include "proton.h"
+#endif
 #ifdef DXVK_ENABLED
 #include "dxvk.h"
 #endif
@@ -26,6 +29,9 @@ static void free_nargv() { free(nargv); }
 static const struct Command main_commands[] = {
 #ifdef WINE_ENABLED
     { .name = "wine",    .func = winecmd,   .description = "manage wine versions" },
+#endif
+#ifdef PROTON_ENABLED
+    { .name = "proton",  .func = proton,    .description = "manage Proton installations" },
 #endif
 #ifdef DXVK_ENABLED
     { .name = "dxvk",    .func = dxvk,      .description = "manage DXVK versions" },
