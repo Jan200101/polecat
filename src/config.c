@@ -26,7 +26,6 @@ static void getXDGDir(const char* envvar, const char* homeext, char* config, con
 #endif
             home = "";
         }
-        if (!home) home = "";
         strncpy(config, home, size);
         strncat(config, homeext, size - strlen(config));
     }

@@ -18,8 +18,8 @@ static const struct Command winecmd_commands[] = {
     { .name = "download",       .func = winecmd_download,  .description = "download and extract a wine version" },
     { .name = "env",            .func = winecmd_env,       .description = "add wine to your PATH in a POSIX shell"},
     { .name = "env-fish",       .func = winecmd_env,       .description = "add wine to your PATH in the fish shell"},
-    { .name = "list",           .func = winecmd_list,      .description = "list installable wine versions" },
-    { .name = "installed",      .func = winecmd_installed, .description = "list already installed wine versions" },
+    { .name = "list",           .func = winecmd_list,      .description = "list available wine versions" },
+    { .name = "installed",      .func = winecmd_installed, .description = "list installed wine versions" },
     { .name = "remove",         .func = winecmd_remove,    .description = "remove a wine version" },
     { .name = "run",            .func = winecmd_run,       .description = "run an installed wine version" },
 };

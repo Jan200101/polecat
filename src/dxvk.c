@@ -15,7 +15,7 @@ static const struct Command dxvk_commands[] = {
     { .name = "download",       .func = dxvk_download,   .description = "download and install a dxvk version" },
     { .name = "install",        .func = dxvk_install,    .description = "run the DXVK installer" },
     { .name = "list",           .func = dxvk_list,       .description = "list available dxvk versions" },
-    { .name = "list-installed", .func = dxvk_installed,  .description = "list installed dxvk versions" },
+    { .name = "installed",      .func = dxvk_installed,  .description = "list installed dxvk versions" },
     { .name = "remove",         .func = dxvk_remove,     .description = "remove a dxvk version" },
 };
 
@@ -114,7 +114,7 @@ COMMAND(dxvk, remove)
 
         if (!isDir(dxvkpath))
         {
-            fprintf(stderr, "'%s' is not an downloaded DXVK version\n", dxvkver);
+            fprintf(stderr, "'%s' is not a downloaded DXVK version\n", dxvkver);
             return EXIT_SUCCESS;
         }
 
@@ -131,7 +131,7 @@ COMMAND(dxvk, remove)
         return retval;
     }
 
-    fprintf(stderr, USAGE_STR " dxvk remove <version>\n\nInstalled dxvk versions can be obtained by using '" NAME " dxvk list-installed\n");
+    fprintf(stderr, USAGE_STR " dxvk remove <version>\n\nInstalled dxvk versions can be obtained by using '" NAME " dxvk installed'\n");
 
     return EXIT_SUCCESS;
 }
@@ -143,7 +143,7 @@ COMMAND(dxvk, list)
     if (runner)
     {
         int istty = isatty(STDOUT_FILENO); 
-        if (istty) puts("Installable DXVK versions:");
+        if (istty) puts("Available DXVK versions:");
 
         for (JSON_LENGTH_TYPE i = 0; i < json_object_array_length(runner); ++i)
         {
@@ -154,6 +154,8 @@ COMMAND(dxvk, list)
             if (istty) printf(" - ");
             printf("%s\n", json_object_get_string(name));
         }
+
+        json_object_put(runner);
     }
 
     return EXIT_SUCCESS;
@@ -172,7 +174,7 @@ COMMAND(dxvk, install)
 
         if (!isDir(dxvkpath))
         {
-            fprintf(stderr, "'%s' is not an downloaded DXVK version\n", dxvkver);
+            fprintf(stderr, "'%s' is not an downloaded DXVK version. Did you mean '" NAME " dxvk download'?\n", dxvkver);
             return EXIT_SUCCESS;
         }
 
@@ -203,7 +205,7 @@ COMMAND(dxvk, install)
     }
     else
     {
-        fprintf(stderr, "Specify a what DXVK version to install.\nUse '" NAME " dxvk list-installed' to list available versions\n");
+        fprintf(stderr, "Specify a what DXVK version to install.\nUse '" NAME " dxvk installed' to list available versions\n");
     }
 
         
@@ -223,7 +225,7 @@ COMMAND(dxvk, installed)
 
     int intty = isatty(STDOUT_FILENO);
 
-    if (intty) puts("Installed DXVK versions:");
+    if (intty) puts("Downloaded DXVK versions:");
     if ((dir = opendir(dxvkdir)) != NULL)
     {
         while ((ent = readdir(dir)) != NULL)

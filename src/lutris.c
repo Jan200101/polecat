@@ -34,21 +34,33 @@ COMMAND_GROUP_FUNC(lutris)
 
 COMMAND(lutris, search)
 {
-    if (argc == 2 && argv[1][0] != '\0')
+    if (argc > 1 && argv[1][0] != '\0')
     {
-        // argv being modifyable is not always a given so lets
-        // lets make a mutable copy
-        char* str = strdup(argv[1]);
-        if (!str) return 1;
+        size_t str_size = 0;
+        for (int i = 1; i < argc; ++i)
+        {
+            str_size += strlen(argv[i]);
+        }
+        str_size += 1; // NULL
 
         // in the case we need to do replacing we allocate more
-        // since we'll free in anyway
+        // since we'll free it anyway
         // the smallest strlen can return is 0 the longest
         // escapeString can return is strlen*3
-        size_t allocsize = strlen(str) * 3;
-        str = realloc(str, allocsize);
-	    if (!str) return 1;
-        lutris_escapeString(str, allocsize);
+        str_size *= 3;
+
+        char* str = malloc(str_size);
+        if (!str) return 1;
+
+        str[0] = '\0';
+        for (int i = 1; i < argc; ++i)
+        {
+            if (i != 1) strncat(str, " ", str_size);
+            strncat(str, argv[i], str_size);
+        }
+        str[str_size-1] = '\0';
+
+        lutris_escapeString(str, str_size);
         char* url = malloc(strlen(LUTRIS_GAME_SEARCH_API) + strlen(str));
         sprintf(url, LUTRIS_GAME_SEARCH_API, str);
 
