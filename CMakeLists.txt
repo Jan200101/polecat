@@ -14,7 +14,7 @@ option(ENABLE_WINE "enables wine support [Not on Windows]" ON)
 option(ENABLE_DXVK "enables dxvk support" ON)
 option(ENABLE_LUTRIS "enables lutris support" OFF)
 
-project(polecat VERSION 0.1.9 LANGUAGES C)
+project(polecat VERSION 0.2.0 LANGUAGES C)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
