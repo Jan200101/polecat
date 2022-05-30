@@ -25,7 +25,7 @@ jobs:
       run: sudo apt-get update
 
     - name: Install dependencies
-      run: sudo apt-get install libcurl4-openssl-dev libjson-c-dev libyaml-dev libarchive-dev cmake make wget
+      run: sudo apt-get -y install libcurl4-openssl-dev libjson-c-dev libyaml-dev libarchive-dev cmake make wget
 
     - name: Create Build Environment
       run: cmake -E make_directory ${{runner.workspace}}/build
@@ -44,13 +44,15 @@ jobs:
         DESTDIR=AppDir cmake --install .
         wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
         chmod +x linuxdeploy-x86_64.AppImage
-        ./linuxdeploy-x86_64.AppImage --appdir AppDir \
+        ./linuxdeploy-x86_64.AppImage --appimage-extract-and-run \
+                                      --appdir AppDir \
                                       --output appimage \
                                       --desktop-file=$GITHUB_WORKSPACE/polecat.desktop \
                                       --icon-file=$GITHUB_WORKSPACE/polecat.svg
         mv polecat*.AppImage polecat.AppImage
 
     - name: Upload AppIamge
+      if: ${{ !env.ACT }}
       uses: actions/upload-artifact@v2
       with:
         path: ${{runner.workspace}}/build/polecat.AppImage
