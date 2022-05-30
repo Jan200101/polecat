@@ -38,12 +38,26 @@ static const struct Command main_commands[] = {
 
 static const struct Flag main_flags[] = {
     { .name = "help",    .variant = TWO,    .returns = 1,   .func = main_help,    .description = "show this message"},
+    { .name = "license", .variant = TWO,    .returns = 1,   .func = main_license, .description = "display the software license"},
     { .name = "version", .variant = BOTH,   .returns = 1,   .func = main_version, .description = "prints the program version"}
 };
 
 COMMAND_GROUP(main)
 {
 #ifdef WINE_ENABLED
+    /*
+     * if ran binary is starts with wine-
+     * its likely that it ends with a wine version
+     * so we rewrite the argv from
+     * `wine-6.0` to `wine-6.0 wine run 6.0`
+     * which will follow the command path down for
+     * running wine.
+     *
+     * Since we run wine by replacing ourselves
+     * this leaves a seamless experience
+     * where the launched PID ends up as wine
+     */
+
     char* arg0 = basename(argv[0]);
     if (!strncmp(WINE_PREFIX, arg0, strlen(WINE_PREFIX)))
     {
@@ -74,14 +88,38 @@ COMMAND(main, env)
 {
     char buffer[PATH_MAX];
 
-    printf("user-Agent:\t\t%s\n", USER_AGENT);
+    printf("User-Agent\t\t%s\n", USER_AGENT);
 
-    getConfigDir(buffer, sizeof(buffer));
-    printf("config dir\t\t%s\n", buffer);
+    /* the config dir is unused for now */
+    /*getConfigDir(buffer, sizeof(buffer));*/
+    /*printf("config directory\t\t%s\n", buffer);*/
 
     getDataDir(buffer, sizeof(buffer));
-    printf("data dir\t\t%s\n", buffer);
+    printf("data directory\t%s\n", buffer);
 
+
+    return EXIT_SUCCESS;
+}
+
+COMMAND(main, license)
+{
+    puts(
+        "\t" NAME ", a wine version manager\n"
+        "\tCopyright (C) 2020-2022  Jan Drögehoff\n"
+        "\n"
+        "\tThis program is free software: you can redistribute it and/or modify\n"
+        "\tit under the terms of the GNU General Public License as published by\n"
+        "\tthe Free Software Foundation, either version 3 of the License, or\n"
+        "\t(at your option) any later version.\n"
+        "\n"
+        "\tThis program is distributed in the hope that it will be useful,\n"
+        "\tbut WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+        "\tMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+        "\tGNU General Public License for more details.\n"
+        "\n"
+        "\tYou should have received a copy of the GNU General Public License\n"
+        "\talong with this program.  If not, see <https://www.gnu.org/licenses/>."
+    );
 
     return EXIT_SUCCESS;
 }
@@ -89,8 +127,7 @@ COMMAND(main, env)
 COMMAND(main, version)
 {
     puts(VERSION);
-
-    return EXIT_SUCCESS;
+    return EXIT_SUCCESS;   
 }
 
 COMMAND_HELP(main, "")

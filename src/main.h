@@ -6,6 +6,7 @@
 #define WINE_PREFIX "wine-"
 
 COMMAND(main, env);
+COMMAND(main, license);
 COMMAND(main, version);
 COMMAND(main, help);
 

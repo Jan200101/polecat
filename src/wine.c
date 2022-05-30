@@ -219,19 +219,13 @@ COMMAND(winecmd, run)
 
         switch(check_wine_ver(winepath, sizeof(winepath)+1))
         {
+            default:
             case WINE_NORMAL:
                 winebinloc = WINEBIN;
                 break;
 
             case WINE_PROTON:
                 winebinloc = PROTONBIN;
-                break;
-
-            default:
-                #ifndef NDEBUG
-                fprintf(stderr, "Couldn't find figure out if this '%s' is Wine or Proton, defaulting to Wine\n", winever);
-                #endif
-                winebinloc = WINEBIN;
                 break;
         }
 
