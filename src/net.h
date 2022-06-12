@@ -4,9 +4,9 @@
 #include <curl/curl.h>
 #include <json.h>
 
-#define TIMEOPT CURLINFO_TOTAL_TIME_T
+void net_init();
+void net_deinit();
 
-size_t WriteMemoryCallback(void*, size_t, size_t, void*);
 struct MemoryStruct* downloadToRam(const char* URL, int);
 void downloadToFile(const char*, const char*, int);
 struct json_object* fetchJSON(const char*);

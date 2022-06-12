@@ -35,6 +35,7 @@ COMMAND(winecmd, download)
 {
     if (argc >= 2)
     {
+        net_init();
         struct json_object* runner = fetchJSON(WINE_API);
 
         if (runner)
@@ -98,11 +99,13 @@ COMMAND(winecmd, download)
 
             json_object_put(runner);
         }
+        net_deinit();
     }
     else
     {
         fprintf(stderr, USAGE_STR " wine download [versions]\n\nversions are obtained via '" NAME " wine list'\n");
     }
+
     return EXIT_SUCCESS;
 }
 
@@ -160,6 +163,7 @@ COMMAND(winecmd, remove)
 
 COMMAND(winecmd, list)
 {
+    net_init();
     struct json_object* runner = fetchJSON(WINE_API);
 
     if (runner)
@@ -182,6 +186,7 @@ COMMAND(winecmd, list)
         json_object_put(runner);
     }
 
+    net_deinit();
     return EXIT_SUCCESS;
 }
 
@@ -346,7 +351,7 @@ COMMAND(winecmd, env)
                 printf("To add a wine installation to your PATH\n"
                        "you have to eval the output.\n\n");
                 if (!fish_env)
-                    printf("$ eval 'polecat wine env %s'\n", winever);
+                    printf("$ eval `polecat wine env %s`\n", winever);
                 else
                     printf("$ eval (polecat wine fish-env %s)\n", winever);
             }
@@ -385,8 +390,8 @@ enum wine_type_t check_wine_ver(char* winepath, size_t size)
     winepathcopy = malloc(size);
     if (winepathcopy)
     {
-        strncpy(winepathcopy, winepath, size);
-        strncat(winepathcopy, WINEBIN, size - strlen(winepathcopy));
+        strncpy(winepathcopy, winepath, size - 1);
+        strncat(winepathcopy, WINEBIN, size - strlen(winepathcopy) - 1);
 
         if (isFile(winepathcopy))
         {
@@ -394,8 +399,8 @@ enum wine_type_t check_wine_ver(char* winepath, size_t size)
             return WINE_NORMAL;
         }
 
-        strncpy(winepathcopy, winepath, size);
-        strncat(winepathcopy, PROTONBIN, size - strlen(winepathcopy));
+        strncpy(winepathcopy, winepath, size - 1);
+        strncat(winepathcopy, PROTONBIN, size - strlen(winepathcopy) - 1);
 
         if (isFile(winepathcopy))
         {

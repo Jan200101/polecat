@@ -30,11 +30,11 @@ COMMAND(dxvk, download)
 {
     if (argc == 2)
     {
+        net_init();
         struct json_object* runner = fetchJSON(DXVK_API);
 
         if (runner)
         {
-
             struct json_object* value, *temp, *temp2;
             uint8_t found = 0;
 
@@ -91,6 +91,7 @@ COMMAND(dxvk, download)
 
             json_object_put(runner);
         }
+        net_deinit();
     }
     else
     {
@@ -138,6 +139,7 @@ COMMAND(dxvk, remove)
 
 COMMAND(dxvk, list)
 {
+    net_init();
     struct json_object* runner = fetchJSON(DXVK_API);
 
     if (runner)
@@ -158,6 +160,7 @@ COMMAND(dxvk, list)
         json_object_put(runner);
     }
 
+    net_deinit();
     return EXIT_SUCCESS;
 }
 

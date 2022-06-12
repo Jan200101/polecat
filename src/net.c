@@ -9,6 +9,16 @@
 #include "net.h"
 #include "common.h"
 
+void net_init()
+{
+    curl_global_init(CURL_GLOBAL_ALL);
+}
+
+void net_deinit()
+{
+    curl_global_cleanup();
+}
+
 static inline size_t memoryCallback(const void* contents, size_t size, size_t nmemb, void* userp)
 {
     size_t realsize = size * nmemb;
@@ -65,8 +75,6 @@ struct MemoryStruct* downloadToRam(const char* URL, int progress)
         chunk->memory[0] = 0;
         chunk->size = 0;
 
-        curl_global_init(CURL_GLOBAL_ALL);
-
         curl_handle = curl_easy_init();
 
         curl_easy_setopt(curl_handle, CURLOPT_URL, URL);
@@ -99,7 +107,6 @@ struct MemoryStruct* downloadToRam(const char* URL, int progress)
         }
 
         curl_easy_cleanup(curl_handle);
-        curl_global_cleanup();
     }
     else
     {

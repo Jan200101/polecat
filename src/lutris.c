@@ -36,6 +36,8 @@ COMMAND(lutris, search)
 {
     if (argc > 1 && argv[1][0] != '\0')
     {
+        net_init();
+
         size_t str_size = 0;
         for (int i = 1; i < argc; ++i)
         {
@@ -49,7 +51,7 @@ COMMAND(lutris, search)
         // escapeString can return is strlen*3
         str_size *= 3;
 
-        char* str = malloc(str_size);
+        char* str = malloc(str_size+1);
         if (!str) return 1;
 
         str[0] = '\0';
@@ -58,7 +60,7 @@ COMMAND(lutris, search)
             if (i != 1) strncat(str, " ", str_size);
             strncat(str, argv[i], str_size);
         }
-        str[str_size-1] = '\0';
+        str[str_size] = '\0';
 
         lutris_escapeString(str, str_size);
         char* url = malloc(strlen(LUTRIS_GAME_SEARCH_API) + strlen(str));
@@ -89,6 +91,7 @@ COMMAND(lutris, search)
 
             json_object_put(queryresult);
         }
+        net_deinit();
     }
     else
     {
@@ -102,6 +105,8 @@ COMMAND(lutris, list)
 {
     if (argc == 2)
     {
+        net_init();
+
         // argv being modifyable is not always a given so lets
         // lets make a mutable copy
         char* str = strdup(argv[1]);
@@ -145,6 +150,7 @@ COMMAND(lutris, list)
 
             json_object_put(queryresult);
         }
+        net_deinit();
     }
     else
     {
@@ -158,6 +164,7 @@ COMMAND(lutris, install)
 {
     if (argc == 2)
     {
+        net_init();
         struct script_t installer = lutris_getInstaller(argv[1]);
 
         if (installer.error == NONE)
@@ -310,6 +317,7 @@ COMMAND(lutris, install)
         }
 
         lutris_freeInstaller(&installer);
+        net_deinit();
     }
     return EXIT_SUCCESS;
 }
@@ -318,6 +326,7 @@ COMMAND(lutris, info)
 {
     if (argc == 2)
     {
+        net_init();
         struct script_t installer = lutris_getInstaller(argv[1]);
 
         if (installer.error > NO_SLUG || installer.error == NONE)
@@ -389,6 +398,7 @@ COMMAND(lutris, info)
         }
 
         lutris_freeInstaller(&installer);
+        net_deinit();
     }
     else
     {
@@ -401,9 +411,12 @@ COMMAND_HELP(lutris, " lutris")
 
 void lutris_escapeString(char* str, size_t size)
 {
+    if (!str || !*str)
+        return;
+
     char* tail = str + size;
 
-    while (str != tail)
+    while (*str && str < tail)
     {
         switch (*str)
         {
