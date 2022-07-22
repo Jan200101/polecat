@@ -2,9 +2,9 @@
 #include <string.h>
 #include <limits.h>
 #include <libgen.h>
-
 #include "main.h"
 #ifdef WINE_ENABLED
+#include <alloca.h>
 #include "wine.h"
 #endif
 #ifdef DXVK_ENABLED
@@ -15,13 +15,6 @@
 #endif
 #include "common.h"
 #include "config.h"
-
-#ifdef WINE_ENABLED
-// if something fails
-// we need to free the new argv
-char** nargv;
-static void free_nargv() { free(nargv); }
-#endif
 
 static const struct Command main_commands[] = {
 #ifdef WINE_ENABLED
@@ -62,7 +55,7 @@ COMMAND_GROUP(main)
     if (!strncmp(WINE_PREFIX, arg0, strlen(WINE_PREFIX)))
     {
         int nargc = argc + 3;
-        nargv = malloc((size_t)(nargc+1) * sizeof(char*));
+        char** nargv = alloca((size_t)(nargc+1) * sizeof(char*));
 
         nargv[0] = argv[0];
         nargv[1] = "wine";
@@ -73,12 +66,6 @@ COMMAND_GROUP(main)
 
         argc = nargc;
         argv = nargv;
-
-        /* we cannot free nargv before the body parsed it
-         * and we cannot free it after because the body
-         * returns, so call this at exit to free the leak
-         */
-        atexit(free_nargv);
     }
 #endif
     COMMAND_GROUP_BODY(main)
