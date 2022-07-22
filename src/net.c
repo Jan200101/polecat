@@ -9,12 +9,12 @@
 #include "net.h"
 #include "common.h"
 
-void net_init()
+void net_init(void)
 {
     curl_global_init(CURL_GLOBAL_ALL);
 }
 
-void net_deinit()
+void net_deinit(void)
 {
     curl_global_cleanup();
 }

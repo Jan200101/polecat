@@ -76,7 +76,7 @@ struct list_t {
     union
     {
         char* str;
-        char* (*func)();
+        char* (*func)(void);
     } value;
 };
 

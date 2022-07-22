@@ -4,8 +4,8 @@
 #include <curl/curl.h>
 #include <json.h>
 
-void net_init();
-void net_deinit();
+void net_init(void);
+void net_deinit(void);
 
 struct MemoryStruct* downloadToRam(const char* URL, int);
 void downloadToFile(const char*, const char*, int);

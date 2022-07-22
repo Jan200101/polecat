@@ -32,11 +32,11 @@ enum flag_variants {
 };
 
 struct Flag {
-    char* name;
+    const char* name;
     enum flag_variants variant;
     uint8_t returns;
     int (*func)(int, char**);
-    char* description;
+    const char* description;
 };
 
 int set_no_net(UNUSED int argc, UNUSED char** argv);
