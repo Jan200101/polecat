@@ -6,8 +6,9 @@
 #include <libgen.h>
 #include <sys/stat.h>
 
-#include "lutris.h"
+#include "fs.h"
 #include "net.h"
+#include "lutris.h"
 
 #define PERCENT_SPACE "%20"
 

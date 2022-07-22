@@ -6,10 +6,11 @@
 #include <dirent.h>
 #include <json.h>
 
-#include "dxvk.h"
+#include "config.h"
+#include "fs.h"
 #include "net.h"
 #include "tar.h"
-#include "config.h"
+#include "dxvk.h"
 
 static const struct Command dxvk_commands[] = {
     { .name = "download",       .func = dxvk_download,   .description = "download and install a dxvk version" },

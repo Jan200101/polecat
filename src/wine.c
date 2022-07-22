@@ -8,11 +8,12 @@
 #include <sys/utsname.h>
 #include <json.h>
 
-#include "wine.h"
+#include "common.h"
+#include "config.h"
+#include "fs.h"
 #include "net.h"
 #include "tar.h"
-#include "config.h"
-#include "common.h"
+#include "wine.h"
 
 static const struct Command winecmd_commands[] = {
     { .name = "download",       .func = winecmd_download,  .description = "download and extract a wine version" },
