@@ -21,6 +21,7 @@ COMMAND(winecmd, list);
 COMMAND(winecmd, run);
 COMMAND(winecmd, installed);
 COMMAND(winecmd, env);
+COMMAND(winecmd, shim);
 COMMAND(winecmd, help);
 
 enum wine_type_t check_wine_ver(char*, size_t);

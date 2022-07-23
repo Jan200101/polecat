@@ -9,7 +9,9 @@
 
 static void getXDGDir(const char* envvar, const char* homeext, char* config, const size_t size)
 {
-    char* xdg_var = getenv(envvar);
+    char* xdg_var = NULL;
+    if (envvar)
+        xdg_var = getenv(envvar);
 
     if (xdg_var)
     {
@@ -44,6 +46,11 @@ void getDataDir(char* config, const size_t size)
 void getCacheDir(char* config, const size_t size)
 {
     getXDGDir("XDG_CACHE_HOME", "/.cache/" NAME, config, size);
+}
+
+void getUserBinDir(char* config, const size_t size)
+{
+    getXDGDir(NULL, "/.local/bin", config, size);
 }
 
 void getWineDir(char* config, const size_t size)
