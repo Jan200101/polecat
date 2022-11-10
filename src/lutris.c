@@ -451,7 +451,7 @@ void lutris_escapeString(char* str, size_t size)
                 memmove(str+3, str+1, (size_t)(tail-str-3));
                 memcpy(str, PERCENT_SPACE, strlen(PERCENT_SPACE));
                 str += 3;
-                if (str >= tail) str[3] = '\0';
+                if (str >= tail) *tail = '\0';
                 break;
 
             /* fallthrough */
