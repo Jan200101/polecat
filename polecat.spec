@@ -3,7 +3,7 @@ Version:        0.2.0
 Release:        1%{?dist}
 Summary:        simple wine version manager
 
-License:        MIT
+License:        GPLv3
 URL:            https://github.com/Jan200101/polecat
 Source0:        %{url}/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
 

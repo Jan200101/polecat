@@ -23,4 +23,4 @@ polecat depends on:
 
 ### [License](LICENSE)
 
-polecat is licensed under MIT so feel free to do what you want with it
+polecat is licensed under the GPLv3
