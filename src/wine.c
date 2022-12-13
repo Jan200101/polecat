@@ -121,8 +121,8 @@ COMMAND(winecmd, remove)
         char winepath[PATH_MAX];
         getWineDir(winepath, sizeof(winepath));
 
-        strncat(winepath, "/", sizeof(winepath) - strlen(winepath) - 1);
-        strncat(winepath, winever, sizeof(winepath) - strlen(winepath) - 1);
+        strscat(winepath, "/");
+        strscat(winepath, winever);
 
         if (!isDir(winepath))
         {
@@ -132,8 +132,8 @@ COMMAND(winecmd, remove)
 
             if (!uname(&buffer))
             {
-                strncat(winepath, "-", sizeof(winepath) - strlen(winepath) - 1);
-                strncat(winepath, buffer.machine, sizeof(winepath) - strlen(winepath) - 1);
+                strscat(winepath, "-");
+                strscat(winepath, buffer.machine);
             }
 
             // if it still doesn't exist tell this wine version is not installed
@@ -201,8 +201,8 @@ COMMAND(winecmd, run)
         getWineDir(winepath, sizeof(winepath));
         char* winever = argv[1];
 
-        strncat(winepath, "/", sizeof(winepath) - strlen(winepath) - 1);
-        strncat(winepath, winever, sizeof(winepath) - strlen(winepath) - 1);
+        strscat(winepath, "/");
+        strscat(winepath, winever);
 
         if (!isDir(winepath))
         {
@@ -212,8 +212,8 @@ COMMAND(winecmd, run)
 
             if (!uname(&buffer))
             {
-                strncat(winepath, "-", sizeof(winepath) - strlen(winepath) - 1);
-                strncat(winepath, buffer.machine, sizeof(winepath) - strlen(winepath) - 1);
+                strscat(winepath, "-");
+                strscat(winepath, buffer.machine);
             }
 
             // if we still cannot find anything tell the user and exit
@@ -236,7 +236,7 @@ COMMAND(winecmd, run)
                 break;
         }
 
-        strncat(winepath, winebinloc, sizeof(winepath) - strlen(winepath) - 1);
+        strscat(winepath, winebinloc);
 
         if (isFile(winepath))
         {
@@ -278,7 +278,7 @@ COMMAND(winecmd, installed)
         while ((ent = readdir (dir)) != NULL)
         {
             if (ent->d_name[0] == '.') continue;
-            strncat(winedir, ent->d_name, sizeof(winedir) - winelen - 1);
+            strscat(winedir, ent->d_name);
             int isdirec = isDir(winedir);
             winedir[winelen] = '\0';
 
@@ -305,8 +305,8 @@ COMMAND(winecmd, env)
         getWineDir(winepath, sizeof(winepath));
         char* winever = argv[1];
 
-        strncat(winepath, "/", sizeof(winepath) - strlen(winepath) - 1);
-        strncat(winepath, winever, sizeof(winepath) - strlen(winepath) - 1);
+        strscat(winepath, "/");
+        strscat(winepath, winever);
 
         if (!isDir(winepath))
         {
@@ -316,8 +316,8 @@ COMMAND(winecmd, env)
 
             if (!uname(&buffer))
             {
-                strncat(winepath, "-", sizeof(winepath) - strlen(winepath) - 1);
-                strncat(winepath, buffer.machine, sizeof(winepath) - strlen(winepath) - 1);
+                strscat(winepath, "-");
+                strscat(winepath, buffer.machine);
             }
 
             // if it still doesn't exist tell this wine version is not installed
@@ -346,7 +346,7 @@ COMMAND(winecmd, env)
                 break;
         }
 
-        strncat(winepath, winebinloc, sizeof(winepath) - strlen(winepath) - 1);
+        strscat(winepath, winebinloc);
 
         if (isFile(winepath))
         {
@@ -395,8 +395,8 @@ COMMAND(winecmd, shim)
         getWineDir(winepath, sizeof(winepath));
         char* winever = argv[1];
 
-        strncat(winepath, "/", sizeof(winepath) - strlen(winepath) - 1);
-        strncat(winepath, winever, sizeof(winepath) - strlen(winepath) - 1);
+        strscat(winepath, "/");
+        strscat(winepath, winever);
 
         if (!isDir(winepath))
         {
@@ -406,8 +406,8 @@ COMMAND(winecmd, shim)
 
             if (!uname(&buffer))
             {
-                strncat(winepath, "-", sizeof(winepath) - strlen(winepath) - 1);
-                strncat(winepath, buffer.machine, sizeof(winepath) - strlen(winepath) - 1);
+                strscat(winepath, "-");
+                strscat(winepath, buffer.machine);
             }
 
             // if we still cannot find anything tell the user and exit
@@ -430,7 +430,7 @@ COMMAND(winecmd, shim)
                 break;
         }
 
-        strncat(winepath, winebinloc, sizeof(winepath) - strlen(winepath) - 1);
+        strscat(winepath, winebinloc);
 
         if (isFile(winepath))
         {
@@ -469,7 +469,7 @@ enum wine_type_t check_wine_ver(char* winepath, size_t size)
     if (winepathcopy)
     {
         strncpy(winepathcopy, winepath, size - 1);
-        strncat(winepathcopy, WINEBIN, size - strlen(winepathcopy) - 1);
+        strsncat(winepathcopy, WINEBIN, size);
 
         if (isFile(winepathcopy))
         {
@@ -478,7 +478,7 @@ enum wine_type_t check_wine_ver(char* winepath, size_t size)
         }
 
         strncpy(winepathcopy, winepath, size - 1);
-        strncat(winepathcopy, PROTONBIN, size - strlen(winepathcopy) - 1);
+        strsncat(winepathcopy, PROTONBIN, size);
 
         if (isFile(winepathcopy))
         {

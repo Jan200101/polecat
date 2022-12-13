@@ -481,8 +481,8 @@ struct script_t lutris_getInstaller(char* installername)
     if (installername)
     {
         char installerurl[PATH_MAX];
-        strncpy(installerurl, INSTALLER_API, sizeof(installerurl));
-        strncat(installerurl, installername, sizeof(installerurl) - strlen(installerurl) - 1);
+        strscpy(installerurl, INSTALLER_API);
+        strscat(installerurl, installername);
 
         struct json_object* installerjson = fetchJSON(installerurl);
 
@@ -885,8 +885,8 @@ size_t parseVar(char** pvar, struct list_t** variables, size_t variable_count)
             // end of the string up until the variable
             // we cannot fetch this after the realloc because it points to completly different memory making pointer math impossible
             var[offset] = '\0';
-            strncat(var, value,  varsize - strlen(var) - 1);
-            strncat(var, buf, varsize - strlen(var) - 1);   
+            strsncat(var, value, varsize);
+            strsncat(var, buf, varsize);   
             // cleanup
             free(value);
             free(buf);
