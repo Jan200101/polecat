@@ -28,7 +28,7 @@
 #define USAGE_STR "Usage: " NAME
 
 #ifndef NDEBUG
-#define UNREACHABLE printf("!!!UNREACHABLE CODE REACHED!!!\n" __FILE__ ":L%i\n", __LINE__); exit(0);
+#define UNREACHABLE printf("!!!UNREACHABLE CODE REACHED!!!\n%s:L%i\n", __FILE__, __LINE__); exit(0);
 #else
 #define UNREACHABLE
 #endif
