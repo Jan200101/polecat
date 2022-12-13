@@ -1,6 +1,6 @@
 # GENERAL VARIABLES
 NAME            ?= polecat
-VERSION		?= 0.1.9
+VERSION         ?= 0.2.0
 TARGET          ?= release
 DEBUG           := 0
 ifeq ($(TARGET),debug)
@@ -37,8 +37,8 @@ ifndef PLATFORM
 endif
 
 # CROSS COMPILATION
-CROSS		:=
-OBJ_EXT         := o
+CROSS           ?=
+OBJ_EXT         ?= o
 
 ifeq ($(PLATFORM),WINDOWS)
 	OUT_EXT     := .exe
@@ -46,7 +46,7 @@ ifeq ($(PLATFORM),WINDOWS)
 endif
 
 # DIRECTORIES
-BUILD_DIR	:= build
+BUILD_DIR       ?= build
 BIN_DIR         := $(BUILD_DIR)
 OBJ_DIR         := $(BUILD_DIR)/$(TARGET)
 
@@ -70,6 +70,9 @@ LIBS            := $(shell $(PKGCONFIG) --libs json-c) $(shell $(PKGCONFIG) --li
 BINFLAGS        := $(LIBS)
 INCLUDEFLAGS    := 
 DEFINES         := -DNAME=\"${NAME}\" -DVERSION=\"${VERSION}\"
+DEFINES         += -DDXVK_ENABLED
+DEFINES         += -DLUTRIS_ENABLED
+DEFINES         += -DWINE_ENABLED
 ifneq ($(DEBUG), 1)
 	DEFINES     += -DNDEBUG
 endif
