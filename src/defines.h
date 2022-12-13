@@ -56,4 +56,7 @@
 #define strsncat(dest, src, size) strncat(dest, src, size - strlen(dest) - 1)
 #define strscat(dest, src) strsncat(dest, src, sizeof(dest))
 
+// convert between function to data pointers
+#define FPTR(val) *(void**)(&val)
+
 #endif
