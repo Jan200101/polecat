@@ -50,4 +50,10 @@
 #define mkdir(path, perm) mkdir(path)
 #endif
 
+// str* operations onto the stack with compile-time bound checks
+#define strscpy(dest, src) strncpy(dest, src, sizeof(dest));
+
+#define strsncat(dest, src, size) strncat(dest, src, size - strlen(dest) - 1)
+#define strscat(dest, src) strsncat(dest, src, sizeof(dest))
+
 #endif
