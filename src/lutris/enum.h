@@ -1,5 +1,5 @@
-#ifdef CREATE_ENUM
-#undef CREATE_ENUM
+#ifdef VAL
+#undef VAL
 #endif
 
-#define CREATE_ENUM(x) x,
+#define VAL(x) x,

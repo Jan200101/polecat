@@ -6,6 +6,7 @@
 
 #define VARIABLESIGN '$'
 
+#include "lutris/pre.h"
 #include "lutris/enum.h"
 enum keyword_t {
     #include "lutris/keyword.h"
@@ -27,7 +28,6 @@ enum runner_t {
 
     RUNNERMAX
 };
-
 #include "lutris/array.h"
 static const char keywordstr[KEYWORDMAX][0xF] = {
     #include "lutris/keyword.h"
@@ -43,7 +43,7 @@ static const char runnerStr[RUNNERMAX][0xF] =
 {
     #include "lutris/runner.h"
 };
-
+#include "lutris/post.h"
 
 enum errors {
     NONE,
