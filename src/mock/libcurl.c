@@ -2,6 +2,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <curl/curl.h>
+#include <assert.h>
 
 #include "../defines.h"
 
@@ -18,6 +19,10 @@ typedef int (*xfercallback_t)(void*, curl_off_t, curl_off_t, curl_off_t, curl_of
 #else
 #define debug_printf(...)
 #endif
+#define mockup_printf(FORMAT, ...) debug_printf(" mock: %s("FORMAT")\n", __func__, __VA_ARGS__)
+#define mockup_print() mockup_printf("%s", "")
+
+#define CURL_MOCK_HANDLE (void*)0xabababab
 
 callback_t callbackfunc = NULL;
 xfercallback_t xfercallbackfunc = NULL;
@@ -30,21 +35,21 @@ long noprogress = 0;
 #undef curl_easy_setopt
 #endif
 
-CURLcode curl_global_init(UNUSED long flags)
+CURLcode curl_global_init(long flags)
 {
-    debug_printf("[MOCK] %s(...)\n", __func__);
+    mockup_printf("flags=0x%lx", flags);
     return CURLE_OK;
 }
 
 CURL* curl_easy_init()
 {
-    debug_printf("[MOCK] %s(...)\n", __func__);
-    return NULL;
+    mockup_print();
+    return CURL_MOCK_HANDLE;
 }
 
-CURLcode curl_easy_setopt(UNUSED CURL *handle, CURLoption option, ...)
+CURLcode curl_easy_setopt(CURL *handle, CURLoption option, ...)
 {
-    debug_printf("[MOCK] %s(...)\n", __func__);
+    assert(handle == CURL_MOCK_HANDLE);
 
     va_list arg;
     va_start(arg, option);
@@ -53,30 +58,31 @@ CURLcode curl_easy_setopt(UNUSED CURL *handle, CURLoption option, ...)
     {
         case CURLOPT_URL:
             url = va_arg(arg, char*);
-            debug_printf("CURLOPT_URL\t%s\n", url);
+            mockup_printf("handle=%p, option=CURLOPT_URL, url=\"%s\"", handle, url);
             break;
 
         case CURLOPT_WRITEDATA:
             data = va_arg(arg, void*);
-            debug_printf("CURLOPT_WRITEDATA\t%p\n", data);
+            mockup_printf("handle=%p, option=CURLOPT_WRITEDATA, data_address=%p", handle, data);
             break;
 
         case CURLOPT_WRITEFUNCTION:
             callbackfunc = va_arg(arg, callback_t);
-            debug_printf("CURLOPT_WRITEFUNCTION\n");
+            mockup_printf("handle=%p, option=CURLOPT_WRITEFUNCTION, writefunction=%p", handle, FPTR(callbackfunc));
             break;
 
         case CURLOPT_XFERINFOFUNCTION:
             xfercallbackfunc = va_arg(arg, xfercallback_t);
-            debug_printf("CURLOPT_XFERINFOFUNCTION\n");
+            mockup_printf("handle=%p, option=CURLOPT_XFERINFOFUNCTION, xferinfofunction=%p", handle, FPTR(xfercallbackfunc));
             break;
 
         case CURLOPT_NOPROGRESS:
             noprogress = va_arg(arg, long);
-            debug_printf("CURLOPT_NOPROGRESS\t%li\n", noprogress);
+            mockup_printf("handle=%p, option=CURLOPT_NOPROGRESS, noprogress=%li", handle, noprogress);
             break;
 
         default:
+            mockup_printf("handle=%p, option=0x%x", handle, option);
             break;
     }
 
@@ -85,12 +91,13 @@ CURLcode curl_easy_setopt(UNUSED CURL *handle, CURLoption option, ...)
     return CURLE_OK;
 }
 
-CURLcode curl_easy_perform(UNUSED CURL *easy_handle)
+CURLcode curl_easy_perform(CURL *handle)
 {
     const void* output = NULL;
     size_t output_size = 0;
 
-    debug_printf("[MOCK] %s(...)\n", __func__);
+    mockup_printf("handle=%p", handle);
+    assert(handle == CURL_MOCK_HANDLE);
 #ifdef WINE_ENABLED
     if (!strcmp(url, WINE_API))
     {
@@ -123,9 +130,10 @@ CURLcode curl_easy_perform(UNUSED CURL *easy_handle)
 #undef curl_easy_getinfo
 #endif
 
-CURLcode curl_easy_getinfo(UNUSED CURL *curl, CURLINFO info, ...)
+CURLcode curl_easy_getinfo(UNUSED CURL *handle, CURLINFO info, ...)
 {
-    debug_printf("[MOCK] %s(...)\n", __func__);
+    mockup_printf("handle=%p", handle);
+    assert(handle == CURL_MOCK_HANDLE);
 
     if (info == CURLINFO_RESPONSE_CODE)
     {
@@ -142,16 +150,17 @@ CURLcode curl_easy_getinfo(UNUSED CURL *curl, CURLINFO info, ...)
 
 const char* curl_easy_strerror(UNUSED CURLcode error)
 {
-    debug_printf("[MOCK] %s(...)\n", __func__);
+    mockup_printf("error=0x%x", error);
     return __func__;;
 }
 
 void curl_easy_cleanup(CURL *handle)
 {
-    debug_printf("[MOCK] %s(...)\n", __func__);
+    assert(handle == CURL_MOCK_HANDLE);
+    mockup_printf("handle=%p", handle);
 }
 
 void curl_global_cleanup()
 {
-    debug_printf("[MOCK] %s(...)\n", __func__);
+    mockup_print();
 }
